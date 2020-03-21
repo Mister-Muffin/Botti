@@ -4,7 +4,8 @@
   "description": "botti with node.js",
   "main": "main.js",
   "scripts": {
-    "test": "node main.js debug"
+    "test": "node main.js debug",
+    "start": "node main.js"
   },
   "author": "",
   "license": "ISC",
