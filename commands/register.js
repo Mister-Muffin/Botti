@@ -1,4 +1,5 @@
 const admin = require('firebase-admin')
+const Embed = require('../embed.js')
 module.exports = {
   name: "register",
   run: async (client, message, args) => {
@@ -8,13 +9,13 @@ module.exports = {
     docRef.get()
       .then(doc => {
         if (doc.exists) {
-          message.channel.send(`${message.author}, du bereits einen Account! Mit [--coins] kannst du deinen Kontostand abfragen.`)
+          Embed.warning(`${message.author}, du bereits einen Account!\nMit [--coins] kannst du deinen Kontostand abfragen.`, message.channel)
         } else {
           docRef.set({
               coins: 0
             })
             .then(doc => {
-              message.channel.send(`${message.author}, Account angelegt. Mit [--coins] kannst du deinen Kontostand abfragen.`)
+              Embed.success(`${message.author}, dein Account wurde angelegt.\nMit [--coins] kannst du deinen Kontostand abfragen.`, message.channel)
             }).catch(err => {
               console.log(err)
             })

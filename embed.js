@@ -26,17 +26,12 @@ module.exports = {
 
     channel.send('', emb)
   },
-  success(content, channel, destroy) {
+  success(content, channel) {
     const emb = new MessageEmbed()
       .setColor(colors.green)
       .setDescription(content)
 
-    channel.send('ehree', emb).then(message => {
-      if (destroy) {
-        console.log(`${message}********`)
-        message.delete(2000)
-      }
-    }).catch(err => {
+    channel.send('', emb).catch(err => {
       console.log(err)
     })
   }
