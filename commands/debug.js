@@ -1,14 +1,15 @@
-var debug = false
+const Embed = require('../embed.js')
+var debugMode = false
+exports.debugMode = debugMode
 module.exports = {
-    name: "ping",
+    name: "debug",
     run: async (client, message, args) => {
-        Embed.error(":x: This command is currently unaviable!", message.channel)
         if (debugMode) {
           debugMode = false
-          Embed.warning('Debug messages disabled')
+          Embed.warning('Debug messages disabled', message.channel)
         } else {
           debugMode = true;
-          Embed.warning('Debug messages enabled')
+          Embed.warning('Debug messages enabled', message.channel)
         }
     }
 }
