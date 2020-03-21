@@ -34,5 +34,14 @@ module.exports = {
     channel.send('', emb).catch(err => {
       console.log(err)
     })
+  },
+  question(content, channel) {
+    const emb = new MessageEmbed()
+      .setColor(colors.purple)
+      .setDescription(content)
+
+    channel.send('', emb).catch(err => {
+      console.log(err)
+    })
   }
 }

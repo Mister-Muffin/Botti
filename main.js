@@ -23,6 +23,7 @@ require(`./handler/command.js`)(client);
 
 client.on('ready', () => {
   console.log("ONLINE!")
+  client.user.setActivity(`New Game: [--play]!`);
 })
 
 client.on('message', async msg => {
