@@ -7,6 +7,10 @@ module.exports = {
   run: async (client, message, args) => {
     if (!args[0]) return
     if (args[0] < 1 || args[0] > 99) return
+    if (!message.member.hasPermission(492427066176700437)) {
+      message.channel.send(`:x: Sorry ${message.author}, du hast nicht die nötigen Rechte!\nBitte einen Admin um Hilfe!`)
+      return
+    }
     message.channel.bulkDelete(args[0], true).then(async msgs => {
 
       const emb = new MessageEmbed()
