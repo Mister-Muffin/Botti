@@ -1,5 +1,5 @@
+node_modules/
+.vscode/
 config.json
-/vscode
 package-lock.json
-/node_modules
 ServiceAccountKey.json
