@@ -1,3 +1,5 @@
+import { setTimeout } from "timers"
+
 const Discord = require('discord.js')
 const fs = require('fs')
 const admin = require('firebase-admin')
@@ -10,13 +12,15 @@ admin.initializeApp({
 })
 const db = admin.firestore()
 const docRef = db.doc('bot/ehre')
+const docRefAlla = db.doc('bot/alla')
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
 var client = new Discord.Client()
 
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 
-var currEhre = 0
+var currEhre: number = 0
+var currAlla:number = 0
 var debugMode = false
 
 require(`./handler/command.js`)(client);
@@ -30,8 +34,11 @@ client.on('message', async msg => {
   if (msg.author.bot) return;
   if (!msg.guild) return;
   if (!msg.content.startsWith(config.prefix)) {
-    if (msg.author.id != client.user.id && msg.content.includes('ehre') || msg.content.includes('ährä') || msg.content.includes('ärä')) {
+    if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('ehre') || msg.content.toLowerCase().includes('ährä') || msg.content.toLowerCase().includes('ärä')) {
       ehre(msg)
+    }
+    if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla') || msg.content.toLowerCase().includes('alla!')) {
+      alla(msg)
     }
   };
 
@@ -73,7 +80,33 @@ function ehre(msg) {
 
       }).then(function() {
         //console.log('done!')
-        msg.channel.send(`${currEhre} Ehre generiert :ok_hand:`)
+        msg.channel.send(`${currEhre + 1} Ehre generiert :ok_hand:`)
+      }).catch(error => {
+        console.log(error)
+      })
+    }).catch(error => {
+      console.log(error)
+    })
+}
+
+function alla(msg) {
+  docRefAlla.get()
+    .then(doc => {
+
+      if (!doc.exists) {
+        console.log('No such doc!')
+        return
+      }
+      currAlla = doc.data().alla
+    })
+    .then(function() {
+      docRefAlla.set({
+
+        alla: currAlla + 1
+
+      }).then(function() {
+        //console.log('done!')
+        msg.channel.send(`Es wurde schon ${currAlla + 1} mal alla gesagt!`)
       }).catch(error => {
         console.log(error)
       })

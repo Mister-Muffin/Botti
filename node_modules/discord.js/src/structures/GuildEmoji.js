@@ -1,70 +1,45 @@
 'use strict';
 
-const Emoji = require('./Emoji');
+const BaseGuildEmoji = require('./BaseGuildEmoji');
 const { Error } = require('../errors');
 const GuildEmojiRoleManager = require('../managers/GuildEmojiRoleManager');
 const Permissions = require('../util/Permissions');
 
 /**
  * Represents a custom emoji.
- * @extends {Emoji}
+ * @extends {BaseGuildEmoji}
  */
-class GuildEmoji extends Emoji {
+class GuildEmoji extends BaseGuildEmoji {
   /**
    * @param {Client} client The instantiating client
    * @param {Object} data The data for the guild emoji
    * @param {Guild} guild The guild the guild emoji is part of
    */
   constructor(client, data, guild) {
-    super(client, data);
+    super(client, data, guild);
 
     /**
-     * The guild this emoji is part of
-     * @type {Guild}
+     * The user who created this emoji
+     * @type {?User}
      */
-    this.guild = guild;
-
-    /**
-     * The ID of this emoji
-     * @type {Snowflake}
-     * @name GuildEmoji#id
-     */
-
-    this._roles = [];
-    this._patch(data);
+    this.author = null;
   }
 
-  _patch(data) {
-    if (data.name) this.name = data.name;
-
-    /**
-     * Whether or not this emoji requires colons surrounding it
-     * @type {boolean}
-     * @name GuildEmoji#requiresColons
-     */
-    if (typeof data.require_colons !== 'undefined') this.requiresColons = data.require_colons;
-
-    /**
-     * Whether this emoji is managed by an external service
-     * @type {boolean}
-     * @name GuildEmoji#managed
-     */
-    if (typeof data.managed !== 'undefined') this.managed = data.managed;
-
-    /**
-     * Whether this emoji is available
-     * @type {boolean}
-     * @name GuildEmoji#available
-     */
-    if (typeof data.available !== 'undefined') this.available = data.available;
-
-    if (data.roles) this._roles = data.roles;
-  }
+  /**
+   * The guild this emoji is part of
+   * @type {Guild}
+   * @name GuildEmoji#guild
+   */
 
   _clone() {
     const clone = super._clone();
     clone._roles = this._roles.slice();
     return clone;
+  }
+
+  _patch(data) {
+    super._patch(data);
+    if (typeof data.user !== 'undefined') this.author = this.client.users.add(data.user);
   }
 
   /**
@@ -90,20 +65,18 @@ class GuildEmoji extends Emoji {
    * Fetches the author for this emoji
    * @returns {Promise<User>}
    */
-  fetchAuthor() {
+  async fetchAuthor() {
     if (this.managed) {
-      return Promise.reject(new Error('EMOJI_MANAGED'));
+      throw new Error('EMOJI_MANAGED');
     } else {
-      if (!this.guild.me) return Promise.reject(new Error('GUILD_UNCACHED_ME'));
+      if (!this.guild.me) throw new Error('GUILD_UNCACHED_ME');
       if (!this.guild.me.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS)) {
-        return Promise.reject(new Error('MISSING_MANAGE_EMOJIS_PERMISSION', this.guild));
+        throw new Error('MISSING_MANAGE_EMOJIS_PERMISSION', this.guild);
       }
     }
-    return this.client.api
-      .guilds(this.guild.id)
-      .emojis(this.id)
-      .get()
-      .then(emoji => this.client.users.add(emoji.user));
+    const data = await this.client.api.guilds(this.guild.id).emojis(this.id).get();
+    this._patch(data);
+    return this.author;
   }
 
   /**

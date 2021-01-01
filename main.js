@@ -9,14 +9,16 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 const docRef = db.doc('bot/ehre');
+const docRefAlla = db.doc('bot/alla');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 var client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 var currEhre = 0;
+var currAlla = 0;
 var debugMode = false;
 require(`./handler/command.js`)(client);
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log("ONLINE!");
     //client.user.setActivity(`New Game: [--play]!`)
 });
@@ -26,8 +28,11 @@ client.on('message', async (msg) => {
     if (!msg.guild)
         return;
     if (!msg.content.startsWith(config.prefix)) {
-        if (msg.author.id != client.user.id && msg.content.includes('ehre') || msg.content.includes('ährä') || msg.content.includes('ärä')) {
+        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('ehre') || msg.content.toLowerCase().includes('ährä') || msg.content.toLowerCase().includes('ärä')) {
             ehre(msg);
+        }
+        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla') || msg.content.toLowerCase().includes('alla!')) {
+            alla(msg);
         }
     }
     ;
@@ -54,23 +59,47 @@ client.on('message', async (msg) => {
 function ehre(msg) {
     docRef.get()
         .then(doc => {
-        if (!doc.exists) {
-            console.log('No such doc!');
-            return;
-        }
-        currEhre = doc.data().ehre;
-    })
+            if (!doc.exists) {
+                console.log('No such doc!');
+                return;
+            }
+            currEhre = doc.data().ehre;
+        })
         .then(function () {
-        docRef.set({
-            ehre: currEhre + 1
-        }).then(function () {
-            //console.log('done!')
-            msg.channel.send(`${currEhre} Ehre generiert :ok_hand:`);
+            docRef.set({
+                ehre: currEhre + 1
+            }).then(function () {
+                //console.log('done!')
+                msg.channel.send(`${currEhre + 1} Ehre generiert :ok_hand:`);
+            }).catch(error => {
+                console.log(error);
+            });
         }).catch(error => {
             console.log(error);
         });
-    }).catch(error => {
-        console.log(error);
-    });
+}
+function alla(msg) {
+    docRefAlla.get()
+        .then(doc => {
+            if (!doc.exists) {
+                console.log('No such doc!');
+                return;
+            }
+            currAlla = doc.data().alla;
+        })
+        .then(function () {
+            docRefAlla.set({
+                alla: currAlla + 1
+            }).then(function () {
+                //console.log('done!')
+                msg.channel.send(`Es wurde schon ${currAlla + 1} mal alla gesagt!`);
+                console.log(currAlla);
+                console.log(currAlla + 1);
+            }).catch(error => {
+                console.log(error);
+            });
+        }).catch(error => {
+            console.log(error);
+        });
 }
 client.login(config.token);

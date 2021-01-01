@@ -29,12 +29,6 @@ class MessageReaction {
     this.message = message;
 
     /**
-     * Whether the client has given this reaction
-     * @type {boolean}
-     */
-    this.me = data.me;
-
-    /**
      * A manager of the users that have given this reaction
      * @type {ReactionUserManager}
      */
@@ -46,12 +40,20 @@ class MessageReaction {
   }
 
   _patch(data) {
-    /**
-     * The number of people that have given the same reaction
-     * @type {?number}
-     */
     // eslint-disable-next-line eqeqeq
-    if (this.count == undefined) this.count = data.count;
+    if (this.count == undefined) {
+      /**
+       * The number of people that have given the same reaction
+       * @type {?number}
+       */
+      this.count = data.count;
+    }
+
+    /**
+     * Whether the client has given this reaction
+     * @type {boolean}
+     */
+    this.me = data.me;
   }
 
   /**
@@ -101,8 +103,12 @@ class MessageReaction {
    * Fetch this reaction.
    * @returns {Promise<MessageReaction>}
    */
-  fetch() {
-    return this.message.reactions._fetchReaction(this.emoji, true);
+  async fetch() {
+    const message = await this.message.fetch();
+    const existing = message.reactions.cache.get(this.emoji.id || this.emoji.name);
+    // The reaction won't get set when it has been completely removed
+    this._patch(existing || { count: 0 });
+    return this;
   }
 
   toJSON() {

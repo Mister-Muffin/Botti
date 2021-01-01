@@ -57,14 +57,39 @@ class TextBasedChannel {
    * @property {string} [nonce=''] The nonce for the message
    * @property {string} [content=''] The content for the message
    * @property {MessageEmbed|Object} [embed] An embed for the message
-   * (see [here](https://discordapp.com/developers/docs/resources/channel#embed-object) for more details)
-   * @property {'none' | 'all' | 'everyone'} [disableMentions=this.client.options.disableMentions] Whether or not
-   * all mentions or everyone/here mentions should be sanitized to prevent unexpected mentions
+   * (see [here](https://discord.com/developers/docs/resources/channel#embed-object) for more details)
+   * @property {MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the message content
+   * @property {DisableMentionType} [disableMentions=this.client.options.disableMentions] Whether or not all mentions or
+   * everyone/here mentions should be sanitized to prevent unexpected mentions
    * @property {FileOptions[]|BufferResolvable[]} [files] Files to send with the message
    * @property {string|boolean} [code] Language for optional codeblock formatting to apply
    * @property {boolean|SplitOptions} [split=false] Whether or not the message should be split into multiple messages if
    * it exceeds the character limit. If an object is provided, these are the options for splitting the message
    * @property {UserResolvable} [reply] User to reply to (prefixes the message with a mention, except in DMs)
+   */
+
+  /**
+   * Options provided to control parsing of mentions by Discord
+   * @typedef {Object} MessageMentionOptions
+   * @property {MessageMentionTypes[]} [parse] Types of mentions to be parsed
+   * @property {Snowflake[]} [users] Snowflakes of Users to be parsed as mentions
+   * @property {Snowflake[]} [roles] Snowflakes of Roles to be parsed as mentions
+   */
+
+  /**
+   * Types of mentions to enable in MessageMentionOptions.
+   * - `roles`
+   * - `users`
+   * - `everyone`
+   * @typedef {string} MessageMentionTypes
+   */
+
+  /**
+   * The type of mentions to disable.
+   * - `none`
+   * - `all`
+   * - `everyone`
+   * @typedef {string} DisableMentionType
    */
 
   /**
@@ -287,7 +312,7 @@ class TextBasedChannel {
 
   /**
    * Bulk deletes given messages that are newer than two weeks.
-   * @param {Collection<Snowflake, Message>|Message[]|Snowflake[]|number} messages
+   * @param {Collection<Snowflake, Message>|MessageResolvable[]|number} messages
    * Messages or number of messages to delete
    * @param {boolean} [filterOld=false] Filter messages to remove those which are older than two weeks automatically
    * @returns {Promise<Collection<Snowflake, Message>>} Deleted messages
@@ -305,10 +330,7 @@ class TextBasedChannel {
       }
       if (messageIDs.length === 0) return new Collection();
       if (messageIDs.length === 1) {
-        await this.client.api
-          .channels(this.id)
-          .messages(messageIDs[0])
-          .delete();
+        await this.client.api.channels(this.id).messages(messageIDs[0]).delete();
         const message = this.client.actions.MessageDelete.getMessage(
           {
             message_id: messageIDs[0],

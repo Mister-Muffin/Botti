@@ -7,6 +7,7 @@ const Snowflake = require('../util/Snowflake');
 /**
  * Represents any channel on Discord.
  * @extends {Base}
+ * @abstract
  */
 class Channel extends Base {
   constructor(client, data) {
@@ -90,27 +91,31 @@ class Channel extends Base {
 
   /**
    * Fetches this channel.
+   * @param {boolean} [force=false] Whether to skip the cache check and request the API
    * @returns {Promise<Channel>}
    */
-  fetch() {
-    return this.client.channels.fetch(this.id, true);
+  fetch(force = false) {
+    return this.client.channels.fetch(this.id, true, force);
+  }
+
+  /**
+   * Indicates whether this channel is text-based.
+   * @returns {boolean}
+   */
+  isText() {
+    return 'messages' in this;
   }
 
   static create(client, data, guild) {
     const Structures = require('../util/Structures');
     let channel;
     if (!data.guild_id && !guild) {
-      switch (data.type) {
-        case ChannelTypes.DM: {
-          const DMChannel = Structures.get('DMChannel');
-          channel = new DMChannel(client, data);
-          break;
-        }
-        case ChannelTypes.GROUP: {
-          const PartialGroupDMChannel = require('./PartialGroupDMChannel');
-          channel = new PartialGroupDMChannel(client, data);
-          break;
-        }
+      if ((data.recipients && data.type !== ChannelTypes.GROUP) || data.type === ChannelTypes.DM) {
+        const DMChannel = Structures.get('DMChannel');
+        channel = new DMChannel(client, data);
+      } else if (data.type === ChannelTypes.GROUP) {
+        const PartialGroupDMChannel = require('./PartialGroupDMChannel');
+        channel = new PartialGroupDMChannel(client, data);
       }
     } else {
       guild = guild || client.guilds.cache.get(data.guild_id);
