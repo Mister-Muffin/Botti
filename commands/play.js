@@ -6,6 +6,7 @@ const price = 50
 
 module.exports = {
   name: "play",
+  description: "startet das Spiel!",
   run: async (client, message, args) => {
 
     const db = admin.firestore()

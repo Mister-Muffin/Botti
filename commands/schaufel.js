@@ -4,6 +4,7 @@ const docRef = db.doc('bot/schaufeln')
 var schaufeln = 0
 module.exports = {
   name: "schaufel",
+  description: "haut dir eine Schaufel gegen den Kopf.",
   run: async (client, message, args) => {
 
     docRef.get()

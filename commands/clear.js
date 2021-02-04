@@ -4,6 +4,7 @@ const {
 } = require('discord.js')
 module.exports = {
   name: "clear",
+  description: "Löscht eine bestimmte Anzahl an Nachichten.!",
   run: async (client, message, args) => {
     if (!args[0]) return
     if (args[0] < 1 || args[0] > 99) return

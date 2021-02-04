@@ -4,24 +4,86 @@ const admin = require('firebase-admin');
 const serviceAccount = require('./ServiceAccountKey.json');
 const Embed = require('./embed.js');
 const debug = require('./commands/debug.js');
+const { readdirSync } = require("fs");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 const db = admin.firestore();
 const docRef = db.doc('bot/ehre');
 const docRefAlla = db.doc('bot/alla');
+const docRefYeet = db.doc('bot/yeet');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 var client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 var currEhre = 0;
 var currAlla = 0;
+var currYeet = 0;
 var debugMode = false;
 require(`./handler/command.js`)(client);
 client.on('ready', async () => {
+
+    client.api.applications(client.user.id).commands().get().then(answer => { console.log(answer) })
+    // client.api.applications(client.user.id).commands("806830661050695711").delete().then(answer => {console.log(answer)})
+
     console.log("ONLINE!");
-    //client.user.setActivity(`New Game: [--play]!`)
+    // Filter so we only have .js command files
+    const commands = readdirSync(`./commands/`).filter(file => file.endsWith(".js"));
+
+    // Loop over the commands, and add all of them to a collection
+    // If there's no name found, prevent it from returning an error,
+    // By using a cross in the table we made.
+    console.log(commands.length)
+    for (let file of commands) {
+        let pull = require(`./commands/${file}`);
+
+        if (pull.name) {
+            client.api.applications(client.user.id).guilds("492426074396033035").commands.post({
+                data: {
+                    name: pull.name,
+                    description: pull.description
+                    // possible options here e.g. options: [{...}]
+                }
+                //client.user.setActivity(`New Game: [--play]!`)
+            })
+            console.log(pull.name)
+        } else {
+            continue;
+        }
+
+        // If there's an aliases key, read the aliases.
+        //if (pull.aliases && Array.isArray(pull.aliases)) pull.aliases.forEach(alias => client.aliases.set(alias, pull.name));
+    }
+    // client.api.applications(client.user.id).guilds("492426074396033035").commands.post({
+    //     data: {
+    //         name: "dujfqgzcwurgq9abdy",
+    //         description: "hello world command"
+    //         // possible options here e.g. options: [{...}]
+    //     }
+    //     //client.user.setActivity(`New Game: [--play]!`)
+    // })
 });
+client.ws.on('INTERACTION_CREATE', async interaction => {
+    const command = interaction.data.name.toLowerCase();
+    let commandList = client.commands.get(command);
+    const args = interaction.data.options;
+
+    if (true) {
+        // here you could do anything. in this sample
+        // i reply with an api interaction
+        //command.run(client, msg, args);
+        command.run(client, interaction, args);
+        client.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+                type: 4,
+                data: {
+                    content: "ello :)"
+                }
+            }
+        })
+    }
+});
+
 client.on('message', async (msg) => {
     if (msg.author.bot)
         return;
@@ -34,6 +96,14 @@ client.on('message', async (msg) => {
         if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla') || msg.content.toLowerCase().includes('alla!')) {
             alla(msg);
         }
+        if (msg.content.toLowerCase().match(/([y][e]{2,}[t])/gi)) {
+            yeet(msg);
+        }
+    }
+    if (msg.content.toLowerCase().includes('https://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
+        msg.delete({ timeout: 1 })
+            .then(msg => console.log(`Deleted message from ${msg.author.username} after 5 seconds`))
+            .catch(console.error);
     }
     ;
     // If msg.member is uncached, cache it.
@@ -95,6 +165,36 @@ function alla(msg) {
                 msg.channel.send(`Es wurde schon ${currAlla + 1} mal alla gesagt!`);
                 console.log(currAlla);
                 console.log(currAlla + 1);
+            }).catch(error => {
+                console.log(error);
+            });
+        }).catch(error => {
+            console.log(error);
+        });
+}
+function yeet(msg) {
+    yeeterId = msg.author.id;
+    docRefYeet.get()
+        .then(doc => {
+            if (!doc.exists) {
+                console.log('No such doc!');
+                return;
+            }
+
+            currYeet = doc.data()[yeeterId];
+        })
+        .then(function () {
+            if (isNaN(currYeet)) {
+                currYeet = 0;
+                console.log("NotANumber");
+            }
+            docRefYeet.update({
+                [yeeterId]: currYeet + 1
+            }).then(function () {
+                //console.log('done!')
+                msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
+                //console.log(currYeet);
+                //console.log(currYeet + 1);
             }).catch(error => {
                 console.log(error);
             });

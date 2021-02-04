@@ -2,6 +2,7 @@ const fs = require('fs')
 const Embed = require('../embed.js')
 module.exports = {
   name: "help",
+  description: "Helo, im under de water, please help me!",
   run: async (client, message, args) => {
     try {
     Embed.help(`${fs.readFileSync('commands/help.md', 'utf8')}`, message.channel)

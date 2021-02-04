@@ -3,6 +3,7 @@ const admin = require('firebase-admin')
 var coins = 0;
 module.exports = {
   name: "coins",
+  description: "zeigt dir deinen aktuellen Kontostand an",
   run: async (client, message, args) => {
 
     const db = admin.firestore()

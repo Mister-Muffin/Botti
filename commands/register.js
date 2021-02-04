@@ -2,6 +2,7 @@ const admin = require('firebase-admin')
 const Embed = require('../embed.js')
 module.exports = {
   name: "register",
+  description: "erstellt dir einen Account, für dein Geld (einmalig!).",
   run: async (client, message, args) => {
 
     const db = admin.firestore()
