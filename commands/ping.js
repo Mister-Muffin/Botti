@@ -11,6 +11,5 @@ module.exports = {
 
         msg.edit(`🏓 Pong! (Latency is ${Math.floor(msg.createdAt - msg.createdAt)}ms)`);
         }).catch(console.error);
-  
     }
 }

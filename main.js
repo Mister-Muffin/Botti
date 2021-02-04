@@ -3,7 +3,6 @@ const fs = require('fs');
 const admin = require('firebase-admin');
 const serviceAccount = require('./ServiceAccountKey.json');
 const Embed = require('./embed.js');
-const debug = require('./commands/debug.js');
 const { readdirSync } = require("fs");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -19,7 +18,6 @@ client.aliases = new Discord.Collection();
 var currEhre = 0;
 var currAlla = 0;
 var currYeet = 0;
-var debugMode = false;
 require(`./handler/command.js`)(client);
 client.on('ready', async () => {
 
@@ -122,8 +120,6 @@ client.on('message', async (msg) => {
     // If a command is finally found, run the command
     if (command)
         command.run(client, msg, args);
-    if (debug.debugMode)
-        msg.channel.send(`${msg.author.id}, ${client.user.id}`);
 });
 function ehre(msg) {
     docRef.get()

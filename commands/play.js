@@ -8,29 +8,29 @@ module.exports = {
   name: "play",
   description: "startet das Spiel!",
   options: [],
-  run: async (client, message, args) => {
+  run: async (client, interaction, args) => {
 
     const db = admin.firestore()
-    const docRef = db.doc(`bot/${message.member.user.tag}`)
+    const docRef = db.doc(`bot/${interaction.member.user.id}`)
 
     docRef.get()
-      .then(doc => {
+      .then(async doc => {
         if (!doc.exists) {
-          Embed.error(`${message.author}, du hast noch keinen Account!\nMit [--register] kannst du dir einen anlegen.`, message.channel)
+          Embed.error(`${interaction.member.nick}, du hast noch keinen Account!\nMit [/coins] kannst du dir einen anlegen.`, client, interaction)
           return
         } else {
 
           coins = doc.data().coins
 
           if (coins < price) {
-            Embed.error(`${message.author}, du hast nicht genug Geld!. (Du brauchst 50)`, message.channel)
+            Embed.error(`${interaction.member.nick}, du hast nicht genug Geld!. (Du brauchst 50)`, client, interaction)
           } else {
 
             docRef.set({
               coins: coins - 50
-            }).then(() => {
+            }).then(async () => {
               coins = coins - 50
-              roll()
+              await roll(interaction)
             }).catch(err => {
               console.log(err)
             })
@@ -41,14 +41,14 @@ module.exports = {
         debug.log(err)
       })
 
-    function roll() {
+    async function roll(interaction) {
       var items = [":watermelon:", ":apple:", ":banana:"]
 
       var first = [Math.floor(Math.random() * 3)];
       var second = [Math.floor(Math.random() * 3)];
       var third = [Math.floor(Math.random() * 3)];
-
-      message.channel.send(`${items[first]} ${items[second]} ${items[third]}`)
+      client.channels.fetch(interaction.channel_id).then(async channel => {
+      channel.send(`${items[first]} ${items[second]} ${items[third]}`)
 
       if (items[first] == items[second] && items[second] == items[third]) {
         coins = coins + 200
@@ -59,13 +59,11 @@ module.exports = {
           console.log(err)
         })
 
-        Embed.success(`Glückwunsch ${message.author}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`, message.channel)
+        Embed.success(`Glückwunsch ${interaction.member.nick}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`, client, interaction)
       } else {
-        Embed.error(`Schade ${message.author}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`, message.channel)
+        Embed.error(`Schade ${interaction.member.nick}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`, client, interaction)
       }
     }
-
-
-
+      )}
   }
 }
