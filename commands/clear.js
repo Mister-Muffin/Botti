@@ -40,24 +40,22 @@ module.exports = {
     
     channel.bulkDelete(args.find(arg => arg.name.toLowerCase() == "number").value, true).then(async msgs => {
 
-      const emb = new MessageEmbed()
-        .setColor(0x2ecc71)
-        .setDescription(`${msgs.size} Nachichten gelöscht`)
+	const emb = new MessageEmbed()
+        	.setColor(0x2ecc71)
+	    	.setDescription(`${msgs.size} Nachichten gelöscht`)
+	    
+      	client.api.interactions(interaction.id, interaction.token).callback.post({
+      		data: {
+        		type: 4,
+          		data: await createAPIMessage(interaction, embed)
+        	}
+      	});
 			
-			
-      client.api.interactions(interaction.id, interaction.token).callback.post({
-      	data: {
-        	type: 4,
-          data: await createAPIMessage(interaction, embed)
-        }
-      });
-			
-			setTimeout(() => {
+	setTimeout(() => {
           client.api.interactions(interaction.id, interaction.token).callback.messages.original.delete()
         	console.log(`********`)
-        }, 2000)   
-
-  }
+        }, 2000)
+  }).catch(err => console.log(err))
 }
 
 function blockCommand(channel) {
