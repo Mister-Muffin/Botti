@@ -18,9 +18,17 @@ module.exports = {
     client.channels.fetch(interaction.channel_id).then(async channel => {
     if (!args[0]) return
     if (args[0] < 1 || args[0] > 99) {
-      channel.send('', new MessageEmbed()
+      var embed = new MessageEmbed()
       .setColor(0xff3300)
       .setDescription(`:x: **Du musst eine Zahl zwischen 1 und 99 angeben!**`));
+      
+      client.api.interactions(interaction.id, interaction.token).callback.post({
+      	data: {
+        	type: 4,
+          data: await createAPIMessage(interaction, embed)
+        }
+      });
+      
       return;
     }
     // if (!interaction.member.permissions('MANAGE_MESSAGES')) {
@@ -35,27 +43,33 @@ module.exports = {
       const emb = new MessageEmbed()
         .setColor(0x2ecc71)
         .setDescription(`${msgs.size} Nachichten gelöscht`)
-
-      channel.send('', emb).then(async deleteMsg => {
-        console.log(`${deleteMsg}********`)
-        setTimeout(() => {
-          deleteMsg.delete()
-        }, 2000)
-      }).catch(err => {
-        console.log(err)
-      })
-
-    }).catch(err => {
-      console.log(err)
-    })
-    }).catch(console.error);
-    
+			
+			
+      client.api.interactions(interaction.id, interaction.token).callback.post({
+      	data: {
+        	type: 4,
+          data: await createAPIMessage(interaction, embed)
+        }
+      });
+			
+			setTimeout(() => {
+          client.api.interactions(interaction.id, interaction.token).callback.messages.original.delete()
+        	console.log(`********`)
+        }, 2000)   
 
   }
 }
 
 function blockCommand(channel) {
-  channel.send('', new MessageEmbed()
+  var embed = new MessageEmbed()
       .setColor(0xff9300)
       .setDescription(`:warning: **Dieser Befehl ist derzeit blockiert.\nFrage einen Admin für weitere Infomationen!**`));
+			
+	
+      client.api.interactions(interaction.id, interaction.token).callback.post({
+      	data: {
+        	type: 4,
+          data: await createAPIMessage(interaction, embed)
+        }
+      });
 }
