@@ -1,4 +1,5 @@
 const Embed = require('../embed.js')
+const Discord = require('discord.js');
 const {
   MessageEmbed
 } = require('discord.js')
@@ -23,12 +24,14 @@ module.exports = {
       .setDescription(`:x: **Du musst eine Zahl zwischen 1 und 99 angeben!**`));
       return;
     }
-    // if (!interaction.member.permissions('MANAGE_MESSAGES')) {
-    //   message.channel.send(`:x: Sorry ${message.author}, du hast nicht die nötigen Rechte!\nBitte einen Admin um Hilfe!`)
-    //   return
-    // }
-    blockCommand(channel);
-    return;
+    var member = await (await client.guilds.fetch(interaction.guild_id)).members.fetch(interaction.member.user.id) // ?
+    if (!member.hasPermission('MANAGE_MESSAGES')) {
+      channel.send(`:x: Sorry ${interaction.member.nick}, du hast nicht die nötigen Rechte!\nBitte einen Admin um Hilfe!`)
+      return
+    }
+
+    // blockCommand(channel);
+    // return;
     
     channel.bulkDelete(args.find(arg => arg.name.toLowerCase() == "number").value, true).then(async msgs => {
 
@@ -58,4 +61,16 @@ function blockCommand(channel) {
   channel.send('', new MessageEmbed()
       .setColor(0xff9300)
       .setDescription(`:warning: **Dieser Befehl ist derzeit blockiert.\nFrage einen Admin für weitere Infomationen!**`));
+}
+
+async function hasPermission(permission, interaction, client) {
+  
+  const guild = await client.guilds.fetch(interaction.guild_id)
+  // guild.roles.cache
+
+  const member = await guild.members.fetch(interaction.member.id)
+
+  console.log("Member" + member)
+  const permissions = new Discord.Permissions(member.roles.map(role => role.permissions));
+  return permissions.has(permission);
 }
