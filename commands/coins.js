@@ -5,21 +5,29 @@ module.exports = {
   name: "coins",
   description: "zeigt dir deinen aktuellen Kontostand an",
   options: [],
-  run: async (client, message, args) => {
-
+  run: async (client, interaction, args) => {
+    client.channels.fetch(interaction.channel_id).then(async channel => {
     const db = admin.firestore()
-    const docRef = db.doc(`bot/${message.member.user.tag}`)
-
+    const docRef = db.doc(`bot/${interaction.member.user.id}`)
     docRef.get()
       .then(doc => {
         if (!doc.exists) {
-          Embed.error(`${message.author}, du hast noch keinen Account!\nMit [--register] kannst du dir einen anlegen.`, message.channel)
+          docRef.set({
+            coins: 0
+          })
+          .then(doc => {
+            Embed.success(`${interaction.member.nick}, dein Account wurde angelegt.\nMit [/coins] kannst du deinen Kontostand abfragen.`, client, interaction)
+          }).catch(err => {
+            console.log(err)
+          })
           return
         } else {
           coins = doc.data().coins
-          message.channel.send(`${message.author} du hast ${coins} Geld :moneybag:`)
+          channel.send(`${interaction.member.nick}, du hast ${coins} Geld :moneybag:`)
           .catch(err => {console.log(err)})
         }
       })
   }
+    )
+}
 }

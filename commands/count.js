@@ -10,6 +10,7 @@ module.exports = {
     run: async (client, interaction, args) => {
         const Embed = require('../embed.js')
         const number = args.find(arg => arg.name.toLowerCase() == "number").value
+        if (number > 100) return
         for (let i = 1; i <= number; i++) {
             setTimeout(function(){
                 client.channels.fetch(interaction.channel_id).then(async channel => {
