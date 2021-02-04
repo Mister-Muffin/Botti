@@ -19,9 +19,17 @@ module.exports = {
     client.channels.fetch(interaction.channel_id).then(async channel => {
     if (!args[0]) return
     if (args[0] < 1 || args[0] > 99) {
-      channel.send('', new MessageEmbed()
+      var embed = new MessageEmbed()
       .setColor(0xff3300)
       .setDescription(`:x: **Du musst eine Zahl zwischen 1 und 99 angeben!**`));
+      
+      client.api.interactions(interaction.id, interaction.token).callback.post({
+      	data: {
+        	type: 4,
+          data: await createAPIMessage(interaction, embed)
+        }
+      });
+      
       return;
     }
     var member = await (await client.guilds.fetch(interaction.guild_id)).members.fetch(interaction.member.user.id) // ?
@@ -35,42 +43,33 @@ module.exports = {
     
     channel.bulkDelete(args.find(arg => arg.name.toLowerCase() == "number").value, true).then(async msgs => {
 
-      const emb = new MessageEmbed()
-        .setColor(0x2ecc71)
-        .setDescription(`${msgs.size} Nachichten gelöscht`)
-
-      channel.send('', emb).then(async deleteMsg => {
-        console.log(`${deleteMsg}********`)
-        setTimeout(() => {
-          deleteMsg.delete()
+	const embed = new MessageEmbed()
+        	.setColor(0x2ecc71)
+	    	.setDescription(`${msgs.size} Nachichten gelöscht`)
+	    
+      	client.api.interactions(interaction.id, interaction.token).callback.post({
+      		data: {
+        		type: 4,
+          		data: await createAPIMessage(interaction, embed)
+        	}
+      	});
+			
+	setTimeout(() => {
+          client.api.interactions(interaction.id, interaction.token).callback.messages.original.delete()
+        	console.log(`********`)
         }, 2000)
-      }).catch(err => {
-        console.log(err)
-      })
-
-    }).catch(err => {
-      console.log(err)
-    })
-    }).catch(console.error);
-    
-
-  }
+  }).catch(err => console.log(err))
 }
 
 function blockCommand(channel) {
-  channel.send('', new MessageEmbed()
+  var embed = new MessageEmbed()
       .setColor(0xff9300)
       .setDescription(`:warning: **Dieser Befehl ist derzeit blockiert.\nFrage einen Admin für weitere Infomationen!**`));
-}
-
-async function hasPermission(permission, interaction, client) {
-  
-  const guild = await client.guilds.fetch(interaction.guild_id)
-  // guild.roles.cache
-
-  const member = await guild.members.fetch(interaction.member.id)
-
-  console.log("Member" + member)
-  const permissions = new Discord.Permissions(member.roles.map(role => role.permissions));
-  return permissions.has(permission);
+	
+      client.api.interactions(interaction.id, interaction.token).callback.post({
+      	data: {
+        	type: 4,
+          data: await createAPIMessage(interaction, embed)
+        }
+      });
 }
