@@ -43,7 +43,7 @@ module.exports = {
     
     channel.bulkDelete(args.find(arg => arg.name.toLowerCase() == "number").value, true).then(async msgs => {
 
-	const emb = new MessageEmbed()
+	const embed = new MessageEmbed()
         	.setColor(0x2ecc71)
 	    	.setDescription(`${msgs.size} Nachichten gelöscht`)
 	    
