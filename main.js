@@ -75,11 +75,6 @@ client.ws.on('INTERACTION_CREATE', async interaction => {
         //command.run(client, msg, args);
         
         command.run(client, interaction, args);
-        client.api.interactions(interaction.id, interaction.token).callback.post({
-            data: {
-                type: 5
-            }
-        })
     }
 });
 
