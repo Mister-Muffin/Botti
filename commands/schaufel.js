@@ -4,15 +4,15 @@ const docRef = db.doc('bot/schaufeln')
 var schaufeln = 0
 module.exports = {
   name: "schaufel",
-  description: "haut dir eine Schaufel gegen den Kopf.",
+  description: "Haue dir oder jemand anderen eine Schaufel an dem Kopf.",
   options: [
     {
     "name": "name",
-    "description": "Haue dir oder jemand anderen eine Schaufel an dem Kopf.",
+    "description": "Ich bin die Beschreibung :).",
     "type": 6,
     "required": false
 },],
-  run: async (client, message, args) => {
+  run: async (client, interaction, args) => {
     client.channels.fetch(interaction.channel_id).then(async channel => {
     docRef.get()
       .then(doc => {
@@ -21,16 +21,15 @@ module.exports = {
           return
         }
         schaufeln = doc.data().schaufeln
-        if (args[0] != null) {
+        if (args != null) {
           try {
-            client.user.fetch(args[0]).then(_ => {
-              message.channel.send(`* Schaufel an ${args[0]}'s Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`)
-            })
+            const user = args.find(arg => arg.name.toLowerCase() == "name").value
+              channel.send(`* Schaufel an <@!${user}>'s Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`)
           } catch (er) {
-            message.channel.send(`Nö (${er})`)
+            channel.send(`Nö (${er})`)
           }
         } else {
-          message.channel.send(`* Schaufel an den Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`)
+          channel.send(`* Schaufel an den Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`)
         }
       })
       .then(function () {
