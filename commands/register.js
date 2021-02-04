@@ -3,6 +3,7 @@ const Embed = require('../embed.js')
 module.exports = {
   name: "register",
   description: "erstellt dir einen Account, für dein Geld (einmalig!).",
+  options: [],
   run: async (client, message, args) => {
 
     const db = admin.firestore()

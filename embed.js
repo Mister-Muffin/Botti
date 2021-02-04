@@ -11,47 +11,41 @@ const colors = {
 }
 
 module.exports = {
-  error(content, channel) {
+  error(content, client, interaction) {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.red)
       .setDescription(content)
-
-    channel.send('', emb)
+      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
+    
   },
-  warning(content, channel) {
+  warning(content, client, interaction) {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.yellow)
       .setDescription(content)
 
-    channel.send('', emb)
+      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
   },
-  success(content, channel) {
+  success(content, client, interaction) {
     const emb = new MessageEmbed()
       .setColor(colors.green)
       .setDescription(content)
 
-    channel.send('', emb).catch(err => {
-      console.log(err)
-    })
+      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
   },
-  question(content, channel) {
+  question(content, client, interaction) {
     const emb = new MessageEmbed()
       .setColor(colors.purple)
       .setDescription(content)
 
-    channel.send('', emb).catch(err => {
-      console.log(err)
-    })
+      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
   },
-  help(content, channel) {
+  help(content, client, interaction) {
     const emb = new MessageEmbed()
       .setColor(colors.cyan)
       .setDescription(content)
 
-    channel.send('', emb).catch(err => {
-      console.log(err)
-    })
+      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
   }
 }

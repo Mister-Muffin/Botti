@@ -41,7 +41,8 @@ client.on('ready', async () => {
             client.api.applications(client.user.id).guilds("492426074396033035").commands.post({
                 data: {
                     name: pull.name,
-                    description: pull.description
+                    description: pull.description,
+                    options: pull.options
                     // possible options here e.g. options: [{...}]
                 }
                 //client.user.setActivity(`New Game: [--play]!`)
@@ -64,21 +65,19 @@ client.on('ready', async () => {
     // })
 });
 client.ws.on('INTERACTION_CREATE', async interaction => {
-    const command = interaction.data.name.toLowerCase();
-    let commandList = client.commands.get(command);
+    const commandName = interaction.data.name.toLowerCase();
+    let command = client.commands.get(commandName);
     const args = interaction.data.options;
 
     if (true) {
         // here you could do anything. in this sample
         // i reply with an api interaction
         //command.run(client, msg, args);
+        
         command.run(client, interaction, args);
         client.api.interactions(interaction.id, interaction.token).callback.post({
             data: {
-                type: 4,
-                data: {
-                    content: "ello :)"
-                }
+                type: 5
             }
         })
     }

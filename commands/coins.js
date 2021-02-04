@@ -4,6 +4,7 @@ var coins = 0;
 module.exports = {
   name: "coins",
   description: "zeigt dir deinen aktuellen Kontostand an",
+  options: [],
   run: async (client, message, args) => {
 
     const db = admin.firestore()

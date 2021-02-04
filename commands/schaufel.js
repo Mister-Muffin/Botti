@@ -5,8 +5,15 @@ var schaufeln = 0
 module.exports = {
   name: "schaufel",
   description: "haut dir eine Schaufel gegen den Kopf.",
+  options: [
+    {
+    "name": "name",
+    "description": "Haue dir oder jemand anderen eine Schaufel an dem Kopf.",
+    "type": 6,
+    "required": false
+},],
   run: async (client, message, args) => {
-
+    client.channels.fetch(interaction.channel_id).then(async channel => {
     docRef.get()
       .then(doc => {
         if (!doc.exists) {
@@ -38,5 +45,5 @@ module.exports = {
         console.log(error)
       })
 
-  }
+  })}
 }

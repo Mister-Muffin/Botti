@@ -4,6 +4,7 @@ exports.debugMode = debugMode
 module.exports = {
     name: "debug",
     description: "EHRE!",
+    options: [],
     run: async (client, message, args) => {
         if (debugMode) {
           debugMode = false
