@@ -21,8 +21,8 @@ var currYeet = 0;
 require(`./handler/command.js`)(client);
 client.on('ready', async () => {
 
-    client.api.applications(client.user.id).commands().get().then(answer => { console.log(answer) })
-    // client.api.applications(client.user.id).commands("806830661050695711").delete().then(answer => {console.log(answer)})
+    client.api.applications(client.user.id).guilds("492426074396033035").commands().get().then(answer => { console.log(answer) })
+    //client.api.applications(client.user.id).guilds("492426074396033035").commands("806851986750308412").delete().then(answer => {console.log(answer)})
 
     console.log("ONLINE!");
     // Filter so we only have .js command files

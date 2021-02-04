@@ -1,4 +1,3 @@
-const debug = require('./debug.js')
 const Embed = require('../embed.js')
 module.exports = {
     name: "ping",
