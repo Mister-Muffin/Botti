@@ -1,6 +1,4 @@
-const {
-  MessageEmbed
-} = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 const colors = {
   red: 0xe74c3c,
