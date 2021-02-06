@@ -11,41 +11,58 @@ const colors = {
 }
 
 module.exports = {
-  error(content, client, interaction) {
+  error(content, client, interaction, callbackType) {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.red)
-      .setDescription(content)
-      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
+    
+    sendEmbed(interaction, emb, client, callbackType)
     
   },
-  warning(content, client, interaction) {
+  warning(content, client, interaction, callbackType) {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.yellow)
       .setDescription(content)
-
-      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
+    
+    sendEmbed(interaction, emb, client, callbackType)
   },
-  success(content, client, interaction) {
+  success(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.green)
       .setDescription(content)
-
-      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
+    
+    sendEmbed(interaction, emb, client, callbackType)
   },
-  question(content, client, interaction) {
+  question(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.purple)
       .setDescription(content)
-
-      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
+    
+    sendEmbed(interaction, emb, client, callbackType)
   },
-  help(content, client, interaction) {
+  help(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.cyan)
       .setDescription(content)
-
-      client.channels.fetch(interaction.channel_id).then(async channel => {channel.send('', emb)});
+    
+    sendEmbed(interaction, emb, client, callbackType)
   }
+}
+
+async function sendEmbed(interaction, embed, client, callbackType){
+  client.api.interactions(interaction.id, interaction.token).callback.post({
+    data: {
+      type: callbackType ? callbackType : 4,
+      data: await createAPIMessage(interaction, embed, client)
+    }
+  });
+}
+
+async function createAPIMessage(interaction, content, client) {
+    const apiMessage = await APIMessage.create(client.channels.resolve(interaction.channel_id), content)
+        .resolveData()
+        .resolveFiles();
+
+    return { ...apiMessage.data, files: apiMessage.files };
 }
