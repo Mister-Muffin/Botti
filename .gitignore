@@ -4,3 +4,4 @@ config.json
 package-lock.json
 ServiceAccountKey.json
 package-lock.json
+*.code-workspace

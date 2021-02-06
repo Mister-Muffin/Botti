@@ -5,12 +5,23 @@ module.exports = {
     options: [],
     run: async (client, interaction, args) => {
 
-        client.api.interactions(interaction.id, interaction.token).callback.post({
+
+        await client.api.interactions(interaction.id, interaction.token).callback.post({
             data: {
                 type: 4,
-                data: await createAPIMessage(interaction, "fant\n<:fant:806252665180520516>", client)
+                data: await createAPIMessage(interaction, "fant", client)
             }
         });
+
+        client.channels.fetch(interaction.channel_id).then(async channel => {
+            await channel.send("<:fant:806252665180520516>");
+        }).catch(console.error);
+
+        // client.webhooks("493003865537511436", ineraction.token).post({
+
+        //     content:"<:fant:806252665180520516>"
+
+        // })
     }
 }
 
