@@ -48,22 +48,34 @@ module.exports = {
       var second = [Math.floor(Math.random() * 3)];
       var third = [Math.floor(Math.random() * 3)];
       client.channels.fetch(interaction.channel_id).then(async channel => {
-      channel.send(`${items[first]} ${items[second]} ${items[third]}`)
+        channel.send(`${items[first]} ${items[second]} ${items[third]}`)
 
-      if (items[first] == items[second] && items[second] == items[third]) {
-        coins = coins + 200
+        if (items[first] == items[second] && items[second] == items[third]) {
+          coins = coins + 200
 
-        docRef.set({
-          coins: coins
-        }).catch(err => {
-          console.log(err)
-        })
-
-        Embed.success(`Glückwunsch ${interaction.member.nick}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`, client, interaction)
-      } else {
-        Embed.error(`Schade ${interaction.member.nick}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`, client, interaction)
+          docRef.set({
+            coins: coins
+          }).catch(err => {
+            console.log(err)
+          })
+          const emb = Embed.success(`Glückwunsch ${interaction.member.nick}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`, client, interaction)
+          client.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+              type: 4,
+              data: await createAPIMessage(interaction, emb, client)
+            }
+          });
+        } else {
+          const emb = Embed.error(`Schade ${interaction.member.nick}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`, client, interaction)
+          client.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+              type: 4,
+              data: await createAPIMessage(interaction, emb, client)
+            }
+          });
+        }
       }
+      )
     }
-      )}
   }
 }

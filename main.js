@@ -18,10 +18,11 @@ client.aliases = new Discord.Collection();
 var currEhre = 0;
 var currAlla = 0;
 var currYeet = 0;
+var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 require(`./handler/command.js`)(client);
 client.on('ready', async () => {
 
-    client.api.applications(client.user.id).guilds("492426074396033035").commands().get().then(answer => { console.log(answer) })
+    //client.api.applications(client.user.id).guilds("492426074396033035").commands().get().then(answer => { console.log(answer) })
     //client.api.applications(client.user.id).guilds("492426074396033035").commands("806851986750308412").delete().then(answer => {console.log(answer)})
 
     console.log("ONLINE!");
@@ -71,7 +72,7 @@ client.ws.on('INTERACTION_CREATE', async interaction => {
         // here you could do anything. in this sample
         // i reply with an api interaction
         //command.run(client, msg, args);
-        
+
         command.run(client, interaction, args);
     }
 });
@@ -193,3 +194,10 @@ function yeet(msg) {
         });
 }
 client.login(config.token);
+
+process.on("SIGINT", (signal) => {
+    client.user.setStatus("idle").then(() => { // ?
+        console.log("SIGINT exiting")
+        process.exit(0)
+    })
+})
