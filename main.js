@@ -2,8 +2,11 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const serviceAccount = require('./ServiceAccountKey.json');
+const goldJson = require('./data/gold.json');
 const Embed = require('./embed.js');
 const { readdirSync } = require("fs");
+const { parse } = require('path');
+const { auth } = require('firebase-admin');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -21,10 +24,13 @@ var currYeet = 0;
 var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 require(`./handler/command.js`)(client);
+
 client.on('ready', async () => {
 
     //client.api.applications(client.user.id).guilds("492426074396033035").commands().get().then(answer => { console.log(answer) })
     //client.api.applications(client.user.id).guilds("492426074396033035").commands("806851986750308412").delete().then(answer => {console.log(answer)})
+
+    client.user.setPresence({ activity: { name: "/play", type: "PLAYING" }, status: "online" })
 
     console.log("ONLINE!");
     // Filter so we only have .js command files
@@ -94,12 +100,37 @@ client.on('message', async (msg) => {
             yeet(msg);
         }
     }
-    if (msg.content.toLowerCase().includes('https://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
+    if (msg.content.toLowerCase().includes('https://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194') || msg.content.toLowerCase().includes('http://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
         msg.delete({ timeout: 1 })
             .then(msg => console.log(`Deleted message from ${msg.author.username} after 5 seconds`))
             .catch(console.error);
     }
-    ;
+
+    var parsedGold = goldJson;
+    const authorId = msg.author.id;
+    if (parsedGold[authorId] && !msg.content.startsWith("</")) {
+
+        var lastTime = parsedGold[authorId].time;
+        //console.log("Last time: " + Math.floor((new Date() - new Date(lastTime)) / 1000));
+
+        if (!Math.floor((new Date() - new Date(lastTime)) / 60000) < 10) {
+
+            const db = admin.firestore()
+            const docRef = db.doc(`bot/${authorId}`)
+            const increaseBy = admin.firestore.FieldValue.increment(20);
+            docRef.update({ coins: increaseBy });
+
+            parsedGold[authorId].time = new Date();
+        }
+
+        fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
+
+    } else {
+        parsedGold[authorId] = { time: new Date() };
+        fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
+    }
+
+
     // If msg.member is uncached, cache it.
     if (!msg.member)
         msg.member = await msg.guild.fetchMember(msg);

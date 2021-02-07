@@ -1,6 +1,16 @@
 const Embed = require('../embed.js')
-const admin = require('firebase-admin')
 
+const { MessageEmbed } = require('discord.js')
+const colors = {
+  red: 0xe74c3c,
+  yellow: 0xf1c40f,
+  green: 0x2ecc71,
+  purple: 0x8e44ad,
+  cyan: 0x0fcedb
+}
+
+const admin = require('firebase-admin')
+const Discord = require('discord.js');
 var coins = 0
 const price = 50
 
@@ -16,14 +26,30 @@ module.exports = {
     docRef.get()
       .then(async doc => {
         if (!doc.exists) {
-          Embed.error(`${interaction.member.nick}, du hast noch keinen Account!\nMit [/coins] kannst du dir einen anlegen.`, client, interaction)
+          const emb = new MessageEmbed()
+            .setColor(colors.red)
+            .setDescription(`${interaction.member.nick}, du hast noch keinen Account!\nMit [/coins] kannst du dir einen anlegen.`)
+          client.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+              type: 4,
+              data: await createAPIMessage(interaction, emb, client)
+            }
+          });
           return
         } else {
 
           coins = doc.data().coins
 
           if (coins < price) {
-            Embed.error(`${interaction.member.nick}, du hast nicht genug Geld!. (Du brauchst 50)`, client, interaction)
+            const emb = new MessageEmbed()
+              .setColor(colors.red)
+              .setDescription(`${interaction.member.nick}, du hast nicht genug Geld! (Du brauchst 50)`)
+            client.api.interactions(interaction.id, interaction.token).callback.post({
+              data: {
+                type: 4,
+                data: await createAPIMessage(interaction, emb, client)
+              }
+            });
           } else {
 
             docRef.set({
@@ -41,41 +67,51 @@ module.exports = {
         debug.log(err)
       })
 
-    async function roll(interaction) {
+    async function roll() {
       var items = [":watermelon:", ":apple:", ":banana:"]
 
       var first = [Math.floor(Math.random() * 3)];
       var second = [Math.floor(Math.random() * 3)];
       var third = [Math.floor(Math.random() * 3)];
       client.channels.fetch(interaction.channel_id).then(async channel => {
-        channel.send(`${items[first]} ${items[second]} ${items[third]}`)
+        await client.api.interactions(interaction.id, interaction.token).callback.post({
+          data: {
+            type: 4,
+            data: await createAPIMessage(interaction, `${items[first]} ${items[second]} ${items[third]}`, client)
+          }
+        });
 
         if (items[first] == items[second] && items[second] == items[third]) {
-          coins = coins + 200
+          coins = coins + 400
 
           docRef.set({
             coins: coins
           }).catch(err => {
             console.log(err)
           })
-          const emb = Embed.success(`Glückwunsch ${interaction.member.nick}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`, client, interaction)
-          client.api.interactions(interaction.id, interaction.token).callback.post({
-            data: {
-              type: 4,
-              data: await createAPIMessage(interaction, emb, client)
-            }
-          });
+
+          const emb = new MessageEmbed()
+            .setColor(colors.green)
+            .setDescription(`Glückwunsch ${interaction.member.nick}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`)
+          channel.send(emb)
+
         } else {
-          const emb = Embed.error(`Schade ${interaction.member.nick}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`, client, interaction)
-          client.api.interactions(interaction.id, interaction.token).callback.post({
-            data: {
-              type: 4,
-              data: await createAPIMessage(interaction, emb, client)
-            }
-          });
+          const emb = new MessageEmbed()
+            .setColor(colors.red)
+            .setDescription(`Schade ${interaction.member.nick}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`)
+          channel.send(emb)
+
         }
       }
       )
     }
   }
+}
+
+async function createAPIMessage(interaction, content, client) {
+  const apiMessage = await Discord.APIMessage.create(client.channels.resolve(interaction.channel_id), content)
+    .resolveData()
+    .resolveFiles();
+
+  return { ...apiMessage.data, files: apiMessage.files };
 }

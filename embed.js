@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed, APIMessage } = require('discord.js')
 
 const colors = {
   red: 0xe74c3c,
@@ -13,6 +13,7 @@ module.exports = {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.red)
+      .setDescription(content)
     
     sendEmbed(interaction, emb, client, callbackType)
     

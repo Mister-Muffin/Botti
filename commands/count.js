@@ -14,7 +14,7 @@ module.exports = {
         for (let i = 1; i <= number; i++) {
             setTimeout(function(){
                 client.channels.fetch(interaction.channel_id).then(async channel => {
-            channel.send(i)
+            chanel.send(i)
         });
             }, 2000);
         
