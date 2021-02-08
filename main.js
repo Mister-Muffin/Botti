@@ -53,7 +53,7 @@ client.on('ready', async () => {
                 }
                 //client.user.setActivity(`New Game: [--play]!`)
             })
-            console.log(pull.name)
+            //console.log(pull.name)
         } else {
             continue;
         }
@@ -109,6 +109,7 @@ client.on('message', async (msg) => {
     var parsedGold = goldJson;
     const authorId = msg.author.id;
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
+        console.log("if m ain");
 
         var lastTime = parsedGold[authorId].time;
         //console.log("Last time: " + Math.floor((new Date() - new Date(lastTime)) / 1000));
@@ -125,8 +126,14 @@ client.on('message', async (msg) => {
 
         fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
 
-    } else {
+    } else if (!msg.content.startsWith("</") && !goldJson[authorId]) {
+        console.log("else if 1");
         parsedGold[authorId] = { time: new Date() };
+        fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
+    } else if (!msg.content.startsWith("</") && goldJson[authorId]) {
+        console.log("else if 2");
+        console.log(parsedGold[authorId]);
+        parsedGold[authorId] = parsedGold[authorId] + { time: new Date() };
         fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
     }
 

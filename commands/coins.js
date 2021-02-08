@@ -14,7 +14,7 @@ module.exports = {
         .then(async doc => {
           if (!doc.exists) {
             docRef.set({
-              coins: 0
+              coins: 1000
             })
               .then(async doc => {
                 Embed.success(`${interaction.member.nick}, dein Account wurde angelegt.\nMit [/coins] kannst du deinen Kontostand abfragen.`, client, interaction)
@@ -40,8 +40,8 @@ module.exports = {
 
 async function createAPIMessage(interaction, content, client) {
   const apiMessage = await Discord.APIMessage.create(client.channels.resolve(interaction.channel_id), content)
-      .resolveData()
-      .resolveFiles();
+    .resolveData()
+    .resolveFiles();
 
   return { ...apiMessage.data, files: apiMessage.files };
 }
