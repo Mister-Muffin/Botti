@@ -113,9 +113,9 @@ client.on('message', async (msg) => {
         console.log("if m ain");
 
         var lastTime = parsedGold[authorId].time;
-        //console.log("Last time: " + Math.floor((new Date() - new Date(lastTime)) / 1000));
+        console.log("Last time: " + Math.floor((new Date() - new Date(lastTime)) / 10000));
 
-        if (!Math.floor((new Date() - new Date(lastTime)) / 1000) < 10) {
+        if (!Math.floor((new Date() - new Date(lastTime)) / 10000) < 10) {
 
             const db = admin.firestore()
             const docRef = db.doc(`bot/${authorId}`)
