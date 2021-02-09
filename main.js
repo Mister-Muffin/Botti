@@ -101,7 +101,7 @@ client.on('message', async (msg) => {
             yeet(msg);
         }
     }
-    if (msg.content.toLowerCase().includes('https://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194') || msg.content.toLowerCase().includes('http://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
+    if (msg.content.toLowerCase().includes('tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194') || msg.content.toLowerCase().includes('http://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
         msg.delete({ timeout: 1 })
             .then(msg => console.log(`Deleted message from ${msg.author.username} after 5 seconds`))
             .catch(console.error);
