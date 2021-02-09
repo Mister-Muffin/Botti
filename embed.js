@@ -64,7 +64,7 @@ module.exports = {
   }
 }
 
-async function sendEmbed(interaction, embed, client, callbackType){
+/* async function sendEmbed(interaction, embed, client, callbackType){
   client.api.interactions(interaction.id, interaction.token).callback.post({
     data: {
       type: callbackType ? callbackType : 4,
@@ -79,4 +79,4 @@ async function createAPIMessage(interaction, content, client) {
         .resolveFiles();
 
     return { ...apiMessage.data, files: apiMessage.files };
-}
+} */

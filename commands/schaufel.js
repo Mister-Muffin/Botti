@@ -26,14 +26,18 @@ module.exports = {
           client.api.interactions(interaction.id, interaction.token).callback.post({
             data: {
               type: 4,
-              content: `* Schaufel an <@!${user}>'s Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`
+              data: {
+                content: `* Schaufel an <@!${user}>'s Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`
+              }
             }
           });
         } catch (er) {
           client.api.interactions(interaction.id, interaction.token).callback.post({
             data: {
               type: callbackType ? callbackType : 4,
-              content: `Nö (${er})`
+              data: {
+                content: `Nö (${er})`
+              }
             }
           });
         }
@@ -41,7 +45,9 @@ module.exports = {
         client.api.interactions(interaction.id, interaction.token).callback.post({
           data: {
             type: 4,
-            content: `* Schaufel an den Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`
+            data: {
+              content: `* Schaufel an den Kopf! *\n${schaufeln + 1} Schaufeln wurden schon gegen Köpfe gehauen.`
+            }
           }
         });
       }

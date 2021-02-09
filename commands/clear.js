@@ -36,7 +36,9 @@ module.exports = {
         client.api.interactions(interaction.id, interaction.token).callback.post({
           data: {
             type: 4,
-            content: `:x: Sorry ${interaction.member.nick}, du hast nicht die nötigen Rechte!\nBitte einen Admin um Hilfe!`
+            data: {
+              content: `:x: Sorry ${interaction.member.nick}, du hast nicht die nötigen Rechte!\nBitte einen Admin um Hilfe!`
+            }
           }
         });
         return;
