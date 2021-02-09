@@ -91,10 +91,10 @@ client.on('message', async (msg) => {
     if (!msg.guild)
         return;
     if (!msg.content.startsWith(config.prefix)) {
-        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('ehre') || msg.content.toLowerCase().includes('ährä') || msg.content.toLowerCase().includes('ärä')) {
+        if (msg.author.id != client.user.id && msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
             ehre(msg);
         }
-        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla') || msg.content.toLowerCase().includes('alla!')) {
+        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla')) {
             alla(msg);
         }
         if (msg.content.toLowerCase().match(/([y][e]{2,}[t])/gi)) {
@@ -130,11 +130,6 @@ client.on('message', async (msg) => {
     } else if (!msg.content.startsWith("</") && !goldJson[authorId]) {
         console.log("else if 1");
         parsedGold[authorId] = { time: new Date() };
-        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
-    } else if (!msg.content.startsWith("</") && goldJson[authorId]) {
-        console.log("else if 2");
-        console.log(parsedGold[authorId]);
-        parsedGold[authorId] = parsedGold[authorId] + { time: new Date() };
         fs.writeFileSync(pathString, JSON.stringify(parsedGold));
     }
 

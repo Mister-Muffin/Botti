@@ -1,5 +1,3 @@
-const Embed = require('../embed.js')
-
 const { MessageEmbed } = require('discord.js')
 const colors = {
   red: 0xe74c3c,
@@ -11,6 +9,7 @@ const colors = {
 
 const admin = require('firebase-admin')
 const Discord = require('discord.js');
+const { sendEmbed, createAPIMessage } = require('../embed.js');
 var coins = 0
 const price = 50
 
@@ -93,25 +92,19 @@ module.exports = {
           const emb = new MessageEmbed()
             .setColor(colors.green)
             .setDescription(`Glückwunsch ${interaction.member.nick}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`)
-          channel.send(emb)
+
+          sendEmbed(interaction, emb, client)
 
         } else {
           const emb = new MessageEmbed()
             .setColor(colors.red)
             .setDescription(`Schade ${interaction.member.nick}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`)
-          channel.send(emb)
+
+          sendEmbed(interaction, emb, client)
 
         }
       }
       )
     }
   }
-}
-
-async function createAPIMessage(interaction, content, client) {
-  const apiMessage = await Discord.APIMessage.create(client.channels.resolve(interaction.channel_id), content)
-    .resolveData()
-    .resolveFiles();
-
-  return { ...apiMessage.data, files: apiMessage.files };
 }

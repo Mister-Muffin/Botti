@@ -24,11 +24,3 @@ module.exports = {
         // })
     }
 }
-
-async function createAPIMessage(interaction, content, client) {
-    const apiMessage = await Discord.APIMessage.create(client.channels.resolve(interaction.channel_id), content)
-        .resolveData()
-        .resolveFiles();
-
-    return { ...apiMessage.data, files: apiMessage.files };
-}

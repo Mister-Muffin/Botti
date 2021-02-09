@@ -14,38 +14,53 @@ module.exports = {
     const emb = new MessageEmbed()
       .setColor(colors.red)
       .setDescription(content)
-    
-    sendEmbed(interaction, emb, client, callbackType)
-    
+
+    module.exports.sendEmbed(interaction, emb, client, callbackType)
+
   },
   warning(content, client, interaction, callbackType) {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.yellow)
       .setDescription(content)
-    
-    sendEmbed(interaction, emb, client, callbackType)
+
+    module.exports.sendEmbed(interaction, emb, client, callbackType)
   },
   success(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.green)
       .setDescription(content)
-    
-    sendEmbed(interaction, emb, client, callbackType)
+
+    module.exports.sendEmbed(interaction, emb, client, callbackType)
   },
   question(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.purple)
       .setDescription(content)
-    
-    sendEmbed(interaction, emb, client, callbackType)
+
+    module.exports.sendEmbed(interaction, emb, client, callbackType)
   },
   help(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.cyan)
       .setDescription(content)
-    
-    sendEmbed(interaction, emb, client, callbackType)
+
+    module.exports.sendEmbed(interaction, emb, client, callbackType)
+  },
+  createAPIMessage(interaction, content, client) {
+    const apiMessage = await APIMessage.create(client.channels.resolve(interaction.channel_id), content)
+      .resolveData()
+      .resolveFiles();
+
+    return { ...apiMessage.data, files: apiMessage.files };
+  },
+  sendEmbed(interaction, embed, client, callbackType) {
+    client.api.interactions(interaction.id, interaction.token).callback.post({
+      data: {
+        type: callbackType ? callbackType : 4,
+        data: await module.exports.createAPIMessage(interaction, embed, client)
+      }
+    });
   }
 }
 
