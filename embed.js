@@ -47,14 +47,14 @@ module.exports = {
 
     module.exports.sendEmbed(interaction, emb, client, callbackType)
   },
-  createAPIMessage(interaction, content, client) {
+  async createAPIMessage(interaction, content, client) {
     const apiMessage = await APIMessage.create(client.channels.resolve(interaction.channel_id), content)
       .resolveData()
       .resolveFiles();
 
     return { ...apiMessage.data, files: apiMessage.files };
   },
-  sendEmbed(interaction, embed, client, callbackType) {
+  async sendEmbed(interaction, embed, client, callbackType) {
     client.api.interactions(interaction.id, interaction.token).callback.post({
       data: {
         type: callbackType ? callbackType : 4,
@@ -84,3 +84,4 @@ async function createAPIMessage(interaction, content, client) {
       .resolveFiles();
 
     return { ...apiMessage.data, files: apiMessage.files };
+    */
