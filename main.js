@@ -116,7 +116,7 @@ client.on('message', async (msg) => {
         console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
         if (!Math.floor((new Date() - new Date(lastTime)) / 1000) < 60) {
-
+console.log("haaaaaaaaaaaaaaaalllllllllllllllooooooooooooooooooooooooooooooooo :)");
             const db = admin.firestore()
             const docRef = db.doc(`bot/${authorId}`)
             const increaseBy = admin.firestore.FieldValue.increment(20);
