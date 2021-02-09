@@ -2,9 +2,9 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const serviceAccount = require('./ServiceAccountKey.json');
-const goldJson = require(pathString);
 const path = require('path');
-const pathString = `${path.resolve(__dirname, '..')}/data/gold.json`;
+const pathString = `${path.resolve(__dirname, '.')}/data/gold.json`;
+const goldJson = require(pathString);
 const { readdirSync } = require("fs");
 const { parse } = require('path');
 const { auth } = require('firebase-admin');
@@ -113,10 +113,10 @@ client.on('message', async (msg) => {
         console.log("if m ain");
 
         var lastTime = parsedGold[authorId].time;
-        //console.log("Last time: " + Math.floor((new Date() - new Date(lastTime)) / 1000));
+        console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
-        if (!Math.floor((new Date() - new Date(lastTime)) / 60000) < 100) {
-
+        if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 60)) {
+            console.log("haaaaaaaaaaaaaaaalllllllllllllllooooooooooooooooooooooooooooooooo :)");
             const db = admin.firestore()
             const docRef = db.doc(`bot/${authorId}`)
             const increaseBy = admin.firestore.FieldValue.increment(20);
