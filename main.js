@@ -2,8 +2,9 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const serviceAccount = require('./ServiceAccountKey.json');
-const goldJson = require('./data/gold.json');
-const Embed = require('./embed.js');
+const goldJson = require(pathString);
+const path = require('path');
+const pathString = `${path.resolve(__dirname, '..')}/data/gold.json`;
 const { readdirSync } = require("fs");
 const { parse } = require('path');
 const { auth } = require('firebase-admin');
@@ -124,17 +125,17 @@ client.on('message', async (msg) => {
             parsedGold[authorId].time = new Date();
         }
 
-        fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
+        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
 
     } else if (!msg.content.startsWith("</") && !goldJson[authorId]) {
         console.log("else if 1");
         parsedGold[authorId] = { time: new Date() };
-        fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
+        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
     } else if (!msg.content.startsWith("</") && goldJson[authorId]) {
         console.log("else if 2");
         console.log(parsedGold[authorId]);
         parsedGold[authorId] = parsedGold[authorId] + { time: new Date() };
-        fs.writeFileSync('./data/gold.json', JSON.stringify(parsedGold));
+        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
     }
 
 
