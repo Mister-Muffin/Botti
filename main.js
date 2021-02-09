@@ -131,11 +131,6 @@ client.on('message', async (msg) => {
         console.log("else if 1");
         parsedGold[authorId] = { time: new Date() };
         fs.writeFileSync(pathString, JSON.stringify(parsedGold));
-    } else if (!msg.content.startsWith("</") && goldJson[authorId]) {
-        console.log("else if 2");
-        console.log(parsedGold[authorId]);
-        parsedGold[authorId] = parsedGold[authorId] + { time: new Date() };
-        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
     }
 
 
