@@ -91,7 +91,7 @@ client.on('message', async (msg) => {
     if (!msg.guild)
         return;
     if (!msg.content.startsWith(config.prefix)) {
-        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('ehre') || msg.content.toLowerCase().includes('ährä') || msg.content.toLowerCase().includes('ärä')) {
+        if (msg.author.id != client.user.id && msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
             ehre(msg);
         }
         if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla')) {
