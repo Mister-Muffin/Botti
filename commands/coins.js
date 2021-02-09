@@ -1,5 +1,6 @@
 const Embed = require('../embed.js')
-const admin = require('firebase-admin')
+const admin = require('firebase-admin');
+const { createAPIMessage } = require('../embed.js');
 var coins = 0;
 module.exports = {
   name: "coins",
