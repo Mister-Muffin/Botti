@@ -1,6 +1,5 @@
 const Embed = require('../embed.js')
 const admin = require('firebase-admin')
-const Discord = require('discord.js');
 var coins = 0;
 module.exports = {
   name: "coins",
@@ -35,13 +34,4 @@ module.exports = {
     }
     )
   }
-}
-
-
-async function createAPIMessage(interaction, content, client) {
-  const apiMessage = await Discord.APIMessage.create(client.channels.resolve(interaction.channel_id), content)
-    .resolveData()
-    .resolveFiles();
-
-  return { ...apiMessage.data, files: apiMessage.files };
 }

@@ -94,7 +94,7 @@ client.on('message', async (msg) => {
         if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('ehre') || msg.content.toLowerCase().includes('ährä') || msg.content.toLowerCase().includes('ärä')) {
             ehre(msg);
         }
-        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla') || msg.content.toLowerCase().includes('alla!')) {
+        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla')) {
             alla(msg);
         }
         if (msg.content.toLowerCase().match(/([y][e]{2,}[t])/gi)) {

@@ -1,8 +1,7 @@
-// const Embed = require("../embed.js");
+
 const Discord = require("discord.js");
-const {
-  MessageEmbed
-} = require("discord.js");
+const { MessageEmbed } = require("discord.js");
+const { createAPIMessage } = require("../embed");
 module.exports = {
   name: "clear",
   description: "Löscht eine bestimmte Anzahl an Nachichten.",
@@ -34,7 +33,12 @@ module.exports = {
       }
       var member = await (await client.guilds.fetch(interaction.guild_id)).members.fetch(interaction.member.user.id); // ?
       if (!member.hasPermission("MANAGE_MESSAGES")) {
-        channel.send(`:x: Sorry ${interaction.member.nick}, du hast nicht die nötigen Rechte!\nBitte einen Admin um Hilfe!`);
+        client.api.interactions(interaction.id, interaction.token).callback.post({
+          data: {
+            type: 4,
+            content: `:x: Sorry ${interaction.member.nick}, du hast nicht die nötigen Rechte!\nBitte einen Admin um Hilfe!`
+          }
+        });
         return;
       }
 
@@ -62,14 +66,6 @@ module.exports = {
     });
   }
 };
-
-async function createAPIMessage(interaction, content, client) {
-  const apiMessage = await Discord.APIMessage.create(client.channels.resolve(interaction.channel_id), content)
-    .resolveData()
-    .resolveFiles();
-
-  return { ...apiMessage.data, files: apiMessage.files };
-}
 
 // async function blockCommand(channel) {
 // 	var embed = new MessageEmbed()
