@@ -6,8 +6,6 @@ const path = require('path');
 const pathString = `${path.resolve(__dirname, '.')}/data/gold.json`;
 const goldJson = require(pathString);
 const { readdirSync } = require("fs");
-const { parse } = require('path');
-const { auth } = require('firebase-admin');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -16,7 +14,7 @@ const docRef = db.doc('bot/ehre');
 const docRefAlla = db.doc('bot/alla');
 const docRefYeet = db.doc('bot/yeet');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-var client = new Discord.Client();
+const client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 var currEhre = 0;
@@ -32,44 +30,11 @@ client.on('ready', async () => {
     //client.api.applications(client.user.id).guilds("492426074396033035").commands("806851986750308412").delete().then(answer => {console.log(answer)})
 
     client.user.setPresence({ activity: { name: "/play", type: "PLAYING" }, status: "online" })
-
     console.log("ONLINE!");
-    // Filter so we only have .js command files
-    const commands = readdirSync(`./commands/`).filter(file => file.endsWith(".js"));
 
-    // Loop over the commands, and add all of them to a collection
-    // If there's no name found, prevent it from returning an error,
-    // By using a cross in the table we made.
-    console.log(commands.length)
-    for (let file of commands) {
-        let pull = require(`./commands/${file}`);
 
-        if (pull.name) {
-            client.api.applications(client.user.id).guilds("492426074396033035").commands.post({
-                data: {
-                    name: pull.name,
-                    description: pull.description,
-                    options: pull.options
-                    // possible options here e.g. options: [{...}]
-                }
-                //client.user.setActivity(`New Game: [--play]!`)
-            })
-            //console.log(pull.name)
-        } else {
-            continue;
-        }
+    // registerCommands();
 
-        // If there's an aliases key, read the aliases.
-        //if (pull.aliases && Array.isArray(pull.aliases)) pull.aliases.forEach(alias => client.aliases.set(alias, pull.name));
-    }
-    // client.api.applications(client.user.id).guilds("492426074396033035").commands.post({
-    //     data: {
-    //         name: "dujfqgzcwurgq9abdy",
-    //         description: "hello world command"
-    //         // possible options here e.g. options: [{...}]
-    //     }
-    //     //client.user.setActivity(`New Game: [--play]!`)
-    // })
 });
 client.ws.on('INTERACTION_CREATE', async interaction => {
     const commandName = interaction.data.name.toLowerCase();
@@ -228,6 +193,39 @@ function yeet(msg) {
             console.log(error);
         });
 }
+
+function registerCommands() {
+    // Filter so we only have .js command files
+    const commands = readdirSync(`./commands/`).filter(file => file.endsWith(".js"));
+
+    // Loop over the commands, and add all of them to a collection
+    // If there's no name found, prevent it from returning an error,
+    // By using a cross in the table we made.
+    console.log(commands.length)
+    for (let file of commands) {
+        let pull = require(`./commands/${file}`);
+
+        if (pull.name) {
+            client.api.applications(client.user.id).guilds("492426074396033035").commands.post({
+                data: {
+                    name: pull.name,
+                    description: pull.description,
+                    options: pull.options
+                    // possible options here e.g. options: [{...}]
+                }
+                //client.user.setActivity(`New Game: [--play]!`)
+            })
+            //console.log(pull.name)
+        } else {
+            continue;
+        }
+
+        // If there's an aliases key, read the aliases.
+        //if (pull.aliases && Array.isArray(pull.aliases)) pull.aliases.forEach(alias => client.aliases.set(alias, pull.name));
+    }
+}
+
+
 client.login(config.token);
 
 process.on("SIGINT", (signal) => {
