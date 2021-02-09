@@ -9,7 +9,7 @@ const colors = {
 }
 
 module.exports = {
-  error(content, client, interaction, callbackType) {
+  async error(content, client, interaction, callbackType) {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.red)
@@ -18,7 +18,7 @@ module.exports = {
     module.exports.sendEmbed(interaction, emb, client, callbackType)
 
   },
-  warning(content, client, interaction, callbackType) {
+  async warning(content, client, interaction, callbackType) {
     var message
     const emb = new MessageEmbed()
       .setColor(colors.yellow)
@@ -26,21 +26,21 @@ module.exports = {
 
     module.exports.sendEmbed(interaction, emb, client, callbackType)
   },
-  success(content, client, interaction, callbackType) {
+  async success(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.green)
       .setDescription(content)
 
     module.exports.sendEmbed(interaction, emb, client, callbackType)
   },
-  question(content, client, interaction, callbackType) {
+  async question(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.purple)
       .setDescription(content)
 
     module.exports.sendEmbed(interaction, emb, client, callbackType)
   },
-  help(content, client, interaction, callbackType) {
+  async help(content, client, interaction, callbackType) {
     const emb = new MessageEmbed()
       .setColor(colors.cyan)
       .setDescription(content)
@@ -74,9 +74,13 @@ module.exports = {
 }
 
 async function createAPIMessage(interaction, content, client) {
+
+
+    module.exports.sendEmbed(interaction, emb, client, callbackType)
+  },
+  async createAPIMessage(interaction, content, client) {
     const apiMessage = await APIMessage.create(client.channels.resolve(interaction.channel_id), content)
-        .resolveData()
-        .resolveFiles();
+      .resolveData()
+      .resolveFiles();
 
     return { ...apiMessage.data, files: apiMessage.files };
-} */
