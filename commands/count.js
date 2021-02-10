@@ -11,6 +11,14 @@ module.exports = {
         const Embed = require('../embed.js')
         const number = args.find(arg => arg.name.toLowerCase() == "number").value
         if (number > 100) return
+
+        await client.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+                type: 4,
+                data: await createAPIMessage(interaction, `Jaaaa, lasst uns bis ${number} zählen!`, client)
+            }
+        });
+
         for (let i = 1; i <= number; i++) {
             setTimeout(function () {
                 client.channels.fetch(interaction.channel_id).then(async channel => {
