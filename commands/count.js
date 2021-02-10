@@ -1,3 +1,5 @@
+const { createAPIMessage } = require('../embed.js');
+
 module.exports = {
     name: "count",
     description: "EHRE!",
