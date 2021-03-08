@@ -5,13 +5,15 @@
   "main": "main.js",
   "scripts": {
     "test": "node main.js debug",
-    "start": "node main.js"
+    "start": "node main.js",
+    "express": "node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "ascii-table": "^0.0.9",
     "discord.js": "^12.5.1",
+    "express": "^4.17.1",
     "firebase-admin": "^9.4.1",
     "firestore": "^1.1.6",
     "mkdirp": "^1.0.4",

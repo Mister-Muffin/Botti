@@ -12,7 +12,7 @@ admin.initializeApp({
 const db = admin.firestore();
 const docRef = db.doc('bot/ehre');
 const docRefAlla = db.doc('bot/alla');
-const docRefYeet = db.doc('bot/yeet');
+const docRefYeet = db.collection('bot/yeet/yeeter');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -33,7 +33,7 @@ client.on('ready', async () => {
     console.log("ONLINE!");
 
 
-    // registerCommands();
+    registerCommands();
 
 });
 client.ws.on('INTERACTION_CREATE', async interaction => {
@@ -165,22 +165,32 @@ function alla(msg) {
 }
 function yeet(msg) {
     yeeterId = msg.author.id;
-    docRefYeet.get()
+    docRefYeet.doc(yeeterId).get()
         .then(doc => {
             if (!doc.exists) {
                 console.log('No such doc!');
-                return;
+                docRefYeet.doc(yeeterId).create({
+                    name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: 1,
+                }).then(function () {
+                    //console.log('done!')
+                    msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
+                    //console.log(currYeet);
+                    //console.log(currYeet + 1);
+                })
             }
 
-            currYeet = doc.data()[yeeterId];
+            console.log(doc.data());
+            currYeet = doc.data().yeet;
         })
         .then(function () {
             if (isNaN(currYeet)) {
                 currYeet = 0;
                 console.log("NotANumber");
             }
-            docRefYeet.update({
-                [yeeterId]: currYeet + 1
+
+            docRefYeet.doc(yeeterId).update({
+                name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: currYeet + 1,
+
             }).then(function () {
                 //console.log('done!')
                 msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);

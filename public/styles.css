@@ -1,0 +1,162 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    --background-brightness: 30%
+}
+
+body {
+    background-color: rgb(44, 43, 58);
+    --onFinishedShow: none;
+    --onLoadShow: flex;
+}
+
+.kreisi {
+    color: white;
+    display: var(--onLoadShow);
+    justify-content: center;
+    align-items: center;
+    width: -moz-available;
+    width: -webkit-fill-available;
+}
+
+.title {
+    font-size: xx-large;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    cursor: default;
+}
+
+.cardTitle {
+    font-size: 50pt;
+    font-weight: bold;
+}
+
+.keyword {
+    font-weight: bold;
+    font-size: 30pt;
+    text-transform: uppercase;
+}
+
+.number {
+    font-weight: bold;
+    font-size: 30pt;
+    letter-spacing: 5px;
+}
+
+.normal {
+    font-weight: normal;
+    font-size: 15pt;
+}
+
+:root {
+    --card-colour: 360 --background-brightness: 30%
+}
+
+.red {
+    --card-colour: 0;
+}
+
+.green {
+    --card-colour: 112;
+}
+
+.blue {
+    --card-colour: 220;
+}
+
+.yellow {
+    --card-colour: 43;
+}
+
+.my-card {
+    height: 200px;
+    width: 350px;
+    border-width: 5px;
+    border-radius: 10px;
+    border-color: hsl(var(--card-colour), 100%, 50%);
+    background-color: hsl(var(--card-colour), 100%, var(--background-brightness));
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    --mdc-theme-primary: hsl(var(--card-colour), 100%, 50%);
+}
+
+.card-content {
+    padding: 32px;
+    width: -moz-available;
+    width: -webkit-fill-available;
+    overflow-wrap: break-word;
+    line-height: 300%;
+    display: var(--onFinishedShow);
+}
+
+#yeeter {
+    column-width: 33%;
+    orphans: 3;
+    width: -moz-available;
+    width: -webkit-fill-available;
+    max-height: -moz-available;
+    max-height: -webkit-fill-available;
+    overflow: auto;
+}
+
+#yeetList {
+    width: -moz-available;
+    width: -webkit-fill-available;
+    height: -moz-available;
+    height: -webkit-fill-available;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
+    cursor: default;
+}
+
+.boxes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+#overlay {
+    position: fixed;
+    /* Sit on top of the page content */
+    display: none;
+    /* Hidden by default */
+    width: 100%;
+    /* Full width (cover the whole page) */
+    height: 100%;
+    /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    /* Black background with opacity */
+    z-index: 2;
+    /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer;
+    /* Add a pointer on hover */
+}
+
+#card-container {
+    width: -moz-available;
+    width: -webkit-fill-available;
+    height: -moz-available;
+    height: -webkit-fill-available;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+}
+
+#info-card {
+    width: -moz-available;
+    width: -webkit-fill-available;
+    height: -moz-available;
+    height: -webkit-fill-available;
+    margin: 120px 240px;
+}
