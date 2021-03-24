@@ -20,7 +20,7 @@ client.aliases = new Discord.Collection();
 let currEhre = 0;
 let currAlla = 0;
 let currYeet = 0;
-let lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
+var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 require(`./handler/command.js`)(client);
 
