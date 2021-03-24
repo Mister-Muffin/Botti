@@ -16,7 +16,7 @@ module.exports = {
                 }
             });
 
-            exec("git reset --hard Githubn/master && git fetch --all --prune && git reset --hard Githubn/master && npm i", (error, stdout, stderr) => {
+            exec("git reset --hard Githubn/master && git fetch --all --prune && git reset --hard Githubn/master && git fetch --all --prune && npm i", (error, stdout, stderr) => {
                 if (error) {
                     console.log(`error: ${error.message}`);
                     return;
