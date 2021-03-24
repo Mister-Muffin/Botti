@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { createAPIMessage } = require("../embed");
+const { exec } = require("child_process");
 const path = require('path');
 
 const downloadGit = require("download-git-repo")
@@ -11,7 +12,7 @@ module.exports = {
     run: async (client, interaction, args) => {
         console.log(interaction.channel);
 
-        deleteDir();
+        // deleteDir();
 
         downloadGit('Mister-Muffin/Botti', `./`, async (err) => {
             if (err) {
@@ -34,10 +35,16 @@ module.exports = {
                     await channel.send(`Botti was successfully updated!`);
 
 
-                    require("child_process").spawn(process.argv.shift(), process.argv, {
-                        cwd: process.cwd(),
-                        detached: true,
-                        stdio: "inherit"
+                    exec("git reset --hard Githubn/master && git fetch --all --prune", error, stdout, stderr => {
+                        if (error) {
+                            console.log(`error: ${error.message}`);
+                            return;
+                        }
+                        if (stderr) {
+                            console.log(`stderr: ${stderr}`);
+                            return;
+                        }
+                        console.log(`stdout: ${stdout}`);
                     });
 
                     process.exit(0);
