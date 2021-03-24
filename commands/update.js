@@ -58,7 +58,7 @@ module.exports = {
             });
 
             const { setUpdated } = require(`../handler/updateFile.js`);
-            setUpdated();
+            setUpdated(channel.id);
 
             await channel.send(`:white_check_mark: Botti was successfully updated!`);
             process.exit(0);
