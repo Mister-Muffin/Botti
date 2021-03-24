@@ -16,7 +16,21 @@ module.exports = {
                 }
             });
 
-            execSync("git fetch --all && git reset --hard Githubn/master && npm i", (error, stdout, stderr) => {
+            execSync("git fetch --all && git reset --hard Githubn/master", (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error: ${error.message}`);
+                    return;
+                }
+                if (stderr) {
+                    console.log(`stderr: ${stderr}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+            });
+
+            await channel.send(`:ok: Updating dependencies!`);
+
+            execSync("npm i", (error, stdout, stderr) => {
                 if (error) {
                     console.log(`error: ${error.message}`);
                     return;
