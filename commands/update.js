@@ -33,7 +33,7 @@ module.exports = {
                 detached: true,
                 stdio: "inherit"
             });
-            await channel.send(`Botti was successfully updated!`);
+            await channel.send(`:ok: Botti was successfully updated!`);
             process.exit(0);
         });
 
