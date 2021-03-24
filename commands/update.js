@@ -19,7 +19,7 @@ module.exports = {
                 data: {
                     type: 4,
                     data: await createAPIMessage(interaction,
-                        ":information_source: ⇊ Updating Botti...", client)
+                        ":information_source: Updating Botti...", client)
                 }
             });
             await channel.send(":arrows_counterclockwise: Fetching git repo...");
