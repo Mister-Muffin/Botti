@@ -211,7 +211,7 @@ function registerCommands() {
     // Loop over the commands, and add all of them to a collection
     // If there's no name found, prevent it from returning an error,
     // By using a cross in the table we made.
-    console.log(commands.length)
+    console.log(`→ ${commands.length} commands found`)
     for (let file of commands) {
         let pull = require(`./commands/${file}`);
 
