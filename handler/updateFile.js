@@ -16,8 +16,8 @@ module.exports = {
 
 
     async sendUpdateMessage() {
-        if (data.isUpdated) {
-            await client.channels.fetch(data.isUpdated).then(async channel => {
+        if (data.channelId) {
+            await client.channels.fetch(data.channelId).then(async channel => {
                 await channel.send("Restart completed.");
             });
             removeUpdated();
