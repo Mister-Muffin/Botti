@@ -12,11 +12,11 @@ module.exports = {
             await client.api.interactions(interaction.id, interaction.token).callback.post({
                 data: {
                     type: 4,
-                    data: await createAPIMessage(interaction, ":arrows_counterclockwise: ⇊ Updating Botti..1.", client)
+                    data: await createAPIMessage(interaction, ":arrows_counterclockwise: ⇊ Updating Botti...", client)
                 }
             });
 
-            exec("git reset --hard Githubn/master && git fetch --all --prune && git reset --hard Githubn/master && git fetch --all --prune && npm i", (error, stdout, stderr) => {
+            exec("git fetch --all && git reset --hard Githubn/master && npm i", (error, stdout, stderr) => {
                 if (error) {
                     console.log(`error: ${error.message}`);
                     return;
