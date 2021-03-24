@@ -35,7 +35,7 @@ module.exports = {
                     await channel.send(`Botti was successfully updated!`);
 
 
-                    exec("git reset --hard Githubn/master && git fetch --all --prune", error, stdout, stderr => {
+                    exec("git reset --hard Githubn/master && git fetch --all --prune", (error, stdout, stderr) => {
                         if (error) {
                             console.log(`error: ${error.message}`);
                             return;
@@ -52,36 +52,5 @@ module.exports = {
             }
         })
 
-    }
-}
-
-function deleteDir() {
-    const dir = ['./commands', './handler', './public', './lel'];
-
-    const files = ['./embed.js', './main.js', './package.json', './server.js']
-
-    // directory path
-
-    // delete directory recursively
-
-    for (const i of dir) {
-        console.log(fs);
-        fs.rmdirSync(i, { recursive: true }, (err) => {
-            if (err) {
-                throw err;
-            }
-
-            console.log(`${i} is deleted!`);
-        });
-
-    }
-    for (const j of files) {
-        fs.rmSync(j, {}, (err) => {
-            if (err) {
-                throw err;
-            }
-
-            console.log(`${j} is deleted!`);
-        });
     }
 }
