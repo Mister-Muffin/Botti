@@ -57,9 +57,9 @@ module.exports = {
                 stdio: "inherit"
             });
 
-            const { setUpdated } = require(`./handler/updateFile.js`);
+            const { setUpdated } = require(`../handler/updateFile.js`);
             setUpdated();
-            
+
             await channel.send(`:white_check_mark: Botti was successfully updated!`);
             process.exit(0);
         });
