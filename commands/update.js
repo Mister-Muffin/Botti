@@ -18,7 +18,8 @@ module.exports = {
             await client.api.interactions(interaction.id, interaction.token).callback.post({
                 data: {
                     type: 4,
-                    data: await createAPIMessage(interaction, ":arrows_counterclockwise: ⇊ Updating Botti...\nFetching git repo...", client)
+                    data: await createAPIMessage(interaction,
+                        ":information_source: ⇊ Updating Botti...\n:arrows_counterclockwise: Fetching git repo...", client)
                 }
             });
 
@@ -55,7 +56,7 @@ module.exports = {
                 detached: true,
                 stdio: "inherit"
             });
-            await channel.send(`:ballot_box_with_check: Botti was successfully updated!`);
+            await channel.send(`:white_check_mark: Botti was successfully updated!`);
             process.exit(0);
         });
 
