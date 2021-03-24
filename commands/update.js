@@ -19,9 +19,10 @@ module.exports = {
                 data: {
                     type: 4,
                     data: await createAPIMessage(interaction,
-                        ":information_source: ⇊ Updating Botti...\n:arrows_counterclockwise: Fetching git repo...", client)
+                        ":information_source: ⇊ Updating Botti...", client)
                 }
             });
+            await channel.send("\n:arrows_counterclockwise: Fetching git repo...");
 
             execSync("git fetch --all && git reset --hard Githubn/master", (error, stdout, stderr) => {
                 if (error) {
@@ -36,7 +37,6 @@ module.exports = {
             });
 
             if (args && args.find(arg => arg.name.toLowerCase() == "npm i").value) {
-                await channel.send(`:information_source: Updating dependencies, this may take a while!`);
 
                 execSync("npm i", (error, stdout, stderr) => {
                     if (error) {
