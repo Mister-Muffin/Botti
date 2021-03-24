@@ -1,56 +1,41 @@
-const fs = require('fs');
 const { createAPIMessage } = require("../embed");
-const { exec } = require("child_process");
-const path = require('path');
+const { exec, spawn } = require("child_process");
 
-const downloadGit = require("download-git-repo")
-//EHRE
 module.exports = {
     name: "update",
     description: "Update this Bot",
     options: [],
     run: async (client, interaction, args) => {
-        console.log(interaction.channel);
 
-        // deleteDir();
+        await client.channels.fetch(interaction.channel_id).then(async channel => {
 
-        downloadGit('Mister-Muffin/Botti', `./`, async (err) => {
-            if (err) {
-                console.log("ELLO:)")
-                client.api.interactions(interaction.id, interaction.token).callback.post({
-                    data: {
-                        type: 4,
-                        data: await createAPIMessage(interaction, `Nein -> ${err}`, client)
-                    }
-                });
-            } else {
-                await client.channels.fetch(interaction.channel_id).then(async channel => {
+            await client.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: await createAPIMessage(interaction, "⇊ Updating Botti...", client)
+                }
+            });
 
-                    await client.api.interactions(interaction.id, interaction.token).callback.post({
-                        data: {
-                            type: 4,
-                            data: await createAPIMessage(interaction, "⇊ Downloaded Git repo", client)
-                        }
-                    });
-                    await channel.send(`Botti was successfully updated!`);
+            exec("git reset --hard Githubn/master && git fetch --all --prune", (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error: ${error.message}`);
+                    return;
+                }
+                if (stderr) {
+                    console.log(`stderr: ${stderr}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+            });
 
-
-                    exec("git reset --hard Githubn/master && git fetch --all --prune", (error, stdout, stderr) => {
-                        if (error) {
-                            console.log(`error: ${error.message}`);
-                            return;
-                        }
-                        if (stderr) {
-                            console.log(`stderr: ${stderr}`);
-                            return;
-                        }
-                        console.log(`stdout: ${stdout}`);
-                    });
-
-                    process.exit(0);
-                });
-            }
-        })
+            spawn(process.argv.shift(), process.argv, {
+                cwd: process.cwd(),
+                detached: true,
+                stdio: "inherit"
+            });
+            await channel.send(`Botti was successfully updated!`);
+            process.exit(0);
+        });
 
     }
 }
