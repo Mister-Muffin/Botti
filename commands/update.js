@@ -13,7 +13,7 @@ module.exports = {
 
         deleteDir();
 
-        downloadGit('direct:https://github.com/Mister-Muffin/Botti.git#master', `./`, { clone: true }, async (err) => {
+        downloadGit('Mister-Muffin/Botti.git#master', `./`, async (err) => {
             if (err) {
                 console.log("ELLO:)")
                 client.api.interactions(interaction.id, interaction.token).callback.post({
