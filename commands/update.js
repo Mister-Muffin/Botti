@@ -13,6 +13,18 @@ module.exports = {
         },],
     run: async (client, interaction, args) => {
 
+        if (interaction.member.user.id != 4438728169332408332) {
+            await client.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: await createAPIMessage(interaction,
+                        ":x: Du darft den Befehl leider nicht ausführen!", client)
+                }
+            });
+            return;
+        }
+
+
         await client.channels.fetch(interaction.channel_id).then(async channel => {
 
             await client.api.interactions(interaction.id, interaction.token).callback.post({
