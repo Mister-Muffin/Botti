@@ -22,7 +22,7 @@ module.exports = {
                         ":information_source: ⇊ Updating Botti...", client)
                 }
             });
-            await channel.send("\n:arrows_counterclockwise: Fetching git repo...");
+            await channel.send(":arrows_counterclockwise: Fetching git repo...");
 
             execSync("git fetch --all && git reset --hard Githubn/master", (error, stdout, stderr) => {
                 if (error) {
