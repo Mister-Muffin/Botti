@@ -60,7 +60,7 @@ module.exports = {
             const { setUpdated } = require(`../handler/updateFile.js`);
             setUpdated(channel.id);
 
-            await channel.send(`:white_check_mark: Botti was successfully updated!`);
+            await channel.send(`:new: Botti was successfully updated and will be restarted!`);
             process.exit(0);
         });
 

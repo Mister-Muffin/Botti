@@ -18,7 +18,7 @@ module.exports = {
     async sendUpdateMessage(client) {
         if (data.channelId) {
             await client.channels.fetch(data.channelId).then(async channel => {
-                await channel.send("Restart completed.");
+                await channel.send(":white_check_mark: Restart completed.");
             });
             removeUpdated();
         }
