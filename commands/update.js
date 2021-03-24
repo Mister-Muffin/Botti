@@ -67,13 +67,13 @@ function deleteDir() {
         });
 
     }
-    for (const i of files) {
-        fs.rmdirSync(i, (err) => {
+    for (const j of files) {
+        fs.rmSync(j, (err) => {
             if (err) {
                 throw err;
             }
 
-            console.log(`${i} is deleted!`);
+            console.log(`${j} is deleted!`);
         });
     }
 }
