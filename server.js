@@ -4,7 +4,6 @@ const path = require('path');
 const app = express();
 
 const pathString = `${path.resolve(__dirname, '.')}/data/access.json`;
-const statsPath = `${path.resolve(__dirname, '.')}/public/stats.js`;
 
 const admin = require('firebase-admin');
 
