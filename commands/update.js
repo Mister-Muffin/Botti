@@ -25,22 +25,22 @@ module.exports = {
             } else {
                 await client.channels.fetch(interaction.channel_id).then(async channel => {
 
-                    await channel.send("⇊ Downloaded Git repo");
-
                     await client.api.interactions(interaction.id, interaction.token).callback.post({
                         data: {
                             type: 4,
-                            data: await createAPIMessage(interaction, `EHRE!`, client)
+                            data: await createAPIMessage(interaction, "⇊ Downloaded Git repo", client)
                         }
                     });
+                    await channel.send(`Botti was successfully updated!`);
 
-                    // require("child_process").spawn(process.argv.shift(), process.argv, {
-                    //     cwd: process.cwd(),
-                    //     detached: true,
-                    //     stdio: "inherit"
-                    // });
 
-                    // process.exit(0);
+                    require("child_process").spawn(process.argv.shift(), process.argv, {
+                        cwd: process.cwd(),
+                        detached: true,
+                        stdio: "inherit"
+                    });
+
+                    process.exit(0);
                 });
             }
         })
