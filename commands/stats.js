@@ -11,7 +11,7 @@ module.exports = {
     description: "TODO",
     options: [],
     run: async (client, interaction, args) => {
-        var tokens = JSON.parse(fs.readFileSync(pathString, 'utf8'));
+        let tokens = JSON.parse(fs.readFileSync(pathString, 'utf8'));
         console.log("HUUUUUIIIIIIIIIIIIIIi");
 
         const token = { 'date': (new Date).getTime(), 'token': makeid(8) };
@@ -31,10 +31,10 @@ module.exports = {
 }
 
 function makeid(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;

@@ -17,10 +17,10 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
-var currEhre = 0;
-var currAlla = 0;
-var currYeet = 0;
-var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
+let currEhre = 0;
+let currAlla = 0;
+let currYeet = 0;
+let lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 require(`./handler/command.js`)(client);
 
@@ -72,12 +72,12 @@ client.on('message', async (msg) => {
             .catch(console.error);
     }
 
-    var parsedGold = goldJson;
+    let parsedGold = goldJson;
     const authorId = msg.author.id;
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
         console.log("if m ain");
 
-        var lastTime = parsedGold[authorId].time;
+        let lastTime = parsedGold[authorId].time;
         console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
         if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 600)) {

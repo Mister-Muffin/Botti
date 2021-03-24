@@ -18,7 +18,7 @@ module.exports = {
     client.channels.fetch(interaction.channel_id).then(async channel => {
       if (!args[0]) return;
       if (args[0] < 1 || args[0] > 99) {
-        var embed = new MessageEmbed()
+        let embed = new MessageEmbed()
           .setColor(0xff3300)
           .setDescription(":x: **Du musst eine Zahl zwischen 1 und 99 angeben!**");
 
@@ -31,7 +31,7 @@ module.exports = {
 
         return;
       }
-      var member = await (await client.guilds.fetch(interaction.guild_id)).members.fetch(interaction.member.user.id); // ?
+      let member = await (await client.guilds.fetch(interaction.guild_id)).members.fetch(interaction.member.user.id); // ?
       if (!member.hasPermission("MANAGE_MESSAGES")) {
         client.api.interactions(interaction.id, interaction.token).callback.post({
           data: {
@@ -70,7 +70,7 @@ module.exports = {
 };
 
 // async function blockCommand(channel) {
-// 	var embed = new MessageEmbed()
+// 	let embed = new MessageEmbed()
 // 		.setColor(0xff9300)
 // 		.setDescription(":warning: **Dieser Befehl ist derzeit blockiert.\nFrage einen Admin für weitere Infomationen!**");
 

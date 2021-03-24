@@ -1,7 +1,7 @@
 const admin = require('firebase-admin')
 const db = admin.firestore()
 const docRef = db.doc('bot/schaufeln')
-var schaufeln = 0
+let schaufeln = 0
 module.exports = {
   name: "schaufel",
   description: "Haue dir oder jemand anderen eine Schaufel an dem Kopf.",

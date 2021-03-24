@@ -1,6 +1,6 @@
 const { createAPIMessage } = require("../embed");
 
-var ping = NaN;
+let ping = NaN;
 
 module.exports = {
   name: "ping",

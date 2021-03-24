@@ -10,7 +10,7 @@ const colors = {
 const admin = require('firebase-admin')
 const Discord = require('discord.js');
 const { sendEmbed, createAPIMessage } = require('../embed.js');
-var coins = 0
+let coins = 0
 const price = 50
 
 module.exports = {
@@ -67,11 +67,11 @@ module.exports = {
       })
 
     async function roll() {
-      var items = [":watermelon:", ":apple:", ":banana:"]
+      let items = [":watermelon:", ":apple:", ":banana:"]
 
-      var first = [Math.floor(Math.random() * 3)];
-      var second = [Math.floor(Math.random() * 3)];
-      var third = [Math.floor(Math.random() * 3)];
+      let first = [Math.floor(Math.random() * 3)];
+      let second = [Math.floor(Math.random() * 3)];
+      let third = [Math.floor(Math.random() * 3)];
       client.channels.fetch(interaction.channel_id).then(async channel => {
         await client.api.interactions(interaction.id, interaction.token).callback.post({
           data: {

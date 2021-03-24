@@ -27,7 +27,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.get(['/botti', '/'], async (req, res) => {
     const token = req.query.token;
-    var config = JSON.parse(fs.readFileSync(pathString, 'utf8'));
+    let config = JSON.parse(fs.readFileSync(pathString, 'utf8'));
 
     const tokenObjecktOderSo = config.find(objeckt => objeckt.token == token)
 
@@ -63,7 +63,7 @@ app.get(['/botti', '/'], async (req, res) => {
 
 app.get(['/botti/stats', '/'], async (req, res) => {
 
-    var stats = {};
+    let stats = {};
 
     await docRefAlla.get()
         .then(doc => {

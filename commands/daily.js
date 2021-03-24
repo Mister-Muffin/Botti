@@ -16,7 +16,7 @@ module.exports = {
 
         const authorId = interaction.member.user.id;
 
-        var parsedGold = goldJson;
+        let parsedGold = goldJson;
 
         if (!parsedGold[authorId]) {
             parsedGold[authorId] = { daily: new Date() };
@@ -24,7 +24,7 @@ module.exports = {
             console.log("if")
         } else if (parsedGold[authorId].daily) {
 
-            var lastTime = parsedGold[authorId].daily;
+            let lastTime = parsedGold[authorId].daily;
             console.log("Last time: " + date_diff_indays(lastTime, new Date()));
 
             if (date_diff_indays(lastTime, new Date()) < 1) {
@@ -53,8 +53,8 @@ module.exports = {
 async function giveBonus(interaction, client, parsedGold, days = 1) {
     const authorId = interaction.member.user.id;
 
-    var coins = 0
-    for (var i = 0; i < days; i++) {
+    let coins = 0
+    for (let i = 0; i < days; i++) {
         coins += 200 * Math.pow(0.5, i)
     }
 

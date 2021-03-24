@@ -10,7 +10,7 @@ const colors = {
 
 module.exports = {
   async error(content, client, interaction, callbackType) {
-    var message
+    let message
     const emb = new MessageEmbed()
       .setColor(colors.red)
       .setDescription(content)
@@ -19,7 +19,7 @@ module.exports = {
 
   },
   async warning(content, client, interaction, callbackType) {
-    var message
+    let message
     const emb = new MessageEmbed()
       .setColor(colors.yellow)
       .setDescription(content)

@@ -28,8 +28,8 @@ window.addEventListener('load', async (event) => {
     document.getElementById("numSchaufel").innerText = stats.schaufeln;
     circularProgress4.close();
 
-    var yeet = 0;
-    var yeeters = {};
+    let yeet = 0;
+    let yeeters = {};
     for (user in stats.yeet) {
         yeet += stats.yeet[user].yeet
         yeeters[user.name] = stats.yeet[user].yeet
