@@ -1,5 +1,5 @@
 const { createAPIMessage } = require("../embed");
-const { exec, spawn } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 
 module.exports = {
     name: "update",
@@ -16,7 +16,7 @@ module.exports = {
                 }
             });
 
-            exec("git fetch --all && git reset --hard Githubn/master && npm i", (error, stdout, stderr) => {
+            execSync("git fetch --all && git reset --hard Githubn/master && npm i", (error, stdout, stderr) => {
                 if (error) {
                     console.log(`error: ${error.message}`);
                     return;
@@ -28,7 +28,7 @@ module.exports = {
                 console.log(`stdout: ${stdout}`);
             });
 
-            spawn(process.argv.shift(), process.argv, {
+            spawnSync(process.argv.shift(), process.argv, {
                 cwd: process.cwd(),
                 detached: true,
                 stdio: "inherit"
