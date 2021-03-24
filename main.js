@@ -34,8 +34,8 @@ client.on('ready', async () => {
 
     const { sendUpdateMessage } = require(`./handler/updateFile.js`);
     sendUpdateMessage();
-
-    registerCommands();
+    
+    //registerCommands();
 
 });
 client.ws.on('INTERACTION_CREATE', async interaction => {
