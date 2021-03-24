@@ -15,7 +15,7 @@ try {
 module.exports = {
 
 
-    async sendUpdateMessage() {
+    async sendUpdateMessage(client) {
         if (data.channelId) {
             await client.channels.fetch(data.channelId).then(async channel => {
                 await channel.send("Restart completed.");

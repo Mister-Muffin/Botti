@@ -33,7 +33,7 @@ client.on('ready', async () => {
     console.log("ONLINE!");
 
     const { sendUpdateMessage } = require(`./handler/updateFile.js`);
-    sendUpdateMessage();
+    sendUpdateMessage(client);
     
     //registerCommands();
 
