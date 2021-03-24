@@ -13,7 +13,7 @@ module.exports = {
 
         deleteDir();
 
-        downloadGit('direct:https://github.com/Mister-Muffin/Botti.git#master', `./lel`, { clone: true }, async (err) => {
+        downloadGit('direct:https://github.com/Mister-Muffin/Botti.git#master', `./`, { clone: true }, async (err) => {
             if (err) {
                 console.log("ELLO:)")
                 client.api.interactions(interaction.id, interaction.token).callback.post({
@@ -68,7 +68,7 @@ function deleteDir() {
 
     }
     for (const j of files) {
-        fs.rmSync(j, (err) => {
+        fs.rmSync(j, {}, (err) => {
             if (err) {
                 throw err;
             }
