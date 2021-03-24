@@ -13,7 +13,7 @@ module.exports = {
         },],
     run: async (client, interaction, args) => {
 
-        if (interaction.member.user.id != 4438728169332408332) {
+        if (interaction.member.user.id != 443872816933240833) {
             await client.api.interactions(interaction.id, interaction.token).callback.post({
                 data: {
                     type: 4,
