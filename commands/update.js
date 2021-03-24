@@ -49,16 +49,31 @@ module.exports = {
 }
 
 function deleteDir() {
-    const dir = './lel';
+    const dir = ['./commands', './handler', './public', './lel'];
+
+    const files = ['./embed.js', './main.js', './package.json', './server.js']
 
     // directory path
 
     // delete directory recursively
-    fs.rmdirSync(dir, { recursive: true }, (err) => {
-        if (err) {
-            throw err;
-        }
 
-        console.log(`${dir} is deleted!`);
-    });
+    for (const i of dir) {
+        fs.rmdirSync(i, { recursive: true }, (err) => {
+            if (err) {
+                throw err;
+            }
+
+            console.log(`${i} is deleted!`);
+        });
+
+    }
+    for (const i of files) {
+        fs.rmdirSync(i, (err) => {
+            if (err) {
+                throw err;
+            }
+
+            console.log(`${i} is deleted!`);
+        });
+    }
 }
