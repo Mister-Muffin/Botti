@@ -12,7 +12,7 @@ module.exports = {
             await client.api.interactions(interaction.id, interaction.token).callback.post({
                 data: {
                     type: 4,
-                    data: await createAPIMessage(interaction, "⇊ Updating Botti...", client)
+                    data: await createAPIMessage(interaction, ":arrows_counterclockwise: ⇊ Updating Botti...", client)
                 }
             });
 
