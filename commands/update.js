@@ -58,7 +58,7 @@ function deleteDir() {
     // delete directory recursively
 
     for (const i of dir) {
-        console.log(fs.rmSync);
+        console.log(fs);
         fs.rmdirSync(i, { recursive: true }, (err) => {
             if (err) {
                 throw err;
