@@ -32,6 +32,8 @@ client.on('ready', async () => {
     client.user.setPresence({ activity: { name: "/play", type: "PLAYING" }, status: "online" })
     console.log("ONLINE!");
 
+    const { sendUpdateMessage } = require(`./handler/updateFile.js`);
+    sendUpdateMessage();
 
     registerCommands();
 
