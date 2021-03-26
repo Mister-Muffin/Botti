@@ -3,6 +3,8 @@ const dotenv = require("dotenv")
 dotenv.config()
 
 const fs = require('fs');
+const path = require('path');
+const appDir = path.dirname(require.main.filename);
 const admin = require('firebase-admin');
 // const serviceAccount = require();
 const { readdirSync } = require("fs");
@@ -24,7 +26,7 @@ var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 require(`${__dirname}handler/command.js`)(client);
 
-const pathString = `${__dirname}data/gold.json`;
+const pathString = `${appDir}/data/gold.json`;
 let goldJson;
 try {
     goldJson = require(pathString);
