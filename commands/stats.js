@@ -2,7 +2,8 @@ const { createAPIMessage } = require("../embed");
 const fs = require('fs');
 const path = require('path');
 
-const pathString = `${path.resolve(__dirname, '..')}/data/access.json`;
+const appDir = path.dirname(require.main.filename);
+const pathString = `${appDir}/data/access.json`;
 
 
 

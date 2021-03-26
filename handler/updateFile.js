@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const pathString = `${path.resolve(__dirname, '..')}/data/updated.json`
+const appDir = path.dirname(require.main.filename);
+const pathString = `${appDir}/data/updated.json`
 
 let data;
 try {
@@ -10,7 +11,6 @@ try {
     createFile();
     data = require(pathString);
 }
-// require(`./handler/command.js`)(client);
 
 module.exports = {
 

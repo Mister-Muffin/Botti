@@ -22,7 +22,7 @@ let currAlla = 0;
 let currYeet = 0;
 var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
-require(`./handler/command.js`)(client);
+require(`${__dirname}/handler/command.js`)(client);
 
 const pathString = `${__dirname}/data/gold.json`;
 let goldJson;
@@ -43,7 +43,7 @@ client.on('ready', async () => {
     client.user.setPresence({ activity: { name: "/play", type: "PLAYING" }, status: "online" })
     console.log("ONLINE!");
 
-    const { sendUpdateMessage } = require(`./handler/updateFile.js`);
+    const { sendUpdateMessage } = require(`${__dirname}/handler/updateFile.js`);
     sendUpdateMessage(client);
 
     //registerCommands();
@@ -219,14 +219,14 @@ function yeet(msg) {
 
 function registerCommands() {
     // Filter so we only have .js command files
-    const commands = readdirSync(`./commands/`).filter(file => file.endsWith(".js"));
+    const commands = readdirSync(`${__dirname}/commands/`).filter(file => file.endsWith(".js"));
 
     // Loop over the commands, and add all of them to a collection
     // If there's no name found, prevent it from returning an error,
     // By using a cross in the table we made.
     console.log(`→ ${commands.length} commands found`)
     for (let file of commands) {
-        let pull = require(`./commands/${file}`);
+        let pull = require(`${__dirname}/commands/${file}`);
 
         if (pull.name) {
             client.api.applications(client.user.id).guilds("492426074396033035").commands.post({

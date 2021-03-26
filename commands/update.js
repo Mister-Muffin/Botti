@@ -1,6 +1,9 @@
 const { createAPIMessage } = require("../embed");
 const { execSync, spawn } = require("child_process");
 
+const path = require('path');
+const appDir = path.dirname(require.main.filename);
+
 module.exports = {
     name: "update",
     description: "Update this Bot",
@@ -69,7 +72,7 @@ module.exports = {
                 stdio: "inherit"
             });
 
-            const { setUpdated } = require(`../handler/updateFile.js`);
+            const { setUpdated } = require(`${appDir}/handler/updateFile.js`);
             setUpdated(channel.id);
 
             await channel.send(`:new: Botti was successfully updated and will be restarted!`);

@@ -1,5 +1,7 @@
 const path = require('path');
-const pathString = `${path.resolve(__dirname, '..')}/data/gold.json`;
+
+const appDir = path.dirname(require.main.filename);
+const pathString = `${appDir}/data/gold.json`;
 
 const goldJson = require(pathString);
 const Discord = require("discord.js");
