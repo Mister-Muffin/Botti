@@ -2,8 +2,6 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const serviceAccount = process.env.SERVICE_ACCOUNT_KEY;
-const pathString = `${__dirname}data/gold.json`;
-const goldJson = require(pathString);
 const { readdirSync } = require("fs");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -23,6 +21,17 @@ var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 require(`./handler/command.js`)(client);
 
+const pathString = `${__dirname}data/gold.json`;
+const goldJson;
+try {
+    goldJson = require(pathString);
+} catch (e) {
+    console.warn(e);
+    fs.writeFileSync(pathString, JSON.stringify({}));
+    goldJson = require(pathString);
+}
+
+
 client.on('ready', async () => {
 
     //client.api.applications(client.user.id).guilds("492426074396033035").commands().get().then(answer => { console.log(answer) })
@@ -33,7 +42,7 @@ client.on('ready', async () => {
 
     const { sendUpdateMessage } = require(`./handler/updateFile.js`);
     sendUpdateMessage(client);
-    
+
     //registerCommands();
 
 });
