@@ -24,7 +24,7 @@ let currAlla = 0;
 let currYeet = 0;
 var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
-require(`${__dirname}/handler/command.js`)(client);
+require(`handler/command.js`)(client);
 
 const pathString = `${appDir}/data/gold.json`;
 let goldJson;
