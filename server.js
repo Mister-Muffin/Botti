@@ -5,11 +5,7 @@ const app = express();
 const pathString = `${__dirname}/data/access.json`;
 
 const admin = require('firebase-admin');
-
-const serviceAccount = require('./ServiceAccountKey.json');
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+admin.initializeApp(JSON.parse(process.env.SERVICE_ACCOUNT_KEY));
 
 const db = admin.firestore();
 const docRefEhre = db.doc('bot/ehre');
