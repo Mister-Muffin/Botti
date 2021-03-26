@@ -8,9 +8,7 @@ const appDir = path.dirname(require.main.filename);
 const admin = require('firebase-admin');
 // const serviceAccount = require();
 const { readdirSync } = require("fs");
-admin.initializeApp(
-    JSON.parse(process.env.SERVICE_ACCOUNT_KEY)
-);
+admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT_KEY)), });
 const db = admin.firestore();
 const docRef = db.doc('bot/ehre');
 const docRefAlla = db.doc('bot/alla');
