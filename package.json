@@ -13,6 +13,7 @@
   "dependencies": {
     "ascii-table": "^0.0.9",
     "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
     "download-git-repo": "^3.0.2",
     "express": "^4.17.1",
     "firebase-admin": "^9.5.0",

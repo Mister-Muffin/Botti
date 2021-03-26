@@ -1,10 +1,13 @@
 const Discord = require('discord.js');
+const dotenv = require("dotenv")
+dotenv.config()
+
 const fs = require('fs');
 const admin = require('firebase-admin');
 // const serviceAccount = require();
 const { readdirSync } = require("fs");
 admin.initializeApp(
-    process.env.SERVICE_ACCOUNT_KEY
+    JSON.parse(process.env.SERVICE_ACCOUNT_KEY)
 );
 const db = admin.firestore();
 const docRef = db.doc('bot/ehre');
