@@ -14,8 +14,6 @@ window.addEventListener('load', async (event) => {
 
     const yeetList = document.getElementById("yeeter");
 
-    yeet
-
     const res = await fetch("https://discord.schweininchen.de/botti/stats");
     const stats = await res.json();
     console.log(stats);
