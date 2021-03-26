@@ -1,11 +1,11 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const admin = require('firebase-admin');
-const serviceAccount = process.env.SERVICE_ACCOUNT_KEY;
+// const serviceAccount = require();
 const { readdirSync } = require("fs");
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+admin.initializeApp(
+    process.env.SERVICE_ACCOUNT_KEY
+);
 const db = admin.firestore();
 const docRef = db.doc('bot/ehre');
 const docRefAlla = db.doc('bot/alla');
@@ -21,7 +21,7 @@ var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 require(`./handler/command.js`)(client);
 
-const pathString = `${__dirname}data/gold.json`;
+const pathString = `${__dirname}/data/gold.json`;
 let goldJson;
 try {
     goldJson = require(pathString);
