@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const admin = require('firebase-admin');
-const serviceAccount = require('./ServiceAccountKey.json');
+const serviceAccount = require(process.env.ServiceAccountKey);
 const path = require('path');
 const pathString = `${path.resolve(__dirname, '.')}/data/gold.json`;
 const goldJson = require(pathString);
