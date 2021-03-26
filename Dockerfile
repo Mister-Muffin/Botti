@@ -1,6 +1,8 @@
 FROM docker.io/node:lts-buster-slim
 
-ADD * /
+COPY . /botti
+
+WORKDIR /botti
 
 RUN npm i
 
