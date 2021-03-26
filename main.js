@@ -22,7 +22,6 @@ let currAlla = 0;
 let currYeet = 0;
 var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
-require(`./handler/command.js`)(client);
 
 const pathString = `${appDir}/data/gold.json`;
 let goldJson;
@@ -34,6 +33,7 @@ try {
     goldJson = require(pathString);
 }
 
+require(`./handler/command.js`)(client);
 
 client.on('ready', async () => {
 
