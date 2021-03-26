@@ -22,7 +22,7 @@ lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEto
 require(`./handler/command.js`)(client);
 
 const pathString = `${__dirname}data/gold.json`;
-const goldJson;
+let goldJson;
 try {
     goldJson = require(pathString);
 } catch (e) {
