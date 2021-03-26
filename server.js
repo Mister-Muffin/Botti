@@ -1,9 +1,8 @@
 const express = require('express');
 const fs = require('fs');
-const path = require('path');
 const app = express();
 
-const pathString = `${path.resolve(__dirname, '.')}/data/access.json`;
+const pathString = `${__dirname}/data/access.json`;
 
 const admin = require('firebase-admin');
 
@@ -18,7 +17,7 @@ const docRefAlla = db.doc('bot/alla');
 const docRefSchaufeln = db.doc('bot/schaufeln');
 const docRefYeet = db.collection('bot/yeet/yeeter');
 
-const server = app.listen(7000, () => {
+const server = app.listen(process.env.PORT || 5000, () => {
     console.log(`Express running → PORT ${server.address().port}`);
 });
 

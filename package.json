@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node main.js debug",
     "start": "node main.js",
-    "express": "node server.js"
+    "express": "node server.js",
+    "full": "concurrently \"node main.js\" \"node server.js\""
   },
   "author": "",
   "license": "ISC",

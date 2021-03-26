@@ -7,7 +7,6 @@ let data;
 try {
     data = require(pathString);
 } catch (e) {
-    console.warn(e);
     createFile();
     data = require(pathString);
 }
