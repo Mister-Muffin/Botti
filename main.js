@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const serviceAccount = process.env.SERVICE_ACCOUNT_KEY;
-const pathString = `./data/gold.json`;
+const pathString = `${__dirname}/data/gold.json`;
 const goldJson = require(pathString);
 const { readdirSync } = require("fs");
 admin.initializeApp({
