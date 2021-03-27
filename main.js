@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
+
 const dotenv = require("dotenv")
 dotenv.config()
-
 const fs = require('fs');
 const { readdirSync } = require("fs");
 const path = require('path');
@@ -110,99 +110,70 @@ client.on('message', async (msg) => {
     // If msg.member is uncached, cache it.
     if (!msg.member) msg.member = await msg.guild.fetchMember(msg);
 
-    let command = client.commands.get(cmd);
-    // If none is found, try to find it by alias
-    if (!command)
-        command = client.commands.get(client.aliases.get(cmd));
-    // If a command is finally found, run the command
-    if (command)
-        command.run(client, msg, args);
 });
-function ehre(msg) {
-    docRef.get()
-        .then(doc => {
-            if (!doc.exists) {
-                console.log('No such doc!');
-                return;
-            }
-            currEhre = doc.data().ehre;
+async function ehre(msg) {
+    try {
+        const doc = await docRef.get()
+        if (!doc.exists) {
+            console.log('No such doc!');
+            return;
+        }
+        currEhre = doc.data().ehre;
+
+        await docRef.set({
+            ehre: currEhre + 1
         })
-        .then(function () {
-            docRef.set({
-                ehre: currEhre + 1
-            }).then(function () {
-                //console.log('done!')
-                msg.channel.send(`${currEhre + 1} Ehre generiert :ok_hand:`);
-            }).catch(error => {
-                console.log(error);
-            });
-        }).catch(error => {
-            console.log(error);
-        });
+
+        await msg.channel.send(`${currEhre + 1} Ehre generiert :ok_hand:`);
+    } catch (e) { console.warn(e); }
 }
-function alla(msg) {
-    docRefAlla.get()
-        .then(doc => {
-            if (!doc.exists) {
-                console.log('No such doc!');
-                return;
-            }
-            currAlla = doc.data().alla;
+
+async function alla(msg) {
+    try {
+        const doc = await docRefAlla.get()
+        if (!doc.exists) {
+            console.log('No such doc!');
+            return;
+        }
+        currAlla = doc.data().alla;
+
+        await docRefAlla.set({
+            alla: currAlla + 1
         })
-        .then(function () {
-            docRefAlla.set({
-                alla: currAlla + 1
-            }).then(function () {
-                //console.log('done!')
-                msg.channel.send(`Es wurde schon ${currAlla + 1} mal alla gesagt!`);
-                console.log(currAlla);
-                console.log(currAlla + 1);
-            }).catch(error => {
-                console.log(error);
-            });
-        }).catch(error => {
-            console.log(error);
-        });
+        await msg.channel.send(`Es wurde schon ${currAlla + 1} mal alla gesagt!`);
+        console.log(currAlla);
+        console.log(currAlla + 1);
+    } catch (e) { console.warn(e); }
+
 }
-function yeet(msg) {
-    yeeterId = msg.author.id;
-    docRefYeet.doc(yeeterId).get()
-        .then(doc => {
-            if (!doc.exists) {
-                console.log('No such doc!');
-                docRefYeet.doc(yeeterId).create({
-                    name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: 1,
-                }).then(function () {
-                    //console.log('done!')
-                    msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
-                    //console.log(currYeet);
-                    //console.log(currYeet + 1);
-                })
-            }
+async function yeet(msg) {
+    try {
+        yeeterId = msg.author.id;
+        const doc = await docRefYeet.doc(yeeterId).get()
 
-            console.log(doc.data());
-            currYeet = doc.data().yeet;
-        })
-        .then(function () {
-            if (isNaN(currYeet)) {
-                currYeet = 0;
-                console.log("NotANumber");
-            }
+        if (!doc.exists) {
+            console.log('No such doc!');
+            await docRefYeet.doc(yeeterId).create({
+                name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: 1,
+            })
 
-            docRefYeet.doc(yeeterId).update({
-                name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: currYeet + 1,
+            msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
 
-            }).then(function () {
-                //console.log('done!')
-                msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
-                //console.log(currYeet);
-                //console.log(currYeet + 1);
-            }).catch(error => {
-                console.log(error);
-            });
-        }).catch(error => {
-            console.log(error);
+        }
+
+        currYeet = doc.data().yeet;
+
+        if (isNaN(currYeet)) {
+            currYeet = 0;
+            console.log("NaN");
+        }
+
+        await docRefYeet.doc(yeeterId).update({
+            name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: currYeet + 1,
         });
+
+        await msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
+    } catch (e) { console.warn(e); }
 }
 
 function registerCommands() {
