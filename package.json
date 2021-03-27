@@ -21,11 +21,11 @@
     "firebase-admin": "^9.5.0",
     "firestore": "^1.1.6",
     "mkdirp": "^1.0.4",
-    "node": ">14.14.0",
+    "node": "^15.10.0",
     "web-pingjs": "^1.0.1"
   },
   "devDependencies": {
-    "eslint": "^7.22.0",
+    "eslint": "^7.23.0",
     "prettier": "^1.19.1"
   }
 }
