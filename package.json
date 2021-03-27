@@ -20,6 +20,7 @@
     "express-rate-limit": "^5.2.6",
     "firebase-admin": "^9.5.0",
     "mkdirp": "^1.0.4",
+    "mongodb": "^3.6.5",
     "web-pingjs": "^1.0.1"
   },
   "devDependencies": {
