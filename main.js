@@ -3,11 +3,10 @@ const dotenv = require("dotenv")
 dotenv.config()
 
 const fs = require('fs');
+const { readdirSync } = require("fs");
 const path = require('path');
 const appDir = path.dirname(require.main.filename);
 const admin = require('firebase-admin');
-// const serviceAccount = require();
-const { readdirSync } = require("fs");
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT_KEY)), });
 const db = admin.firestore();
 const docRef = db.doc('bot/ehre');
@@ -46,7 +45,7 @@ client.on('ready', async () => {
     const { sendUpdateMessage } = require(`${__dirname}/handler/updateFile.js`);
     sendUpdateMessage(client);
 
-    //registerCommands();
+    if (process.env.REGISTER_COMMANDS) registerCommands();
 
 });
 client.ws.on('INTERACTION_CREATE', async interaction => {
@@ -68,27 +67,24 @@ client.on('message', async (msg) => {
         return;
     if (!msg.guild)
         return;
-    if (!msg.content.startsWith(config.prefix)) {
-        if (msg.author.id != client.user.id && msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
-            ehre(msg);
-        }
-        if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla')) {
-            alla(msg);
-        }
-        if (msg.content.toLowerCase().match(/([y][e]{2,}[t])/gi)) {
-            yeet(msg);
-        }
+    if (msg.author.id != client.user.id && msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
+        ehre(msg);
     }
-    if (msg.content.toLowerCase().includes('tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194') || msg.content.toLowerCase().includes('http://tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
+    if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla')) {
+        alla(msg);
+    }
+    if (msg.content.toLowerCase().match(/([y][e]{2,}[t])/gi)) {
+        yeet(msg);
+    }
+    if (msg.content.toLowerCase().includes('tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
         msg.delete({ timeout: 1 })
-            .then(msg => console.log(`Deleted message from ${msg.author.username} after 5 seconds`))
+            .then(msg => console.log(`Deleted message from ${msg.author.username} after 1 second`))
             .catch(console.error);
     }
 
     let parsedGold = goldJson;
     const authorId = msg.author.id;
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
-        console.log("if m ain");
 
         let lastTime = parsedGold[authorId].time;
         console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
@@ -111,17 +107,9 @@ client.on('message', async (msg) => {
         fs.writeFileSync(pathString, JSON.stringify(parsedGold));
     }
 
-
     // If msg.member is uncached, cache it.
-    if (!msg.member)
-        msg.member = await msg.guild.fetchMember(msg);
-    const args = msg.content.slice(config.prefix.length).trim().split(/ +/g);
-    const cmd = args.shift().toLowerCase();
-    if (cmd.length === 0)
-        return;
-    if (!msg.content.startsWith(config.prefix)) {
-        return;
-    }
+    if (!msg.member) msg.member = await msg.guild.fetchMember(msg);
+
     let command = client.commands.get(cmd);
     // If none is found, try to find it by alias
     if (!command)
