@@ -1,10 +1,9 @@
 const { createAPIMessage } = require("../embed");
-
-const path = require('path');
+const embed = require("../embed");
 
 module.exports = {
     name: "stop",
-    description: "Stop this Bot",
+    description: "Stop this Bot (Limited usage)",
     options: [],
     run: async (client, interaction, args) => {
 
@@ -13,7 +12,7 @@ module.exports = {
                 data: {
                     type: 4,
                     data: await createAPIMessage(interaction,
-                        ":x: Du darft den Befehl leider nicht ausführen!", client)
+                        embed.error(":x: Du darft den Befehl leider nicht ausführen!", client, interaction), client)
                 }
             });
         } else {
@@ -25,7 +24,6 @@ module.exports = {
                         ":octagonal_sign: Stopping Botti...", client)
                 }
             });
-
             process.exit(0);
         }
 
