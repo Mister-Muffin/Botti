@@ -4,6 +4,14 @@ dotenv.config()
 const fs = require('fs');
 const app = express();
 
+const RateLimit = require('express-rate-limit');
+const limiter = new RateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 500,
+    message:
+        "Too many accounts created from this IP, please try again after a minute"
+});
+
 const pathString = `${__dirname}/data/access.json`;
 
 const admin = require('firebase-admin');
@@ -21,6 +29,7 @@ const server = app.listen(process.env.PORT || 5000, () => {
     console.log(`Express running → PORT ${server.address().port}`);
 });
 
+app.use(limiter)
 app.use(express.static(__dirname + '/public'));
 
 app.get(['/botti', '/'], async (req, res) => {
