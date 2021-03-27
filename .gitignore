@@ -5,7 +5,6 @@ ServiceAccountKey.json
 package-lock.json
 *.code-workspace
 data/gold.json
-/data/gold.json
 data/updated.json
 .env
 
