@@ -8,7 +8,7 @@ Just for one time use (no persistency or stats webserver):
 docker run --env-file [/path/to/env/file] bigbraindamage/botti:latest
 ```
 
-#### Botti environment variables (see examples in "examples"):
+#### Botti environment variables (see examples in "[examples](#env-file)"):
 You need to give Botti some variables to work with:
 - SERVICE_ACCOUNT_KEY=[FIREBASE_CONFIG_KEYS]
 - CONFIG=[DISCORD_CONFIG]
