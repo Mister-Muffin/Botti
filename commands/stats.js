@@ -9,7 +9,7 @@ const pathString = `${appDir}/data/access.json`;
 
 module.exports = {
     name: "stats",
-    description: "TODO",
+    description: "View Botti's server stats",
     options: [],
     run: async (client, interaction, args) => {
         let tokens = JSON.parse(fs.readFileSync(pathString, 'utf8'));
