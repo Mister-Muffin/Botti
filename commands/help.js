@@ -6,7 +6,7 @@ module.exports = {
   options: [],
   run: async (client, interaction, args) => {
     try {
-      Embed.help(`${fs.readFileSync('commands/help.md', 'utf8')}`, client, interaction)
+      Embed.help(`${fs.readFileSync('commands/help.txt', 'utf8')}`, client, interaction)
     } catch (e) {
       Embed.error(`
       :x: Es ist ein Fehler aufgetreten!
