@@ -23,7 +23,7 @@ Install dependencies with npm (concurrently is needed to run express and discord
 npm i
 npm i -g concurrently
 ```
-#### Botti environment variables (see examples in "examples"):
+#### Botti environment variables (see examples in "[examples](#env-file)"):
 You need to create a ".env" file in Botti's root directory in order to give Botti some variables to work with:
 - SERVICE_ACCOUNT_KEY=[FIREBASE_CONFIG_KEYS]
 - CONFIG=[DISCORD_CONFIG]
@@ -72,3 +72,9 @@ Fun:
 
 Failing:
 - update: Update Botti
+
+## Stats generation in chat
+
+- Ehre
+- Alla
+- Yeet
