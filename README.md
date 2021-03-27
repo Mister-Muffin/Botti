@@ -72,3 +72,9 @@ Fun:
 
 Failing:
 - update: Update Botti
+
+## Stats generation in chat
+
+- Ehre
+- Alla
+- Yeet
