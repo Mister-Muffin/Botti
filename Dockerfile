@@ -4,7 +4,7 @@ COPY . /botti
 
 WORKDIR /botti
 
-RUN npm i
+RUN npm ci
 RUN npm i -g concurrently
 
 CMD [ "npm", "run", "full" ]
