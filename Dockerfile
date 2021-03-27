@@ -1,10 +1,10 @@
-FROM docker.io/node:lts-buster
+FROM docker.io/node:lts-alpine
 
 COPY . /botti
 
 WORKDIR /botti
 
-RUN npm ci
+RUN npm i
 RUN npm i -g concurrently
 
 CMD [ "npm", "run", "full" ]

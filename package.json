@@ -21,7 +21,6 @@
     "firebase-admin": "^9.5.0",
     "firestore": "^1.1.6",
     "mkdirp": "^1.0.4",
-    "node": "^15.10.0",
     "web-pingjs": "^1.0.1"
   },
   "devDependencies": {
