@@ -1,7 +1,7 @@
 # Botti
 I am a happy Discord Bot :smiley:
 
-## Installation (will fail)
+## Installation
 ### Via Docker (recommended) (not available yet):
 Just for one time use (no persistency or stats webserver):
 ```
