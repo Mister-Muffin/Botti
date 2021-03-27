@@ -52,7 +52,7 @@ Run the container with the newly created volume and port 80 opened:
 docker run --env-file [/path/to/env/file] -v botti:/botti/data/ -p 80:5000 bigbraindamage/botti:latest
 ```
 
-# Commands: /
+## Commands: /
 
 Standard:
 
