@@ -1,4 +1,4 @@
-FROM docker.io/node:lts-buster-slim
+FROM docker.io/node:lts-buster
 
 COPY . /botti
 
