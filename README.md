@@ -56,19 +56,19 @@ docker run --env-file [/path/to/env/file] -v botti:/botti/data/ -p 80:5000 bigbr
 
 Standard:
 
-- ping Check if the Bot is up and running, additionally get the Latency
-- clear + {number: 1-99} Delete >number< of messages in the current channel
-- stats Get a link to access stats
+- ping: Check if the Bot is up and running, additionally get the Latency
+- clear + {number: 1-99}: Delete >number< of messages in the current channel
+- stats: Get a link to access stats
 
 Game:
-- coins Return your current account balance in chat
-- daily Request your daily coins (resets at 00:00)
-- play Let the game begin!
+- coins: Return your current account balance in chat
+- daily: Request your daily coins (resets at 00:00)
+- play: Let the game begin!
 
 Fun:
-- count + {number: 1-100} Count to >number<
+- count + {number: 1-100}: Count to >number<
 - schaufel + {person (optional): @mention} hit you or >person< on the head with a shovel
-- fant Get a Fant!
+- fant: Get a Fant!
 
 Failing:
-- update Update Botti
+- update: Update Botti
