@@ -2,6 +2,9 @@ const Discord = require('discord.js');
 
 const dotenv = require("dotenv")
 dotenv.config()
+const mongoClient = require('mongodb').MongoClient;
+const dburl = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_IP}:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}`;
+
 const fs = require('fs');
 const { readdirSync } = require("fs");
 const path = require('path');
@@ -31,6 +34,29 @@ try {
     fs.writeFileSync(pathString, JSON.stringify({}));
     goldJson = require(pathString);
 }
+
+// mongoClient.connect(dburl, function (err, db) {
+//     if (err) throw err;
+//     console.log("Database created!");
+//     const dbo = db.db("botti");
+//     dbo.createCollection("customers", function (err, res) {
+//         if (err) throw err;
+//         console.log("Collection created!");
+//         db.close();
+//     });
+// });
+
+let mongoDB, bottiDB;
+
+async function initializeDB() {
+    mongoDB = await mongoClient.connect(dburl)
+
+    bottiDB = mongoDB.db("botti");
+}
+
+initializeDB()
+
+
 
 require(`./handler/command.js`)(client);
 
@@ -111,69 +137,54 @@ client.on('message', async (msg) => {
     if (!msg.member) msg.member = await msg.guild.fetchMember(msg);
 
 });
-async function ehre(msg) {
-    try {
-        const doc = await docRef.get()
-        if (!doc.exists) {
-            console.log('No such doc!');
-            return;
-        }
-        currEhre = doc.data().ehre;
 
-        await docRef.set({
-            ehre: currEhre + 1
-        })
-
-        await msg.channel.send(`${currEhre + 1} Ehre generiert :ok_hand:`);
-    } catch (e) { console.warn(e); }
+function ehre(msg) {
+    updateStat("ehre", msg, `{newStat} Ehre generiert :ok_hand:`);
 }
 
-async function alla(msg) {
-    try {
-        const doc = await docRefAlla.get()
-        if (!doc.exists) {
-            console.log('No such doc!');
-            return;
-        }
-        currAlla = doc.data().alla;
-
-        await docRefAlla.set({
-            alla: currAlla + 1
-        })
-        await msg.channel.send(`Es wurde schon ${currAlla + 1} mal alla gesagt!`);
-        console.log(currAlla);
-        console.log(currAlla + 1);
-    } catch (e) { console.warn(e); }
-
+function alla(msg) {
+    updateStat("alla", msg, `Es wurde schon {newStat} mal alla gesagt!`);
 }
 async function yeet(msg) {
+
+    yeeterId = msg.author.id;
+    const collectionName = "yeet";
     try {
-        yeeterId = msg.author.id;
-        const doc = await docRefYeet.doc(yeeterId).get()
-
-        if (!doc.exists) {
-            console.log('No such doc!');
-            await docRefYeet.doc(yeeterId).create({
-                name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: 1,
-            })
-
-            msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
-
+        const result = await bottiDB.collection(collectionName).findOne({ yeeter: yeeterId })
+        let currStat;
+        if (result) {
+            currStat = result.value
+        } else {
+            currStat = 0;
         }
+        let newStat = currStat + 1;
 
-        currYeet = doc.data().yeet;
+        let myobj = { $set: { value: newStat } };
 
-        if (isNaN(currYeet)) {
-            currYeet = 0;
-            console.log("NaN");
-        }
 
-        await docRefYeet.doc(yeeterId).update({
-            name: msg.member.nickname ? msg.member.nickname : msg.author.username, yeet: currYeet + 1,
-        });
 
-        await msg.channel.send(`<@${yeeterId}> hat sich schon ${currYeet + 1} mal weggeyeetet!`);
-    } catch (e) { console.warn(e); }
+        await bottiDB.collection(collectionName).updateOne({ "yeeter": yeeterId }, myobj, { upsert: true })
+
+        msg.channel.send(`<@${yeeterId}> hat sich schon ${newStat} mal weggeyeetet!`);
+    } catch (e) { console.warn(e) };
+
+}
+
+async function updateStat(stat, msg, statMessage, increaseAmount = 1) {
+    const collectionName = stat;
+    const id = msg.author.id;
+    try {
+        const result = await bottiDB.collection(collectionName).findOne({ id: id })
+        let currStat = result ? result.value : 0;
+        let newStat = currStat + increaseAmount
+
+        let myobj = { $set: { value: newStat } };
+
+        await bottiDB.collection(collectionName).updateOne({ id: id }, myobj, { upsert: true })
+
+
+        await msg.channel.send(statMessage.replace("{newStat}", newStat));
+    } catch (e) { console.warn(e) };
 }
 
 function registerCommands() {
@@ -211,6 +222,7 @@ function registerCommands() {
 client.login(config.token);
 
 process.on("SIGINT", (signal) => {
+    db.close();
     client.user.setStatus("idle").then(() => { // ?
         console.log("SIGINT exiting")
         process.exit(0)
