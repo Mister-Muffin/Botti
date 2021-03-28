@@ -4,24 +4,16 @@ const dotenv = require("dotenv")
 dotenv.config()
 const mongoClient = require('mongodb').MongoClient;
 const dburl = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_IP}:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}`;
-
 const fs = require('fs');
 const { readdirSync } = require("fs");
 const path = require('path');
 const appDir = path.dirname(require.main.filename);
 const admin = require('firebase-admin');
-admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT_KEY)), });
-const db = admin.firestore();
-const docRef = db.doc('bot/ehre');
-const docRefAlla = db.doc('bot/alla');
-const docRefYeet = db.collection('bot/yeet/yeeter');
+admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT_KEY)), }); //TODO: remove
 const config = JSON.parse(process.env.CONFIG);
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
-let currEhre = 0;
-let currAlla = 0;
-let currYeet = 0;
 var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 
@@ -35,27 +27,15 @@ try {
     goldJson = require(pathString);
 }
 
-// mongoClient.connect(dburl, function (err, db) {
-//     if (err) throw err;
-//     console.log("Database created!");
-//     const dbo = db.db("botti");
-//     dbo.createCollection("customers", function (err, res) {
-//         if (err) throw err;
-//         console.log("Collection created!");
-//         db.close();
-//     });
-// });
-
 let mongoDB, bottiDB;
 
 async function initializeDB() {
-    mongoDB = await mongoClient.connect(dburl)
+    mongoDB = await mongoClient.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
 
     bottiDB = mongoDB.db("botti");
+    module.exports = { bottiDB }
 }
-
 initializeDB()
-
 
 
 require(`./handler/command.js`)(client);
@@ -222,7 +202,7 @@ function registerCommands() {
 client.login(config.token);
 
 process.on("SIGINT", (signal) => {
-    db.close();
+    mongoDB.close();
     client.user.setStatus("idle").then(() => { // ?
         console.log("SIGINT exiting")
         process.exit(0)

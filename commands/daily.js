@@ -1,58 +1,32 @@
 const path = require('path');
+const { createAPIMessage } = require('../embed');
 
 const appDir = path.dirname(require.main.filename);
-const pathString = `${appDir}/data/gold.json`;
-
-const goldJson = require(pathString);
-const Discord = require("discord.js");
-const fs = require('fs');
-const mkdirp = require('mkdirp');
-const admin = require('firebase-admin');
-const { createAPIMessage } = require('../embed');
+const collectionName = "coins";
 
 module.exports = {
     name: "daily",
-    description: "Hole deinen täglichen coin Bonus.",
+    description: "Hole deine täglichen Münzen.",
     options: [],
     run: async (client, interaction, args) => {
 
         const authorId = interaction.member.user.id;
+        const { bottiDB } = require(`${appDir}/main.js`);
 
-        let parsedGold = goldJson;
+        const result = await bottiDB.collection(collectionName).findOne({ id: authorId })
+        let lastTime = result ? result.lastTime : new Date();
 
-        if (!parsedGold[authorId]) {
-            parsedGold[authorId] = { daily: new Date() };
-            await giveBonus(interaction, client, parsedGold);
-            console.log("if")
-        } else if (parsedGold[authorId].daily) {
+        console.log("Last time: " + date_diff_indays(lastTime, new Date()));
 
-            let lastTime = parsedGold[authorId].daily;
-            console.log("Last time: " + date_diff_indays(lastTime, new Date()));
-
-            if (date_diff_indays(lastTime, new Date()) < 1) {
-
-                await rejectBonus(interaction, client, parsedGold);
-
-            } else {
-
-                await giveBonus(interaction, client, parsedGold, date_diff_indays(lastTime, new Date()));
-
-            }
-
-            console.log("Else if")
-
+        if (date_diff_indays(lastTime, new Date()) < 1) {
+            await rejectBonus(interaction, client);
         } else {
-            console.log(parsedGold[authorId]);
-            parsedGold[authorId].daily = new Date();
-            console.log("Else")
-            // await giveBonus(interaction, client);
-            fs.writeFileSync(pathString, JSON.stringify(parsedGold));
+            await giveBonus(interaction, client, date_diff_indays(lastTime, new Date()));
         }
-
     }
 };
 
-async function giveBonus(interaction, client, parsedGold, days = 1) {
+async function giveBonus(interaction, client, days = 1) {
     const authorId = interaction.member.user.id;
 
     let coins = 0
@@ -60,14 +34,19 @@ async function giveBonus(interaction, client, parsedGold, days = 1) {
         coins += 200 * Math.pow(0.5, i)
     }
 
-    const db = admin.firestore()
-    const docRef = db.doc(`bot/${authorId}`)
-    const increaseBy = admin.firestore.FieldValue.increment(Math.round(coins));
-    docRef.update({ coins: increaseBy });
+    try {
+        const { bottiDB } = require(`${appDir}/main.js`);
 
-    parsedGold[authorId].daily = new Date();
+        const result = await bottiDB.collection(collectionName).findOne({ id: authorId })
+        let currStat = result ? result.value : 0;
+        let newStat = currStat + Math.round(coins);
 
-    fs.writeFileSync(pathString, JSON.stringify(parsedGold));
+        let myobj = { $set: { value: newStat, lastTime: new Date() } };
+
+        await bottiDB.collection(collectionName).updateOne({ id: authorId }, myobj, { upsert: true })
+
+
+    } catch (e) { console.warn(e) };
 
     client.api.interactions(interaction.id, interaction.token).callback.post({
         data: {
@@ -77,9 +56,7 @@ async function giveBonus(interaction, client, parsedGold, days = 1) {
     });
 }
 
-async function rejectBonus(interaction, client, parsedGold) {
-
-    fs.writeFileSync(pathString, JSON.stringify(parsedGold));
+async function rejectBonus(interaction, client) {
 
     client.api.interactions(interaction.id, interaction.token).callback.post({
         data: {
