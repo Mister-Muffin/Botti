@@ -1,38 +1,30 @@
-const Embed = require('../embed.js')
-const admin = require('firebase-admin');
 const { createAPIMessage } = require('../embed.js');
-let coins = 0;
+const path = require('path');
+const appDir = path.dirname(require.main.filename);
+const collectionName = "coins";
 module.exports = {
   name: "coins",
   description: "zeigt dir deinen aktuellen Kontostand an",
   options: [],
   run: async (client, interaction, args) => {
-    client.channels.fetch(interaction.channel_id).then(async channel => {
-      const db = admin.firestore()
-      const docRef = db.doc(`bot/${interaction.member.user.id}`)
-      docRef.get()
-        .then(async doc => {
-          if (!doc.exists) {
-            docRef.set({
-              coins: 1000
-            })
-              .then(async doc => {
-                Embed.success(`${interaction.member.nick}, dein Account wurde angelegt.\nMit [/coins] kannst du deinen Kontostand abfragen.`, client, interaction)
-              }).catch(err => {
-                console.log(err)
-              })
-            return
-          } else {
-            coins = doc.data().coins
-            await client.api.interactions(interaction.id, interaction.token).callback.post({
-              data: {
-                type: 4,
-                data: await createAPIMessage(interaction, `${interaction.member.nick}, du hast ${coins} Geld :moneybag:`, client)
-              }
-            });
-          }
-        })
+
+    const { bottiDB } = require(`${appDir}/main.js`);
+    const authorId = interaction.member.user.id;
+
+    const result = await bottiDB.collection(collectionName).findOne({ id: authorId })
+    const coins = result ? result.value : 400;
+
+    if (!result.value) {
+      const myobj = { $set: { value: coins } };
+      await bottiDB.collection(collectionName).updateOne({ id: authorId }, myobj, { upsert: true })
     }
-    )
+
+    await client.api.interactions(interaction.id, interaction.token).callback.post({
+      data: {
+        type: 4,
+        data: await createAPIMessage(interaction, `${interaction.member.nick}, du hast ${coins} Geld :moneybag:`, client)
+      }
+    });
+
   }
 }

@@ -1,5 +1,5 @@
-const path = require('path');
 const { createAPIMessage } = require('../embed');
+const path = require('path');
 
 const appDir = path.dirname(require.main.filename);
 const collectionName = "coins";
@@ -14,7 +14,7 @@ module.exports = {
         const { bottiDB } = require(`${appDir}/main.js`);
 
         const result = await bottiDB.collection(collectionName).findOne({ id: authorId })
-        let lastTime = result ? result.lastTime : new Date();
+        let lastTime = result ? result.lastTime : 0;
 
         console.log("Last time: " + date_diff_indays(lastTime, new Date()));
 

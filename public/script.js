@@ -19,21 +19,21 @@ window.addEventListener('load', async (event) => {
     console.log(stats);
 
 
-    document.getElementById("numEhre").innerText = stats.ehre;
+    document.getElementById("numEhre").innerText = stats.ehre.total;
     circularProgress1.close();
-    document.getElementById("numAlla").innerText = stats.alla;
+    document.getElementById("numAlla").innerText = stats.alla.total;
     circularProgress2.close();
-    document.getElementById("numSchaufel").innerText = stats.schaufeln;
+    document.getElementById("numSchaufel").innerText = stats.schaufeln.total;
     circularProgress4.close();
 
     let yeet = 0;
     let yeeters = {};
-    for (user in stats.yeet) {
-        yeet += stats.yeet[user].yeet
-        yeeters[user.name] = stats.yeet[user].yeet
+    for (user in stats.yeet.result) {
+        yeet += stats.yeet.result[user].value
+        yeeters[user.name] = stats.yeet.result[user].id
 
         const el = document.createElement("H2");
-        el.innerText = `${stats.yeet[user].name}: ${stats.yeet[user].yeet} mal weggeyeetet`;
+        el.innerText = `${stats.yeet.result[user].name}: ${stats.yeet.result[user].value} mal weggeyeetet`;
         yeetList.appendChild(el);
     }
     document.getElementById("numYeet").innerText = yeet;

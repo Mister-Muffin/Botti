@@ -8,8 +8,6 @@ const fs = require('fs');
 const { readdirSync } = require("fs");
 const path = require('path');
 const appDir = path.dirname(require.main.filename);
-const admin = require('firebase-admin');
-admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT_KEY)), }); //TODO: remove
 const config = JSON.parse(process.env.CONFIG);
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -130,7 +128,7 @@ async function yeet(msg) {
     yeeterId = msg.author.id;
     const collectionName = "yeet";
     try {
-        const result = await bottiDB.collection(collectionName).findOne({ yeeter: yeeterId })
+        const result = await bottiDB.collection(collectionName).findOne({ id: yeeterId })
         let currStat;
         if (result) {
             currStat = result.value
@@ -139,11 +137,10 @@ async function yeet(msg) {
         }
         let newStat = currStat + 1;
 
-        let myobj = { $set: { value: newStat } };
 
+        let myobj = { $set: { value: newStat, name: msg.author.username } };
 
-
-        await bottiDB.collection(collectionName).updateOne({ "yeeter": yeeterId }, myobj, { upsert: true })
+        await bottiDB.collection(collectionName).updateOne({ "id": yeeterId }, myobj, { upsert: true })
 
         msg.channel.send(`<@${yeeterId}> hat sich schon ${newStat} mal weggeyeetet!`);
     } catch (e) { console.warn(e) };

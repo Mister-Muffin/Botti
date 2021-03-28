@@ -1,6 +1,8 @@
 const express = require('express');
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
+const mongoClient = require('mongodb').MongoClient;
 dotenv.config()
+const dburl = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_IP}:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}`;
 const fs = require('fs');
 const app = express();
 
@@ -12,18 +14,15 @@ const limiter = new RateLimit({
         "Too many accounts created from this IP, please try again after a minute"
 });
 
+let mongoDB, bottiDB;
+async function initializeDB() {
+    mongoDB = await mongoClient.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
+
+    bottiDB = mongoDB.db("botti");
+}
+initializeDB()
+
 const pathString = `${__dirname}/data/access.json`;
-
-const admin = require('firebase-admin');
-admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT_KEY)),
-});
-
-const db = admin.firestore();
-const docRefEhre = db.doc('bot/ehre');
-const docRefAlla = db.doc('bot/alla');
-const docRefSchaufeln = db.doc('bot/schaufeln');
-const docRefYeet = db.collection('bot/yeet/yeeter');
 
 const server = app.listen(process.env.PORT || 5000, () => {
     console.log(`Express running → PORT ${server.address().port}`);
@@ -71,51 +70,25 @@ app.get(['/botti', '/'], async (req, res) => {
 app.get(['/botti/stats', '/'], async (req, res) => {
 
     let stats = {};
+    const allStats = ["alla", "ehre", "yeet", "schaufeln"]
 
-    await docRefAlla.get()
-        .then(doc => {
-            if (!doc.exists) {
-                console.log('No such doc!');
-                return;
-            }
-            stats.alla = doc.data().alla;
-        }).catch(error => {
-            console.log(error);
-        });
+    for (stat of allStats) {
+        const result = await bottiDB.collection(stat).find({ value: { $gt: 0 } }).toArray();
+        let total = [];
+        let id = [];
 
-    await docRefEhre.get()
-        .then(doc => {
-            if (!doc.exists) {
-                console.log('No such doc!');
-                return;
-            }
-            stats.ehre = doc.data().ehre;
-        }).catch(error => {
-            console.log(error);
+        result.forEach(function (task) {
+            total.push(task.value);
         });
+        result.forEach(function (task) {
+            id.push(task.id);
+        });
+        stats[stat] = { total: total.reduce((acc, curr) => acc + curr), result }
+        // let currStat = result ? result.value : 0;
 
-    await docRefSchaufeln.get()
-        .then(doc => {
-            if (!doc.exists) {
-                console.log('No such doc!');
-                return;
-            }
-            stats.schaufeln = doc.data().schaufeln;
-        }).catch(error => {
-            console.log(error);
-        });
-
-    stats.yeet = {}
-    await docRefYeet.get()
-        .then(collection => {
-            let docs = collection.docs;
-            docs.forEach(doc => {
-                stats.yeet[doc.id] = doc.data()
-            })
-            //stats.yeet = doc.data().yeet;
-        }).catch(error => {
-            console.log(error);
-        });
+    }
+    console.log(stats.alla.result.value)
+    console.log(stats);
 
     res.send(stats)
 });
