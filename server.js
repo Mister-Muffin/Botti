@@ -2,7 +2,11 @@ const express = require('express');
 const dotenv = require("dotenv");
 const mongoClient = require('mongodb').MongoClient;
 dotenv.config()
-const dburl = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_IP}:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}/${process.env.MONGO_DB}?authMechanism=${process.env.MONGO_AUTH_MECHANISM}`;
+const dburl = `mongodb://${process.env.MONGO_USER}\
+:${process.env.MONGO_PASS}\
+@${process.env.MONGO_IP}\
+:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}\
+/${process.env.MONGO_DB}?authMechanism=${process.env.MONGO_AUTH_MECHANISM}`;
 const fs = require('fs');
 const app = express();
 
