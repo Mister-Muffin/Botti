@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const dotenv = require("dotenv")
 dotenv.config()
 const mongoClient = require('mongodb').MongoClient;
-const dburl = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_IP}:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}`;
+const dburl = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_IP}:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}/${process.env.MONGO_DB}?authMechanism=${process.env.MONGO_AUTH_MECHANISM}`;
 const fs = require('fs');
 const { readdirSync } = require("fs");
 const path = require('path');
@@ -45,9 +45,6 @@ client.on('ready', async () => {
 
     client.user.setPresence({ activity: { name: "/play", type: "PLAYING" }, status: "online" })
     console.log("ONLINE!");
-
-    const { sendUpdateMessage } = require(`${__dirname}/handler/updateFile.js`);
-    sendUpdateMessage(client);
 
     if (process.env.REGISTER_COMMANDS) registerCommands();
 
@@ -152,20 +149,25 @@ async function yeet(msg) {
 
 }
 
-async function updateStat(stat, msg, statMessage, increaseAmount = 1) {
+async function updateStat(stat, msg, statMessage) {
     const collectionName = stat;
     const id = msg.author.id;
     try {
-        const result = await bottiDB.collection(collectionName).findOne({ id: id })
-        let currStat = result ? result.value : 0;
-        let newStat = currStat + increaseAmount
+        const result = await bottiDB.collection(collectionName).find({ value: { $type: "number" } }).toArray()
+        let total = [];
 
-        let myobj = { $set: { value: newStat } };
+        result.forEach(function (task) {
+            total.push(task.value);
+        });
+        let stats = {};
+        stats[stat] = { total: total.reduce((acc, curr) => acc + curr), result }
+
+        let myobj = { $set: { value: result.find(res => res.id.toString() == id.toString()).value + 1 } };
 
         await bottiDB.collection(collectionName).updateOne({ id: id }, myobj, { upsert: true })
 
+        await msg.channel.send(statMessage.replace("{newStat}", stats[stat].total + 1));
 
-        await msg.channel.send(statMessage.replace("{newStat}", newStat));
     } catch (e) { console.warn(e) };
 }
 
@@ -203,7 +205,7 @@ function registerCommands() {
 
 client.login(config.token);
 
-process.on("SIGINT", (signal) => {
+process.on("SIGINT", () => {
     mongoDB.close();
     client.user.setStatus("idle").then(() => { // ?
         console.log("SIGINT exiting")
