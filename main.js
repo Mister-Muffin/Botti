@@ -91,16 +91,21 @@ client.on('message', async (msg) => {
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
 
         let lastTime = parsedGold[authorId].time;
-        console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
+        // console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
         if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 600)) {
-            console.log("haaaaaaaaaaaaaaaalllllllllllllllooooooooooooooooooooooooooooooooo :)");
-            const db = admin.firestore()
-            const docRef = db.doc(`bot/${authorId}`)
-            const increaseBy = admin.firestore.FieldValue.increment(20);
-            docRef.update({ coins: increaseBy });
+            try {
 
-            parsedGold[authorId].time = new Date();
+                const result = await bottiDB.collection("coins").findOne({ id: authorId })
+                let currCoins = result ? result.value : 0;
+
+                let myobj = { $set: { value: currCoins + 20, lastMessage: new Date() } };
+
+                await bottiDB.collection("coins").updateOne({ id: authorId }, myobj, { upsert: true })
+
+                parsedGold[authorId].time = new Date();
+
+            } catch (e) { console.warn(e) };
         }
 
         fs.writeFileSync(pathString, JSON.stringify(parsedGold));
