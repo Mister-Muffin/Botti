@@ -3,8 +3,7 @@ node_modules/
 config.json
 ServiceAccountKey.json
 *.code-workspace
-data/gold.json
-data/updated.json
+data/
 .env
 
 # Logs from https://github.com/github/gitignore/blob/master/Node.gitignore
