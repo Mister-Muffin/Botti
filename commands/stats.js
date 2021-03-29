@@ -6,14 +6,15 @@ const appDir = path.dirname(require.main.filename);
 const pathString = `${appDir}/data/access.json`;
 
 
-
 module.exports = {
     name: "stats",
     description: "View Botti's server stats",
     options: [],
     run: async (client, interaction, args) => {
-        let tokens = JSON.parse(fs.readFileSync(pathString, 'utf8'));
-        console.log("HUUUUUIIIIIIIIIIIIIIi");
+
+        console.log()
+
+        let tokens = await new Promise(r => fs.access(pathString, fs.constants.F_OK, e => r(!e))) ? JSON.parse(fs.readFileSync(pathString, 'utf8')) : [];
 
         const token = { 'date': (new Date).getTime(), 'token': makeid(8) };
         tokens.push(token);
