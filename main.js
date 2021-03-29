@@ -38,6 +38,7 @@ async function initializeDB() {
 
     bottiDB = mongoDB.db("botti");
     module.exports = { bottiDB }
+    console.log("Successfully connected to Database");
 }
 initializeDB()
 

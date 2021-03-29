@@ -27,6 +27,14 @@ async function initializeDB() {
 initializeDB()
 
 const pathString = `${__dirname}/data/access.json`;
+// let goldJson;
+// try {
+//     goldJson = require(pathString);
+// } catch (e) {
+//     console.warn(e);
+//     fs.writeFileSync(pathString, JSON.stringify({}));
+//     goldJson = require(pathString);
+// }
 
 const server = app.listen(process.env.PORT || 5000, () => {
     console.log(`Express running → PORT ${server.address().port}`);
