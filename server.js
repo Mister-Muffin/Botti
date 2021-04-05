@@ -83,7 +83,7 @@ app.get(['/botti', '/'], async (req, res) => {
     }
 });
 
-app.get(['/botti/stats', '/'], async (req, res) => {
+app.get('/botti/stats', async (req, res) => {
 
     try {
 
