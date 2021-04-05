@@ -24,7 +24,7 @@ window.addEventListener('load', async (event) => {
     const divNames = ["numEhre", "numAlla", "numYeet", "numSchaufel"];
 
     if (res.status !== 200) {
-        console.warn("Status !== 200!");
+        console.warn(`${res.status}!`);
 
         const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!"
 
