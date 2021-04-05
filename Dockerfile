@@ -9,9 +9,9 @@ ENV MONGO_USER="botti" \
     MONGO_DB="botti" \
     MONGO_IP=127.0.0.1
 
-RUN npm i \
-    npm i -g concurrently \
-    apk add curl
+RUN npm i
+RUN npm i -g concurrently
+RUN apk add curl
 
 HEALTHCHECK --interval=20s --timeout=3s --start-period=10s --retries=3 CMD curl --fail ${MONGO_IP} || exit 1
 
