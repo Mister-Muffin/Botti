@@ -92,8 +92,6 @@ body {
 }
 
 #yeeter {
-    column-width: 33%;
-    orphans: 3;
     width: -moz-available;
     width: -webkit-fill-available;
     max-height: -moz-available;
