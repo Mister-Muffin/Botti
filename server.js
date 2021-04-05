@@ -20,9 +20,13 @@ const limiter = new RateLimit({
 
 let mongoDB, bottiDB;
 async function initializeDB() {
-    mongoDB = await mongoClient.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
+    try {
+        mongoDB = await mongoClient.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
 
-    bottiDB = mongoDB.db("botti");
+        bottiDB = mongoDB.db("botti");
+    } catch (e) {
+        console.warn("API down!");
+    }
 }
 initializeDB()
 
@@ -81,26 +85,32 @@ app.get(['/botti', '/'], async (req, res) => {
 
 app.get(['/botti/stats', '/'], async (req, res) => {
 
-    let stats = {};
-    const allStats = ["alla", "ehre", "yeet", "schaufeln"]
+    try {
 
-    for (stat of allStats) {
-        const result = await bottiDB.collection(stat).find({ value: { $gt: 0 } }).toArray();
-        let total = [];
-        let id = [];
+        let stats = {};
+        const allStats = ["alla", "ehre", "yeet", "schaufeln"]
 
-        result.forEach(function (task) {
-            total.push(task.value);
-        });
-        result.forEach(function (task) {
-            id.push(task.id);
-        });
-        stats[stat] = { total: total.reduce((acc, curr) => acc + curr), result }
-        // let currStat = result ? result.value : 0;
+        for (stat of allStats) {
+            const result = await bottiDB.collection(stat).find({ value: { $gt: 0 } }).toArray();
+            let total = [];
+            let id = [];
 
+            result.forEach(function (task) {
+                total.push(task.value);
+            });
+            result.forEach(function (task) {
+                id.push(task.id);
+            });
+            stats[stat] = { total: total.reduce((acc, curr) => acc + curr), result }
+            // let currStat = result ? result.value : 0;
+
+        }
+        console.log(stats.alla.result.value)
+        console.log(stats);
+
+        res.send(stats)
+
+    } catch (e) {
+        res.sendStatus(503);
     }
-    console.log(stats.alla.result.value)
-    console.log(stats);
-
-    res.send(stats)
 });

@@ -1,7 +1,13 @@
-
 window.addEventListener('load', async (event) => {
+    'use strict';
 
-    const MDCCircularProgress = mdc.circularProgress.MDCCircularProgress
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+            .register('./sw.js');
+    }
+
+
+    const MDCCircularProgress = mdc.circularProgress.MDCCircularProgress;
 
     const circularProgress1 = new MDCCircularProgress(document.querySelector('#kreisi1'));
     const circularProgress2 = new MDCCircularProgress(document.querySelector('#kreisi2'));
@@ -15,9 +21,30 @@ window.addEventListener('load', async (event) => {
     const yeetList = document.getElementById("yeeter");
 
     const res = await fetch("https://discord.schweininchen.de/botti/stats");
-    const stats = await res.json();
-    console.log(stats);
+    const divNames = ["numEhre", "numAlla", "numYeet", "numSchaufel"];
 
+    if (res.status !== 200) {
+        console.warn("Status !== 200!");
+
+        const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!"
+
+        for (let name of divNames) {
+            document.getElementById(name).parentElement.style = "display: grid; place-items: center;";
+            document.getElementById(name).parentElement.innerHTML = `<span class="keyword">${errorMessage}</span>`;
+        }
+        circularProgress1.close();
+        circularProgress2.close();
+        circularProgress3.close();
+        circularProgress4.close();
+
+        setTimeout(() => {
+            document.getElementById("body").style.setProperty("--onFinishedShow", "unset")
+            document.getElementById("body").style.setProperty("--onLoadShow", "none")
+        }, 300)
+        return;
+    }
+
+    const stats = await res.json();
 
     document.getElementById("numEhre").innerText = stats.ehre.total;
     circularProgress1.close();
@@ -28,7 +55,7 @@ window.addEventListener('load', async (event) => {
 
     let yeet = 0;
     let yeeters = {};
-    for (user in stats.yeet.result) {
+    for (let user in stats.yeet.result) {
         yeet += stats.yeet.result[user].value
         yeeters[user.name] = stats.yeet.result[user].id
 
