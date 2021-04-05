@@ -14,6 +14,6 @@ RUN npm i
 RUN npm i -g concurrently
 RUN apk add curl
 
-HEALTHCHECK --interval=20s --timeout=3s --start-period=10s --retries=3 CMD curl --fail ${MONGO_IP}:${MONGO_PORT} || exit 1
+HEALTHCHECK --interval=20s --timeout=3s --start-period=10s --retries=3 CMD curl --fail $MONGO_IP:$MONGO_PORT || exit 1
 
 CMD [ "npm", "run", "full" ]
