@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const dotenv = require("dotenv")
 dotenv.config()
 
-const { getValueFromUserId, incrementValueFromUserId, updateValueFromUserId } = require('./postgres.js')
+const { incrementValueFromUserId } = require('./postgres.js')
 
 const { Client } = require('pg')
 const dbclient = new Client({ //export
