@@ -142,12 +142,21 @@ function yeet(msg) {
 async function updateStat(stat, msg, statMessage) {
     const id = msg.author.id;
     try {
-        const result = await dbclient.query(`SELECT SUM("${stat}") FROM users`);
-        const val = result.rows[0].sum;
+        if (stat == "Yeet") {
+            const result = await dbclient.query(`SELECT "${stat}" FROM users WHERE "UserId" = ${id}`);
+            const val = result.rows[0].Yeet;
 
-        await incrementValueFromUserId(dbclient, stat, 1, id);
+            await incrementValueFromUserId(dbclient, stat, 1, id);
 
-        await msg.channel.send(statMessage.replace("{newStat}", parseInt(val) + 1));
+            await msg.channel.send(statMessage.replace("{newStat}", parseInt(val) + 1));
+        } else {
+            const result = await dbclient.query(`SELECT SUM("${stat}") FROM users`);
+            const val = result.rows[0].sum;
+
+            await incrementValueFromUserId(dbclient, stat, 1, id);
+
+            await msg.channel.send(statMessage.replace("{newStat}", parseInt(val) + 1));
+        }
 
     } catch (e) { console.warn(e) };
 }
