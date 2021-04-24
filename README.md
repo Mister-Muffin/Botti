@@ -40,22 +40,22 @@ Or run Botti and Express independently with ```npm run start```and ```npm run ex
 You need to give Botti some variables to work with:
 
 CONFIG={"token": "iamadiscordbottoken","owner": "12345678987654321"}  
-MONGO_USER=botti  
-MONGO_PASS=securepassword  
-MONGO_IP=192.168.178.2  
-MONGO_DB=botti
+DB_USER=botti  
+DB_PASS=securepassword  
+DB_IP=192.168.178.2  
+DB_DB=botti
 
 ## .env file
 
 All available variables:
 
 - CONFIG Discord config
-- MONGO_USER MongoDB username
-- MONGO_PASS MongoDB password
-- MONGO_IP IP-Adress of the MongoDB server
-- MONGO_PORT MongoDB server port
-- MONGO_AUTH_MECHANISM (optional: SCRAM-SHA-256)
-- MONGO_DB Database name
+- DB_USER MongoDB username
+- DB_PASS MongoDB password
+- DB_IP IP-Adress of the MongoDB server
+- DB_PORT MongoDB server port
+- DB_AUTH_MECHANISM (optional: SCRAM-SHA-256)
+- DB_DB Database name
 
 ## Examples
 

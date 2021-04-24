@@ -7,11 +7,11 @@ const { incrementValueFromUserId } = require('./postgres.js')
 
 const { Client } = require('pg')
 const dbclient = new Client({ //export
-    user: process.env.MONGO_USER,
-    host: process.env.MONGO_IP,
-    database: process.env.MONGO_DB,
-    password: process.env.MONGO_PASS,
-    port: process.env.MONGO_PORT ? process.env.MONGO_PORT : 5432
+    user: process.env.DB_USER,
+    host: process.env.DB_IP,
+    database: process.env.DB_DB,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT ? process.env.DB_PORT : 5432
 })
 module.exports.dbclient = dbclient;
 
