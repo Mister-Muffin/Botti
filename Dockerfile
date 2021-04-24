@@ -5,10 +5,9 @@ COPY . /botti
 WORKDIR /botti
 
 ENV DB_USER="botti" \
-    DB_AUTH_MECHANISM="SCRAM-SHA-256" \
     DB_DB="botti" \
     DB_IP=127.0.0.1 \
-    DB_PORT=27017
+    DB_PORT=5432
 
 RUN npm i
 RUN npm i -g concurrently
