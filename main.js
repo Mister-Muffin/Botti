@@ -20,7 +20,6 @@ const fs = require('fs');
 const { readdirSync } = require("fs");
 const path = require('path');
 const appDir = path.dirname(require.main.filename);
-const config = JSON.parse(process.env.CONFIG);
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
@@ -193,7 +192,7 @@ function registerCommands() {
 }
 
 
-client.login(config.token);
+client.login(process.env.TOKEN);
 
 process.on("SIGINT", async () => {
     try {

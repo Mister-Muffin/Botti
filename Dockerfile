@@ -7,7 +7,8 @@ WORKDIR /botti
 ENV DB_USER="botti" \
     DB_DB="botti" \
     DB_IP=127.0.0.1 \
-    DB_PORT=5432
+    DB_PORT=5432 \
+    DB_PASS="postgres"
 
 RUN npm i
 RUN npm i -g concurrently
