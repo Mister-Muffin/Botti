@@ -50,11 +50,10 @@ DB_DB=botti
 All available variables:
 
 - CONFIG Discord config
-- DB_USER MongoDB username
-- DB_PASS MongoDB password
-- DB_IP IP-Adress of the MongoDB server
-- DB_PORT MongoDB server port
-- DB_AUTH_MECHANISM (optional: SCRAM-SHA-256)
+- DB_USER PostgreSQL username
+- DB_PASS PostgreSQL password
+- DB_IP IP-Adress of the PostgreSQL server
+- DB_PORT PostgreSQL server port
 - DB_DB Database name
 
 ## Examples
