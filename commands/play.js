@@ -11,23 +11,22 @@ const colors = {
 }
 
 const price = 50
-const collectionName = "coins";
 
 module.exports = {
   name: "play",
   description: "startet das Spiel!",
   options: [],
   run: async (client, interaction, args) => {
-    const { bottiDB } = require(`${appDir}/main.js`);
+    const { getValueFromUserId, incrementValueFromUserId } = require(`${appDir}/postgres.js`)
+    const { dbclient } = require(`${appDir}/main.js`);
     const authorId = interaction.member.user.id;
 
-    const result = await bottiDB.collection(collectionName).findOne({ id: authorId })
-    let coins = result ? result.value : 1000;
+    let coins = (await getValueFromUserId(dbclient, "Coins", authorId)).Coins;
 
     if (coins < price) {
       const emb = new MessageEmbed()
         .setColor(colors.red)
-        .setDescription(`${interaction.member.nick}, du hast nicht genug Geld! (Du brauchst 50)`)
+        .setDescription(`${interaction.member.nick}, du hast leider nicht genug Geld! (Du brauchst mindestens 50)`)
       client.api.interactions(interaction.id, interaction.token).callback.post({
         data: {
           type: 4,
@@ -35,9 +34,8 @@ module.exports = {
         }
       });
     } else {
-
       coins -= price;
-      await bottiDB.collection(collectionName).updateOne({ id: authorId }, { $set: { value: coins } }, { upsert: true })
+      (await incrementValueFromUserId(dbclient, "Coins", -price, authorId));
 
       //Roll!
       let items = [":watermelon:", ":apple:", ":banana:"]
@@ -49,9 +47,9 @@ module.exports = {
       let emb;
 
       if (items[first] == items[second] && items[second] == items[third]) {
-        coins += 400
 
-        await db.collection(collectionName).updateOne({ id: authorId }, { $set: { value: coins } }, { upsert: true })
+        coins += 400;
+        (await incrementValueFromUserId(dbclient, "Coins", 400, authorId));
 
         emb = new MessageEmbed()
           .setColor(colors.green)

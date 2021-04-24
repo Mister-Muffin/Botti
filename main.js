@@ -2,13 +2,19 @@ const Discord = require('discord.js');
 
 const dotenv = require("dotenv")
 dotenv.config()
-const mongoClient = require('mongodb').MongoClient;
 
-const dburl = `mongodb://${process.env.MONGO_USER}\
-:${process.env.MONGO_PASS}\
-@${process.env.MONGO_IP}\
-:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}/\
-${process.env.MONGO_DB}?authMechanism=${process.env.MONGO_AUTH_MECHANISM}`;
+const { getValueFromUserId, incrementValueFromUserId, updateValueFromUserId } = require('./postgres.js')
+
+const { Client } = require('pg')
+const dbclient = new Client({ //export
+    user: process.env.MONGO_USER,
+    host: process.env.MONGO_IP,
+    database: process.env.MONGO_DB,
+    password: process.env.MONGO_PASS,
+    port: process.env.MONGO_PORT ? process.env.MONGO_PORT : 5432
+})
+module.exports.dbclient = dbclient;
+
 
 const fs = require('fs');
 const { readdirSync } = require("fs");
@@ -31,16 +37,11 @@ try {
     goldJson = require(pathString);
 }
 
-let mongoDB, bottiDB;
-
 async function initializeDB() {
-    mongoDB = await mongoClient.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
-
-    bottiDB = mongoDB.db("botti");
-    module.exports = { bottiDB }
+    await dbclient.connect()
     console.log("Successfully connected to Database");
 }
-initializeDB()
+initializeDB();
 
 
 require(`./handler/command.js`)(client);
@@ -99,13 +100,15 @@ client.on('message', async (msg) => {
 
         if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 600)) {
             try {
-
-                const result = await bottiDB.collection("coins").findOne({ id: authorId })
-                let currCoins = result ? result.value : 0;
-
-                let myobj = { $set: { value: currCoins + 20, lastMessage: new Date() } };
-
-                await bottiDB.collection("coins").updateOne({ id: authorId }, myobj, { upsert: true })
+                //Check if user exists
+                const userArray = (await dbclient.query(`SELECT "UserId" FROM users`)).rows;
+                if (userArray.filter(object => object.UserId == authorId).length < 1) {
+                    dbclient.query(`INSERT INTO users("UserId") VALUES (${authorId});`);
+                }
+                //
+                await dbclient.query(`UPDATE users SET "Username" = '${msg.author.username}' WHERE "UserId" = ${authorId}`);
+                //
+                await incrementValueFromUserId(dbclient, "Coins", 20, authorId)
 
                 parsedGold[authorId].time = new Date();
 
@@ -126,54 +129,25 @@ client.on('message', async (msg) => {
 });
 
 function ehre(msg) {
-    updateStat("ehre", msg, `{newStat} Ehre generiert :ok_hand:`);
+    updateStat("Ehre", msg, `{newStat} Ehre generiert :ok_hand:`);
 }
 
 function alla(msg) {
-    updateStat("alla", msg, `Es wurde schon {newStat} mal alla gesagt!`);
+    updateStat("Alla", msg, `Es wurde schon {newStat} mal alla gesagt!`);
 }
-async function yeet(msg) {
-
-    yeeterId = msg.author.id;
-    const collectionName = "yeet";
-    try {
-        const result = await bottiDB.collection(collectionName).findOne({ id: yeeterId })
-        let currStat;
-        if (result) {
-            currStat = result.value
-        } else {
-            currStat = 0;
-        }
-        let newStat = currStat + 1;
-
-
-        let myobj = { $set: { value: newStat, name: msg.author.username } };
-
-        await bottiDB.collection(collectionName).updateOne({ "id": yeeterId }, myobj, { upsert: true })
-
-        msg.channel.send(`<@${yeeterId}> hat sich schon ${newStat} mal weggeyeetet!`);
-    } catch (e) { console.warn(e) };
-
+function yeet(msg) {
+    updateStat("Yeet", msg, `Du hast dich schon {newStat} mal weggeyeetet!`);
 }
 
 async function updateStat(stat, msg, statMessage) {
-    const collectionName = stat;
     const id = msg.author.id;
     try {
-        const result = await bottiDB.collection(collectionName).find({ value: { $type: "number" } }).toArray()
-        let total = [];
+        const result = await dbclient.query(`SELECT SUM("${stat}") FROM users`);
+        const val = result.rows[0].sum;
 
-        result.forEach(function (task) {
-            total.push(task.value);
-        });
-        let stats = {};
-        stats[stat] = { total: total.reduce((acc, curr) => acc + curr), result }
+        await incrementValueFromUserId(dbclient, stat, 1, id);
 
-        let myobj = { $set: { value: result.find(res => res.id.toString() == id.toString()).value + 1 } };
-
-        await bottiDB.collection(collectionName).updateOne({ id: id }, myobj, { upsert: true })
-
-        await msg.channel.send(statMessage.replace("{newStat}", stats[stat].total + 1));
+        await msg.channel.send(statMessage.replace("{newStat}", parseInt(val) + 1));
 
     } catch (e) { console.warn(e) };
 }
@@ -212,10 +186,15 @@ function registerCommands() {
 
 client.login(config.token);
 
-process.on("SIGINT", () => {
-    mongoDB.close();
-    client.user.setStatus("idle").then(() => { // ?
-        console.log("SIGINT exiting")
-        process.exit(0)
-    })
+process.on("SIGINT", async () => {
+    try {
+        await dbclient.end()
+        console.log("\nConnection closed.");
+    }
+    finally {
+        client.user.setStatus("idle").then(() => { // ?
+            console.log("SIGINT exiting")
+            process.exit(0)
+        })
+    }
 })

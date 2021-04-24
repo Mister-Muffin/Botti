@@ -10,7 +10,6 @@ module.exports = {
         "required": true
     },],
     run: async (client, interaction, args) => {
-        const Embed = require('../embed.js')
         const number = args.find(arg => arg.name.toLowerCase() == "number").value
         if (number > 100) return
 

@@ -15,15 +15,15 @@
     "ascii-table": "^0.0.9",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "download-git-repo": "^3.0.2",
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.6",
     "mkdirp": "^1.0.4",
-    "mongodb": "^3.6.5",
+    "pg": "^8.6.0",
     "web-pingjs": "^1.0.1"
   },
   "devDependencies": {
     "eslint": "^7.23.0",
     "prettier": "^1.19.1"
-  }
+  },
+  "type": "commonjs"
 }

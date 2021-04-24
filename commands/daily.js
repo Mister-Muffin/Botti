@@ -2,7 +2,9 @@ const { createAPIMessage } = require('../embed');
 const path = require('path');
 
 const appDir = path.dirname(require.main.filename);
-const collectionName = "coins";
+
+const { getValueFromUserId, incrementValueFromUserId, updateValueFromUserId } = require(`${appDir}/postgres.js`)
+const { dbclient } = require(`${appDir}/main.js`);
 
 module.exports = {
     name: "daily",
@@ -11,10 +13,8 @@ module.exports = {
     run: async (client, interaction, args) => {
 
         const authorId = interaction.member.user.id;
-        const { bottiDB } = require(`${appDir}/main.js`);
 
-        const result = await bottiDB.collection(collectionName).findOne({ id: authorId })
-        let lastTime = result ? result.lastTime : 0;
+        const lastTime = (await getValueFromUserId(dbclient, "LastTime", authorId)).LastTime;
 
         console.log("Last time: " + date_diff_indays(lastTime, new Date()));
 
@@ -35,16 +35,9 @@ async function giveBonus(interaction, client, days = 1) {
     }
 
     try {
-        const { bottiDB } = require(`${appDir}/main.js`);
 
-        const result = await bottiDB.collection(collectionName).findOne({ id: authorId })
-        let currStat = result ? result.value : 0;
-        let newStat = currStat + Math.round(coins);
-
-        let myobj = { $set: { value: newStat, lastTime: new Date() } };
-
-        await bottiDB.collection(collectionName).updateOne({ id: authorId }, myobj, { upsert: true })
-
+        (await incrementValueFromUserId(dbclient, "Coins", coins, authorId));
+        (await dbclient.query(`UPDATE users SET "LastTime" = NOW() WHERE "UserId" = ${authorId}`));
 
     } catch (e) { console.warn(e) };
 

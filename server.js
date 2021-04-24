@@ -1,44 +1,34 @@
 const express = require('express');
 const dotenv = require("dotenv");
-const mongoClient = require('mongodb').MongoClient;
+const { Client } = require('pg')
+
 dotenv.config()
-const dburl = `mongodb://${process.env.MONGO_USER}\
-:${process.env.MONGO_PASS}\
-@${process.env.MONGO_IP}\
-:${process.env.MONGO_PORT ? process.env.MONGO_PORT : 27017}\
-/${process.env.MONGO_DB}?authMechanism=${process.env.MONGO_AUTH_MECHANISM}`;
+
+const dbclient = new Client({
+    user: process.env.MONGO_USER,
+    host: process.env.MONGO_IP,
+    database: process.env.MONGO_DB,
+    password: process.env.MONGO_PASS,
+    port: process.env.MONGO_PORT ? process.env.MONGO_PORT : 5432
+})
 const fs = require('fs');
 const app = express();
 
 const RateLimit = require('express-rate-limit');
 const limiter = new RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 500,
+    max: 300,
     message:
-        "Too many accounts created from this IP, please try again after a minute"
+        "Too many requests from this IP, please try again after a minute"
 });
 
-let mongoDB, bottiDB;
 async function initializeDB() {
-    try {
-        mongoDB = await mongoClient.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
-
-        bottiDB = mongoDB.db("botti");
-    } catch (e) {
-        console.warn("API down!");
-    }
+    await dbclient.connect()
+    console.log("Successfully connected to Database");
 }
-initializeDB()
+initializeDB();
 
 const pathString = `${__dirname}/data/access.json`;
-// let goldJson;
-// try {
-//     goldJson = require(pathString);
-// } catch (e) {
-//     console.warn(e);
-//     fs.writeFileSync(pathString, JSON.stringify({}));
-//     goldJson = require(pathString);
-// }
 
 const server = app.listen(process.env.PORT || 5000, () => {
     console.log(`Express running → PORT ${server.address().port}`);
@@ -86,31 +76,29 @@ app.get(['/botti', '/'], async (req, res) => {
 app.get('/botti/stats', async (req, res) => {
 
     try {
+        const query = await dbclient.query(`SELECT "UserId", "Alla", "Ehre", "Yeet", "Schaufel", "Username" FROM users`)
+        console.log(query.rows)
 
-        let stats = {};
-        const allStats = ["alla", "ehre", "yeet", "schaufeln"]
+        let status = {};
+        status.totals = {};
+        status.ids = {};
 
-        for (stat of allStats) {
-            const result = await bottiDB.collection(stat).find({ value: { $gt: 0 } }).toArray();
-            let total = [];
-            let id = [];
-
-            result.forEach(function (task) {
-                total.push(task.value);
-            });
-            result.forEach(function (task) {
-                id.push(task.id);
-            });
-            stats[stat] = { total: total.reduce((acc, curr) => acc + curr), result }
-            // let currStat = result ? result.value : 0;
-
+        for (const key in query.rows[0]) {
+            status.totals[key] = query.rows.reduce(function (accumulator, item) {
+                return accumulator + item[key];
+            }, 0);
         }
-        console.log(stats.alla.result.value)
-        console.log(stats);
 
-        res.send(stats)
+        for (let i = 0; i < query.rows.length; i++) {
+            status.ids[query.rows[i].UserId] = query.rows[i];
+        }
+
+        console.log(status)
+
+        res.send(status)
 
     } catch (e) {
+        console.error(e);
         res.sendStatus(503);
     }
 });

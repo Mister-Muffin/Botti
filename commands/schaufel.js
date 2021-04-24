@@ -12,21 +12,15 @@ module.exports = {
       "required": false
     },],
   run: async (client, interaction, args) => {
-    const collectionName = "schaufeln";
 
     try {
-      const { bottiDB } = require(`${appDir}/main.js`);
+      const { incrementValueFromUserId } = require(`${appDir}/postgres.js`)
+      const { dbclient } = require(`${appDir}/main.js`);
+
       const user = args ? args.find(arg => arg.name.toLowerCase() == "name").value : interaction.member.user.id;
 
-      const result = await bottiDB.collection(collectionName).findOne({ id: user })
-      let schaufeln = result ? result.value : 0;
-
-
-      let myobj = { $set: { value: schaufeln + 1, name: interaction.member.user.username } };
-
-      await bottiDB.collection(collectionName).updateOne({ id: user }, myobj, { upsert: true })
-
-      schaufeln++;
+      (await incrementValueFromUserId(dbclient, "Schaufel", 1, user));
+      const schaufeln = (await dbclient.query(`SELECT SUM("Schaufel") FROM users`)).rows[0].sum;
 
       if (args != null) {
         client.api.interactions(interaction.id, interaction.token).callback.post({
@@ -38,8 +32,6 @@ module.exports = {
           }
         });
 
-
-
       } else {
         client.api.interactions(interaction.id, interaction.token).callback.post({
           data: {
@@ -50,9 +42,6 @@ module.exports = {
           }
         });
       }
-
-
-
     } catch (e) { console.warn(e) };
   }
 }
