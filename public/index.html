@@ -33,7 +33,7 @@
         <h2>KEKX Botti Stats</h2>
     </div>
     <div class="boxes">
-        <div class="mdc-card mdc-card--outlined red my-card" style="cursor: default;">
+        <div class="mdc-card mdc-card--outlined red my-card" style="cursor: pointer;" onclick="cardClick('EHRE')">
             <div class="kreisi">
                 <div id="kreisi1" class="mdc-circular-progress" style="width:48px;height:48px;" role="progressbar"
                     aria-label="Example Progress Bar" aria-valuemin="0" aria-valuemax="1">
@@ -79,7 +79,7 @@
                 <span class="keyword">Ehre</span>
             </div>
         </div>
-        <div class="mdc-card mdc-card--outlined green my-card" style="cursor: default;">
+        <div class="mdc-card mdc-card--outlined green my-card" style="cursor: pointer;" onclick="cardClick('ALLA')">
             <div class="kreisi">
                 <div id="kreisi2" class="mdc-circular-progress" style="width:48px;height:48px;" role="progressbar"
                     aria-label="Example Progress Bar" aria-valuemin="0" aria-valuemax="1">
@@ -169,7 +169,7 @@
                 <span class="normal ">mal hat sich jemand wegge<span class="keyword">yeet</span>et</span>
             </div>
         </div>
-        <div class="mdc-card mdc-card--outlined yellow my-card" style="cursor: default;">
+        <div class="mdc-card mdc-card--outlined yellow my-card" style="cursor: pointer;" onclick="cardClick('SCHAUFELN')">
             <div class="kreisi">
                 <div id="kreisi4" class="mdc-circular-progress" style="width:48px;height:48px;" role="progressbar"
                     aria-label="Example Progress Bar" aria-valuemin="0" aria-valuemax="1">
@@ -220,10 +220,25 @@
     <div class="overlay" id="overlay" onclick="closeOverlayClick(event, this)">
         <div id="card-container" onclick="closeOverlayClick(event, this)">
             <div class="mdc-card mdc-card--outlined my-card" id="info-card" style="cursor: default;">
-                <div id="yeetList" class="card-content">
+                <div id="yeetList" class="card-content overlay-content" style="display: none;">
                     <span class="cardTitle">YEETS</span>
                     <br>
-                    <div id="yeeter"></div>
+                    <div id="yeeter" class="overlay-inner"></div>
+                </div>
+                <div id="ehreList" class="card-content overlay-content" style="display: none;">
+                    <span class="cardTitle">EHRE</span>
+                    <br>
+                    <div id="geehrte" class="overlay-inner"></div>
+                </div>
+                <div id="allaList" class="card-content overlay-content" style="display: none;">
+                    <span class="cardTitle">ALLA</span>
+                    <br>
+                    <div id="allaUltras" class="overlay-inner"></div>
+                </div>
+                <div id="schaufelList" class="card-content overlay-content" style="display: none;">
+                    <span class="cardTitle">SCHAUFEL</span>
+                    <br>
+                    <div id="geschaufelte" class="overlay-inner"></div>
                 </div>
             </div>
         </div>

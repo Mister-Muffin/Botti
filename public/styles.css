@@ -91,7 +91,7 @@ body {
     display: var(--onFinishedShow);
 }
 
-#yeeter {
+.overlay-inner {
     width: -moz-available;
     width: -webkit-fill-available;
     max-height: -moz-available;
@@ -99,7 +99,7 @@ body {
     overflow: auto;
 }
 
-#yeetList {
+.overlay-content {
     width: -moz-available;
     width: -webkit-fill-available;
     height: -moz-available;

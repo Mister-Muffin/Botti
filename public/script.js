@@ -19,6 +19,9 @@ window.addEventListener('load', async (event) => {
     circularProgress4.determinate = false
 
     const yeetList = document.getElementById("yeeter");
+    const ehreList = document.getElementById("geehrte");
+    const allaList = document.getElementById("allaUltras");
+    const schaufelList = document.getElementById("geschaufelte");
 
     const res = await fetch("https://discord.schweininchen.de/botti/stats");
     const divNames = ["numEhre", "numAlla", "numYeet", "numSchaufel"];
@@ -45,26 +48,44 @@ window.addEventListener('load', async (event) => {
     }
 
     const stats = await res.json();
+    console.log(stats);
 
-    document.getElementById("numEhre").innerText = stats.ehre.total;
+    document.getElementById("numEhre").innerText = stats.totals.Ehre;
     circularProgress1.close();
-    document.getElementById("numAlla").innerText = stats.alla.total;
+    document.getElementById("numAlla").innerText = stats.totals.Alla;
     circularProgress2.close();
-    document.getElementById("numSchaufel").innerText = stats.schaufeln.total;
+    document.getElementById("numYeet").innerText = stats.totals.Yeet;
+    circularProgress3.close();
+    document.getElementById("numSchaufel").innerText = stats.totals.Schaufel;
     circularProgress4.close();
 
-    let yeet = 0;
     let yeeters = {};
-    for (let user in stats.yeet.result) {
-        yeet += stats.yeet.result[user].value
-        yeeters[user.name] = stats.yeet.result[user].id
+    let geehrte = {}
+    for (let user in stats.ids) {
+        console.log(user);
+
+        yeeters[user] = stats.ids[user].UserId
+        console.log(yeeters);
+
+        geehrte[user] = stats.ids[user].UserId
+        console.log(geehrte);
 
         const el = document.createElement("H2");
-        el.innerText = `${stats.yeet.result[user].name}: ${stats.yeet.result[user].value} mal weggeyeetet`;
+        el.innerText = `${stats.ids[user].Username}: ${stats.ids[user].Yeet} mal weggeyeetet`;
         yeetList.appendChild(el);
+
+        const ehrelement = document.createElement("H2");
+        ehrelement.innerText = `${stats.ids[user].Username}: ${stats.ids[user].Ehre} mal Ehre generiert`;
+        ehreList.appendChild(ehrelement);
+
+        const allalement = document.createElement("H2");
+        allalement.innerText = `${stats.ids[user].Username}: ${stats.ids[user].Alla} mal Alla gesagt`;
+        allaList.appendChild(allalement);
+
+        const schaufelement = document.createElement("H2");
+        schaufelement.innerText = `${stats.ids[user].Username}: ${stats.ids[user].Schaufel} mal weggeschaufelt`;
+        schaufelList.appendChild(schaufelement);
     }
-    document.getElementById("numYeet").innerText = yeet;
-    circularProgress3.close();
 
     setTimeout(() => {
         document.getElementById("body").style.setProperty("--onFinishedShow", "unset")
@@ -88,6 +109,20 @@ function cardClick(card) {
     switch (card) {
         case "YEET":
             document.getElementById("info-card").classList.add("blue")
+            document.getElementById("yeetList").style.removeProperty("display")
+            break;
+        case "EHRE":
+            document.getElementById("info-card").classList.add("red")
+            document.getElementById("ehreList").style.removeProperty("display")
+            break;
+        case "ALLA":
+            document.getElementById("info-card").classList.add("green")
+            document.getElementById("allaList").style.removeProperty("display")
+            break;
+        case "SCHAUFELN":
+            document.getElementById("info-card").classList.add("yellow")
+            document.getElementById("schaufelList").style.removeProperty("display")
+            break;
     }
 }
 
@@ -102,4 +137,10 @@ function closeOverlayClick(event, element) {
 function closeOverlay() {
     document.body.onkeyup = () => { }
     document.getElementById("overlay").style.display = "none";
+    document.getElementById("yeetList").style.setProperty("display", "none")
+    document.getElementById("ehreList").style.setProperty("display", "none")
+    document.getElementById("allaList").style.setProperty("display", "none")
+    document.getElementById("schaufelList").style.setProperty("display", "none")
+
+    document.getElementById("info-card").classList.remove("blue", "green", "red", "yellow")
 }
