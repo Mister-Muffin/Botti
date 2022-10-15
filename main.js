@@ -59,7 +59,7 @@ client.on("ready", async () => {
     await client.user.setPresence({activities: [{name: "/play", type: "PLAYING"}], status: "online"});
     console.log("ONLINE!");
 
-    if (process.env.REGISTER_COMMANDS) registerCommands();
+    if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.js");
 
 });
 client.on("interactionCreate", async interaction => {
@@ -161,37 +161,6 @@ async function updateStat(stat, msg, statMessage) {
         }
 
     } catch (e) { console.warn(e); }
-}
-
-function registerCommands() {
-    // Filter so we only have .js command files
-    const commands = readdirSync(`${__dirname}/commands/`).filter(file => file.endsWith(".js"));
-
-    // Loop over the commands, and add all of them to a collection
-    // If there's no name found, prevent it from returning an error,
-    // By using a cross in the table we made.
-    console.log(`→ ${commands.length} commands found`);
-    for (let file of commands) {
-        let pull = require(`${__dirname}/commands/${file}`);
-
-        if (pull.name) {
-            client.api.applications(client.user.id).guilds("492426074396033035").commands.post({
-                data: {
-                    name: pull.name,
-                    description: pull.description,
-                    options: pull.options
-                    // possible options here e.g. options: [{...}]
-                }
-                //client.user.setActivity(`New Game: [--play]!`)
-            });
-            //console.log(pull.name)
-        } else {
-            continue;
-        }
-
-        // If there's an aliases key, read the aliases.
-        //if (pull.aliases && Array.isArray(pull.aliases)) pull.aliases.forEach(alias => client.aliases.set(alias, pull.name));
-    }
 }
 
 
