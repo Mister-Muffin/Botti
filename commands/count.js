@@ -1,32 +1,28 @@
-const { createAPIMessage } = require('../embed.js');
-
+const {SlashCommandBuilder} = require("discord.js");
 module.exports = {
-    name: "count",
-    description: "EHRE!",
-    options: [{
-        "name": "number",
-        "description": "Wie viel soll der Bot zählen? (max.100)",
-        "type": 4,
-        "required": true
-    },],
-    run: async (client, interaction, args) => {
-        const number = args.find(arg => arg.name.toLowerCase() == "number").value
-        if (number > 100) return
+    data: new SlashCommandBuilder()
+        .setName("count")
+        .setDescription("EHRE!")
+        .addNumberOption(option => option.setName("number").setDescription("Wie viel soll der Bot zählen? (max.100)").setRequired(true)),
+    async execute(interaction) {
+        const number = interaction.options.getNumber("number", true);
 
-        await client.api.interactions(interaction.id, interaction.token).callback.post({
-            data: {
-                type: 4,
-                data: await createAPIMessage(interaction, `Jaaaa, lasst uns bis ${number} zählen!`, client)
-            }
-        });
-
-        for (let i = 1; i <= number; i++) {
-            setTimeout(function () {
-                client.channels.fetch(interaction.channel_id).then(async channel => {
-                    channel.send(i)
-                });
-            }, 2000);
-
+        if (number > 100) {
+            interaction.reply(`Ich glaube, dass ich noch nicht bis ${number} zählen kann.\nBitte versuch's nochmal mit einer kleineren Zahl :)`);
+            return;
         }
+
+        await interaction.reply(`Jaaaa, lasst uns bis ${number} zählen!`);
+
+        await countUp(1);
+
+        async function countUp(num) {
+            setTimeout(async function () {
+                if (num === number + 1) {await interaction.channel.send("Endlich fertig!"); return;}
+                await interaction.channel.send(num.toString());
+                await countUp(num + 1);
+            }, 750);
+        }
+
     }
-}
+};

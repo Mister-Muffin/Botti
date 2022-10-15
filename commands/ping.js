@@ -4,7 +4,7 @@ let ping = NaN;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("ping")
-        .setDescription("pong!!"),
+        .setDescription("pong!"),
     options: [],
     async execute(interaction) {
         console.log(interaction.channel);

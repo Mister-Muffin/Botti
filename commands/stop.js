@@ -1,31 +1,20 @@
-const { createAPIMessage } = require("../embed");
-const embed = require("../embed");
+const {SlashCommandBuilder} = require("discord.js");
 
 module.exports = {
-    name: "stop",
-    description: "Stop this Bot (Limited usage)",
-    options: [],
-    run: async (client, interaction, args) => {
+    data: new SlashCommandBuilder()
+        .setName("stop")
+        .setDescription("Stop this Bot (Limited usage)"),
+    async execute(interaction) {
 
-        if (interaction.member.user.id != 443872816933240833) {
-            await client.api.interactions(interaction.id, interaction.token).callback.post({
-                data: {
-                    type: 4,
-                    data: await createAPIMessage(interaction,
-                        embed.error(":x: Du darft den Befehl leider nicht ausführen!", client, interaction), client)
-                }
-            });
+        if (interaction.member.user.id === "443872816933240833") {
+            await interaction.reply(":octagonal_sign: Stopping Botti...", interaction.client);
+            // eslint-disable-next-line no-undef
+
+            process.kill(process.pid, "SIGINT");
         } else {
-
-            await client.api.interactions(interaction.id, interaction.token).callback.post({
-                data: {
-                    type: 4,
-                    data: await createAPIMessage(interaction,
-                        ":octagonal_sign: Stopping Botti...", client)
-                }
-            });
-            process.exit(0);
+            //TODO: maybe use error embed
+            await interaction.reply(":x: Du darfst den Befehl leider nicht ausführen!");
         }
 
     }
-}
+};
