@@ -1,28 +1,34 @@
-const Discord = require('discord.js');
+const { Client, IntentsBitField, Collection} = require("discord.js");
 
-const dotenv = require("dotenv")
-dotenv.config()
+const dotenv = require("dotenv");
+dotenv.config();
 
-const { incrementValueFromUserId } = require('./postgres.js')
+const { incrementValueFromUserId } = require("./postgres.js");
 
-const { Client } = require('pg')
-const dbclient = new Client({ //export
+const { Client: PgClient } = require("pg");
+const dbclient = new PgClient({ //export
     user: process.env.DB_USER,
     host: process.env.DB_IP,
     database: process.env.DB_DB,
     password: process.env.DB_PASS,
     port: process.env.DB_PORT ? process.env.DB_PORT : 5432
-})
+});
 module.exports.dbclient = dbclient;
 
+const myIntents = new IntentsBitField();
+myIntents.add(
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.MessageContent
+);
 
-const fs = require('fs');
+const fs = require("fs");
 const { readdirSync } = require("fs");
-const path = require('path');
+const path = require("path");
 const appDir = path.dirname(require.main.filename);
-const client = new Discord.Client();
-client.commands = new Discord.Collection();
-client.aliases = new Discord.Collection();
+const client = new Client({ intents: myIntents });
+client.commands = new Collection();
+client.aliases = new Collection();
 var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 
@@ -37,57 +43,54 @@ try {
 }
 
 async function initializeDB() {
-    await dbclient.connect()
+    await dbclient.connect();
     console.log("Successfully connected to Database");
 }
 initializeDB();
 
 
-require(`./handler/command.js`)(client);
+require("./handler/command.js")(client);
 
-client.on('ready', async () => {
+client.on("ready", async () => {
 
     //client.api.applications(client.user.id).guilds("492426074396033035").commands().get().then(answer => { console.log(answer) })
     //client.api.applications(client.user.id).guilds("492426074396033035").commands("806851986750308412").delete().then(answer => {console.log(answer)})
 
-    client.user.setPresence({ activity: { name: "/play", type: "PLAYING" }, status: "online" })
+    await client.user.setPresence({activities: [{name: "/play", type: "PLAYING"}], status: "online"});
     console.log("ONLINE!");
 
     if (process.env.REGISTER_COMMANDS) registerCommands();
 
 });
-client.ws.on('INTERACTION_CREATE', async interaction => {
-    const commandName = interaction.data.name.toLowerCase();
-    let command = client.commands.get(commandName);
-    const args = interaction.data.options;
+client.on("interactionCreate", async interaction => {
+    // not every interaction is a slash command (e.g. MessageComponents).Only receive slash commands by making use of the BaseInteraction#isChatInputCommand() method
+    if (!interaction.isChatInputCommand()) return;
+    const commandName = interaction.commandName.toLowerCase();
+    let command = interaction.client.commands.get(commandName);
 
-    if (true) {
-        // here you could do anything. in this sample
-        // i reply with an api interaction
-        //command.run(client, msg, args);
-
-        command.run(client, interaction, args);
-    }
+    command.execute(interaction);
 });
 
-client.on('message', async (msg) => {
+client.on("messageCreate", async (msg) => {
     if (msg.author.bot)
         return;
     if (!msg.guild)
         return;
-    if (msg.author.id != client.user.id && msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
+    if (msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
         ehre(msg);
     }
-    if (msg.author.id != client.user.id && msg.content.toLowerCase().includes('alla')) {
+    if (msg.content.toLowerCase().includes("alla")) {
         alla(msg);
     }
     if (msg.content.toLowerCase().match(/([y][e]{2,}[t])/gi)) {
         yeet(msg);
     }
-    if (msg.content.toLowerCase().includes('tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194')) {
-        msg.delete({ timeout: 1 })
-            .then(msg => console.log(`Deleted message from ${msg.author.username} after 1 second`))
-            .catch(console.error);
+    if (msg.content.toLowerCase().includes("tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194")) {
+        setTimeout(() => {
+            msg.delete()
+                .then(msg => console.log(`Deleted message from ${msg.author.username} after 1 second`))
+                .catch(console.error);
+        }, 1000);
     }
 
     let parsedGold = goldJson;
@@ -100,18 +103,18 @@ client.on('message', async (msg) => {
         if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 600)) {
             try {
                 //Check if user exists
-                const userArray = (await dbclient.query(`SELECT "UserId" FROM users`)).rows;
+                const userArray = (await dbclient.query("SELECT \"UserId\" FROM users")).rows;
                 if (userArray.filter(object => object.UserId == authorId).length < 1) {
                     dbclient.query(`INSERT INTO users("UserId") VALUES (${authorId});`);
                 }
                 //
                 await dbclient.query(`UPDATE users SET "Username" = '${msg.author.username}' WHERE "UserId" = ${authorId}`);
                 //
-                await incrementValueFromUserId(dbclient, "Coins", 20, authorId)
+                await incrementValueFromUserId(dbclient, "Coins", 20, authorId);
 
                 parsedGold[authorId].time = new Date();
 
-            } catch (e) { console.warn(e) };
+            } catch (e) { console.warn(e); }
         }
 
         fs.writeFileSync(pathString, JSON.stringify(parsedGold));
@@ -128,20 +131,20 @@ client.on('message', async (msg) => {
 });
 
 function ehre(msg) {
-    updateStat("Ehre", msg, `{newStat} Ehre generiert :ok_hand:`);
+    updateStat("Ehre", msg, "{newStat} Ehre generiert :ok_hand:");
 }
 
 function alla(msg) {
-    updateStat("Alla", msg, `Es wurde schon {newStat} mal alla gesagt!`);
+    updateStat("Alla", msg, "Es wurde schon {newStat} mal alla gesagt!");
 }
 function yeet(msg) {
-    updateStat("Yeet", msg, `Du hast dich schon {newStat} mal weggeyeetet!`);
+    updateStat("Yeet", msg, "Du hast dich schon {newStat} mal weggeyeetet!");
 }
 
 async function updateStat(stat, msg, statMessage) {
     const id = msg.author.id;
     try {
-        if (stat == "Yeet") {
+        if (stat === "Yeet") {
             const result = await dbclient.query(`SELECT "${stat}" FROM users WHERE "UserId" = ${id}`);
             const val = result.rows[0].Yeet;
 
@@ -154,10 +157,10 @@ async function updateStat(stat, msg, statMessage) {
 
             await incrementValueFromUserId(dbclient, stat, 1, id);
 
-            await msg.channel.send(statMessage.replace("{newStat}", parseInt(val) + 1));
+            await msg.channel.send({content: statMessage.replace("{newStat}", parseInt(val) + 1)});
         }
 
-    } catch (e) { console.warn(e) };
+    } catch (e) { console.warn(e); }
 }
 
 function registerCommands() {
@@ -167,7 +170,7 @@ function registerCommands() {
     // Loop over the commands, and add all of them to a collection
     // If there's no name found, prevent it from returning an error,
     // By using a cross in the table we made.
-    console.log(`→ ${commands.length} commands found`)
+    console.log(`→ ${commands.length} commands found`);
     for (let file of commands) {
         let pull = require(`${__dirname}/commands/${file}`);
 
@@ -180,7 +183,7 @@ function registerCommands() {
                     // possible options here e.g. options: [{...}]
                 }
                 //client.user.setActivity(`New Game: [--play]!`)
-            })
+            });
             //console.log(pull.name)
         } else {
             continue;
@@ -196,13 +199,12 @@ client.login(process.env.TOKEN);
 
 process.on("SIGINT", async () => {
     try {
-        await dbclient.end()
+        await client.destroy();
+        await dbclient.end();
         console.log("\nConnection closed.");
     }
     finally {
-        client.user.setStatus("idle").then(() => { // ?
-            console.log("SIGINT exiting")
-            process.exit(0)
-        })
+        console.log("SIGINT exiting");
+        process.exit(0);
     }
-})
+});

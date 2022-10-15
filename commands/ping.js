@@ -1,37 +1,19 @@
-const { createAPIMessage } = require("../embed");
-
+const { SlashCommandBuilder } = require("discord.js");
 let ping = NaN;
 
 module.exports = {
-  name: "ping",
-  description: "pong!",
-  options: [],
-  run: async (client, interaction, args) => {
-    console.log(interaction.channel);
+    data: new SlashCommandBuilder()
+        .setName("ping")
+        .setDescription("pong!!"),
+    options: [],
+    async execute(interaction) {
+        console.log(interaction.channel);
 
-    await client.channels.fetch(interaction.channel_id).then(async channel => {
+        await interaction.reply("Pinging...");
 
-      await channel.send("Pinging...").then(m => {
+        ping = Date.now() - interaction.createdAt;
 
-        ping = Date.now() - m.createdTimestamp;
+        await interaction.editReply(`🏓 Pong! (Latency is ${ping}ms. API Latency is ${Math.round(interaction.client.ws.ping)}ms)`);
 
-        m.delete();
-
-      });
-
-      await client.api.interactions(interaction.id, interaction.token).callback.post({
-        data: {
-          type: 4,
-          data: await createAPIMessage(interaction, `🏓 Pong! (Latency is ${ping}ms. API Latency is ${Math.round(client.ws.ping)}ms)`, client)
-        }
-      });
-
-    });
-
-    /* client.channels.fetch(interaction.channel_id).then(async channel => {
-        const msg = await channel.send(`🏓 Pinging....`);
-
-    msg.edit(`🏓 Pong! (Latency is ${Math.floor(msg.createdAt - msg.createdAt)}ms)`);
-    }).catch(console.error); */
-  }
-}
+    }
+};
