@@ -11,4 +11,4 @@ async function incrementValueFromUserId(db, value, int, userId) {
 
 module.exports = {
     getValueFromUserId, updateValueFromUserId, incrementValueFromUserId
-}
+};

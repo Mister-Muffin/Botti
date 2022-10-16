@@ -48,17 +48,19 @@ module.exports = {
 
                 emb = new EmbedBuilder()
                     .setColor(colors.green)
-                    .setDescription(`Glückwunsch ${interaction.member.nick}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`);
+                    .setTitle("Gewonnen!")
+                    .setDescription(`Glückwunsch ${interaction.member.nickname}!\nDu hast gewonnen! :partying_face:\nDu hast jetzt ${coins} Geld.`);
 
             } else {
                 emb = new EmbedBuilder()
                     .setColor(colors.red)
-                    .setDescription(`Schade ${interaction.member.nick}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`);
+                    .setTitle("Verloren!")
+                    .setDescription(`Schade ${interaction.member.nickname}.\nViel Glück beim nächsten mal!\nDu hast noch ${coins} Geld`);
 
             }
+            await interaction.reply(`${items[first]} ${items[second]} ${items[third]}`);
 
-            await interaction.reply(`${items[first]} ${items[second]} ${items[third]}`, { embeds: [emb] });
-
+            await interaction.channel.send({ embeds: [emb] });
 
         }
     }

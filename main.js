@@ -53,15 +53,13 @@ require("./handler/command.js")(client);
 
 client.on("ready", async () => {
 
-    //client.api.applications(client.user.id).guilds("492426074396033035").commands().get().then(answer => { console.log(answer) })
-    //client.api.applications(client.user.id).guilds("492426074396033035").commands("806851986750308412").delete().then(answer => {console.log(answer)})
+    if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.js");
 
     await client.user.setPresence({activities: [{name: "/play", type: "PLAYING"}], status: "online"});
     console.log("ONLINE!");
 
-    if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.js");
-
 });
+
 client.on("interactionCreate", async interaction => {
     // not every interaction is a slash command (e.g. MessageComponents).Only receive slash commands by making use of the BaseInteraction#isChatInputCommand() method
     if (!interaction.isChatInputCommand()) return;

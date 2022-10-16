@@ -5,7 +5,6 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("ping")
         .setDescription("pong!"),
-    options: [],
     async execute(interaction) {
         console.log(interaction.channel);
 
