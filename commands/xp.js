@@ -1,68 +1,66 @@
-const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder} = require("discord.js");
-const { createCanvas, loadImage } = require("canvas");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const path = require("path");
-const canvas = createCanvas(200, 200);
-const ctx = canvas.getContext("2d");
 const appDir = path.dirname(require.main.filename);
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("xp")
-        .setDescription("xp"),
+        .setDescription("xp")
+        .addUserOption(option =>
+            option.setRequired(false)
+                .setName("member")
+                .setDescription("Wessen XP abgerufen werden")),
     async execute(interaction) {
+        try {
 
-        const { dbclient: dbClient } = require(`${appDir}/main.js`);
-        const { getValueFromUserId } = require(`${appDir}/postgres.js`);
+            const { dbclient: dbClient } = require(`${appDir}/main.js`);
+            const { getValueFromUserId } = require(`${appDir}/postgres.js`);
 
-        const authorId = interaction.member.user.id;
-        const xp = (await getValueFromUserId(dbClient, "Xp", authorId)).Xp;
+            const member = interaction.options.getMember("member") || interaction.member;
 
-        const rankTable = (await dbClient.query("SELECT \"Xp\" FROM users ORDER BY \"Xp\" DESC")).rows;
-        const rank = rankTable.findIndex( element => {
-            if (element.Xp === xp) {
-                return true;
-            }
-        }) + 1;
+            const authorId = member.user.id;
+            const xp = (await getValueFromUserId(dbClient, "Xp", authorId)).Xp;
+            const messages = (await getValueFromUserId(dbClient, "Messages", authorId)).Messages;
 
-        const exampleEmbed = new EmbedBuilder()
-            .setColor(0x0099FF)
-            .setTitle(`${interaction.member.nickname} (#${rank})`)
-            .setURL("https://discord.js.org/")
-            .setThumbnail(interaction.user.avatarURL())
-            .addFields({ name: "Nachichten", value: "3.6k", inline: true })
-            .addFields({ name: "Erfahrung", value: xp, inline: true })
-            .addFields({ name: "Level", value: "1", inline: true })
-            .setTimestamp()
-            .setFooter({ text: "---------", iconURL: "https://i.imgur.com/AfFp7pu.png" });
+            // get a array of all xp by all mambers        
+            const rankTable = (await dbClient.query("SELECT \"Xp\" FROM users ORDER BY \"Xp\" DESC")).rows;
+            // get the index from the sorted array by the xp and add one at the end to get the rank
+            const rank = rankTable.findIndex(element => {
+                if (element.Xp === xp) {
+                    return true;
+                }
+            }) + 1;
 
-        interaction.reply({ embeds: [exampleEmbed] });
+            const third = 1 / 3;
 
-        // eslint-disable-next-line no-unused-vars
-        async function createImage() {
-            // Write "Awesome!"
-            ctx.font = "30px Impact";
-            ctx.rotate(0.1);
-            ctx.fillText("Awesome!", 50, 100);
+            const level = ((-5 * Math.pow((10), third)) / (- Math.pow(- (Math.sqrt(9 * xp * xp + 1500 * xp + 50000) - 3 * xp - 250), third))) - 5;
+            const medals = [
+                "https://cdn.discordapp.com/attachments/704275816598732840/1031210582587736064/e2f8f101328a4b4ae7875945716345b3.webp", // 🥇 first place medal
+                "https://cdn.discordapp.com/attachments/704275816598732840/1031210582222852117/c65da98dd1cd29756d4d5901ed549661.webp", // 🥈 second place medal
+                "https://cdn.discordapp.com/attachments/704275816598732840/1031210581883105362/9ecf90770f4de9be7b44cb601d49722c.webp", // 🥉 third place medal
+                "https://cdn.discordapp.com/attachments/704275816598732840/1031209390117752902/6ca609cb5fe0c1a5a74633567c2e743f.webp", // 🎖️ last place honorary medal
+            ];
 
-            // Draw line under text
-            const text = ctx.measureText("Awesome!");
-            ctx.strokeStyle = "rgba(0,0,0,0.5)";
-            ctx.beginPath();
-            ctx.lineTo(50, 102);
-            ctx.lineTo(50 + text.width, 102);
-            ctx.stroke();
+            const medalString = rank < 4 ? medals[rank - 1] : rank == rankTable.length ? medals[3] : null;
 
-            // Draw cat with lime helmet
-            loadImage(interaction.user.avatarURL()).then((image) => {
-                ctx.drawImage(image, 50, 0, 70, 70);
+            const xpEmbed = new EmbedBuilder()
+                .setColor(0x0099FF)
+                .setTitle(`${member.nickname} (#${rank})`)
+                .addFields({ name: "Nachichten", value: messages, inline: true })
+                .addFields({ name: "Erfahrung", value: xp, inline: true })
+                .addFields({ name: "Level", value: Math.floor(level).toString(), inline: true })
+                .setImage(member.user.avatarURL())
+                .setFooter({
+                    text: "⬤".repeat((level % 1) * 15) + "◯".repeat((1 - (level % 1)) * 15) + ` ${Math.round(level % 1 * 100)}%`,
+                });
 
-                console.log("<img src=\"" + canvas.toDataURL() + "\" />");
-            });
 
-            const attachment = new AttachmentBuilder(await canvas.createPNGStream(), { name: "image.png" });
+            if (medalString) xpEmbed.setThumbnail(medalString);
+            interaction.reply({ embeds: [xpEmbed] });
 
-            interaction.reply({ files: [attachment] });
+        } catch (e) {
+            interaction.reply(":x: Das hat leider nicht funcktioniert :(");
+            console.error(e);
         }
-
     }
 };

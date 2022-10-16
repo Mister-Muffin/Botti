@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, Collection} = require("discord.js");
+const { Client, IntentsBitField, Collection } = require("discord.js");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -55,7 +55,7 @@ client.on("ready", async () => {
 
     if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.js");
 
-    await client.user.setPresence({activities: [{name: "/play", type: "PLAYING"}], status: "online"});
+    await client.user.setPresence({ activities: [{ name: "/play", type: "PLAYING" }], status: "online" });
     console.log("ONLINE!");
 
 });
@@ -67,6 +67,7 @@ client.on("interactionCreate", async interaction => {
     let command = interaction.client.commands.get(commandName);
 
     command.execute(interaction);
+
 });
 
 client.on("messageCreate", async (msg) => {
@@ -93,12 +94,13 @@ client.on("messageCreate", async (msg) => {
 
     let parsedGold = goldJson;
     const authorId = msg.author.id;
+
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
 
         let lastTime = parsedGold[authorId].time;
         // console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
-        if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 600)) {
+        if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 60)) {
             try {
                 //Check if user exists
                 const userArray = (await dbclient.query("SELECT \"UserId\" FROM users")).rows;
@@ -108,7 +110,8 @@ client.on("messageCreate", async (msg) => {
                 //
                 await dbclient.query(`UPDATE users SET "Username" = '${msg.author.username}' WHERE "UserId" = ${authorId}`);
                 //
-                await incrementValueFromUserId(dbclient, "Coins", 20, authorId);
+                await incrementValueFromUserId(dbclient, "Coins", 2, authorId);
+                await incrementValueFromUserId(dbclient, "Xp", Math.random() * (10) + 15, authorId);
 
                 parsedGold[authorId].time = new Date();
 
@@ -122,6 +125,8 @@ client.on("messageCreate", async (msg) => {
         parsedGold[authorId] = { time: new Date() };
         fs.writeFileSync(pathString, JSON.stringify(parsedGold));
     }
+
+    await incrementValueFromUserId(dbclient, "Messages", 1, authorId); // increase message counter every time a user sent a message
 
     // If msg.member is uncached, cache it.
     if (!msg.member) msg.member = await msg.guild.fetchMember(msg);
@@ -155,7 +160,7 @@ async function updateStat(stat, msg, statMessage) {
 
             await incrementValueFromUserId(dbclient, stat, 1, id);
 
-            await msg.channel.send({content: statMessage.replace("{newStat}", parseInt(val) + 1)});
+            await msg.channel.send({ content: statMessage.replace("{newStat}", parseInt(val) + 1) });
         }
 
     } catch (e) { console.warn(e); }
