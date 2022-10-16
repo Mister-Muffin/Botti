@@ -14,7 +14,6 @@
   "dependencies": {
     "@discordjs/voice": "^0.13.0",
     "ascii-table": "^0.0.9",
-    "canvas": "^2.10.1",
     "discord.js": "^14.6.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
