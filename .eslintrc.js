@@ -23,6 +23,12 @@ module.exports = {
         "semi": [
             "warn",
             "always"
+        ],
+        "no-unused-vars": [
+            "warn"
+        ],
+        "no-self-assign": [
+            "off"
         ]
     }
 };
