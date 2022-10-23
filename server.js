@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
 const dotenv = require("dotenv");
-const { Client } = require('pg')
+const { Client } = require("pg");
 
-dotenv.config()
+dotenv.config();
 
 const dbclient = new Client({
     user: process.env.DB_USER,
@@ -10,11 +10,11 @@ const dbclient = new Client({
     database: process.env.DB_DB,
     password: process.env.DB_PASS,
     port: process.env.DB_PORT ? process.env.DB_PORT : 5432
-})
-const fs = require('fs');
+});
+const fs = require("fs");
 const app = express();
 
-const RateLimit = require('express-rate-limit');
+const RateLimit = require("express-rate-limit");
 const limiter = new RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 300,
@@ -23,7 +23,7 @@ const limiter = new RateLimit({
 });
 
 async function initializeDB() {
-    await dbclient.connect()
+    await dbclient.connect();
     console.log("Successfully connected to Database");
 }
 initializeDB();
@@ -34,14 +34,14 @@ const server = app.listen(process.env.PORT || 5000, () => {
     console.log(`Express running → PORT ${server.address().port}`);
 });
 
-app.use(limiter)
-app.use(express.static(__dirname + '/public'));
+app.use(limiter);
+app.use(express.static(__dirname + "/public"));
 
-app.get(['/botti', '/'], async (req, res) => {
+app.get(["/botti", "/"], async (req, res) => {
     const token = req.query.token;
-    let config = JSON.parse(fs.readFileSync(pathString, 'utf8'));
+    let config = JSON.parse(fs.readFileSync(pathString, "utf8"));
 
-    const tokenObjecktOderSo = config.find(objeckt => objeckt.token == token)
+    const tokenObjecktOderSo = config.find(objeckt => objeckt.token == token);
 
     if (tokenObjecktOderSo) {
 
@@ -73,11 +73,11 @@ app.get(['/botti', '/'], async (req, res) => {
     }
 });
 
-app.get('/botti/stats', async (req, res) => {
+app.get("/botti/stats", async (req, res) => {
 
     try {
-        const query = await dbclient.query(`SELECT "UserId", "Alla", "Ehre", "Yeet", "Schaufel", "Username" FROM users`)
-        console.log(query.rows)
+        const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\" FROM users");
+        console.log(query.rows);
 
         let status = {};
         status.totals = {};
@@ -93,9 +93,9 @@ app.get('/botti/stats', async (req, res) => {
             status.ids[query.rows[i].UserId] = query.rows[i];
         }
 
-        console.log(status)
+        console.log(status);
 
-        res.send(status)
+        res.send(status);
 
     } catch (e) {
         console.error(e);
