@@ -1,5 +1,5 @@
 const { REST, Routes } = require("discord.js");
-const { token } = require("../config.json");
+const { token } = require("../../config.json");
 const {readdirSync} = require("fs");
 const path = require("path");
 
@@ -18,7 +18,7 @@ for (let file of commands) {
 
         commandList.push(command);
     } catch (e) {
-        console.warn("Command skipped. Not implemented");
+        console.warn(file, "Command skipped. Not implemented.", e.message);
     }
 
 }

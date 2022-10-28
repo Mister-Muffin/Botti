@@ -4,7 +4,7 @@ const appDir = path.dirname(require.main.filename);
 
 const { getValueFromUserId, incrementValueFromUserId } = require(`${appDir}/postgres.js`);
 const { dbclient } = require(`${appDir}/main.js`);
-const {SlashCommandBuilder} = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()

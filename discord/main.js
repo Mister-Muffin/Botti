@@ -1,9 +1,11 @@
+checkArgs();
+
 const { Client, IntentsBitField, Collection } = require("discord.js");
 
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { incrementValueFromUserId } = require("../postgres.js");
+const { incrementValueFromUserId } = require("./postgres.js");
 
 const { Client: PgClient } = require("pg");
 const dbclient = new PgClient({ //export
@@ -23,9 +25,9 @@ myIntents.add(
 );
 
 const fs = require("fs");
-const { readdirSync } = require("fs");
 const path = require("path");
 const appDir = path.dirname(require.main.filename);
+global.appRoot__ObhsaaU = path.resolve(__dirname);
 const client = new Client({ intents: myIntents });
 client.commands = new Collection();
 client.aliases = new Collection();
@@ -180,3 +182,21 @@ process.on("SIGINT", async () => {
         process.exit(0);
     }
 });
+
+/* eslint-disable indent */
+function checkArgs() {
+    const myArgs = process.argv.slice(2);
+    switch (myArgs[0]) {
+        case "--register":
+            require("./handler/registerCommand.js");
+            console.info("Registered commands. Exiting.");
+            process.exit(0);
+            break;
+        case "--delete":
+            require("./handler/deleteCommands.js");
+            console.info("Deleted commands. Exiting.");
+            process.exit(0);
+            break;
+        default:
+    }
+}

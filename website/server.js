@@ -35,7 +35,7 @@ const server = app.listen(process.env.PORT || 5000, () => {
 });
 
 app.use(limiter);
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/dist/"));
 
 app.get(["/botti", "/"], async (req, res) => {
     const token = req.query.token;
@@ -66,8 +66,8 @@ app.get(["/botti", "/"], async (req, res) => {
         config[index].date = (new Date).getTime();
 
         fs.writeFileSync(pathString, JSON.stringify(config));
-
-        res.sendFile(__dirname + "/public/" + "index.html");
+        res.sendFile(__dirname + "/dist/botti/index.html");
+        //res.sendFile(__dirname + "/public/" + "index.html");
     } else {
         res.sendStatus(403);
     }
@@ -77,7 +77,6 @@ app.get("/botti/stats", async (req, res) => {
 
     try {
         const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\" FROM users");
-        console.log(query.rows);
 
         let status = {};
         status.totals = {};
