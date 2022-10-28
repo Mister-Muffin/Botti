@@ -102,3 +102,15 @@ app.get("/botti/stats", async (req, res) => {
         res.sendStatus(503);
     }
 });
+
+app.get("/favicon.ico", async (req, res) => {
+
+    try {
+
+        res.send(204);
+
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(503);
+    }
+});
