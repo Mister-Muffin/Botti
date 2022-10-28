@@ -1,47 +1,111 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import TitleText from './components/TitleText.vue'
+import StatBox from './components/StatBox.vue'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <TitleText />
     </div>
   </header>
 
   <main>
-    <TheWelcome />
+    <div id="boxes">
+      <StatBox hue=0 :text=ehre />
+      <StatBox hue=50 :text=alla />
+      <StatBox hue=100 :text=yeet />
+      <StatBox hue=200 :text=schaufel />
+    </div>
+    <div style="min-height: 20px;"></div>
+    <h1 class="subtitle, green">Rangliste</h1>
+    <div id="leaderboard">
+      <ol>
+        <li id="leaderboardList" v-for="member in leaderboard">{{ member.Username }}: {{ member.Xp }}xp</li>
+      </ol>
+    </div>
   </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+#boxes {
+  width: inherit;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+#leaderboard {
+  width: 100%;
+  min-height: 200px;
+  border-radius: 10px;
+  border: solid hsl(133, 76%, 33%) 2px;
+  padding: 10px 0 10px 0;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+#leaderboardList {
+  padding: 5px 0 5px 0;
+  font-size: large;
 }
 </style>
+
+<script lang="ts">
+export default {
+  data() {
+    return {
+      ehre: "",
+      alla: "",
+      yeet: "",
+      schaufel: "",
+      leaderboard: []
+    }
+  },
+  methods: {
+    loadData: async function () {
+      const res = await fetch("http://127.0.0.1:5000/botti/stats");
+
+      if (res.status !== 200) {
+        console.warn(`${res.status}!`);
+
+        const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
+        this.ehre, this.alla, this.yeet, this.schaufel = errorMessage;
+
+        return;
+      }
+
+      const stats = await res.json();
+      console.log(stats);
+
+      this.ehre = `Es wurde schon\n${stats.totals.Ehre}\nmal Ehre generiert`;
+      this.alla = `Es wurde insgesamt\n${stats.totals.Alla}\nmal alla gesagt`;
+      this.yeet = `Es wurde sich schon\n${stats.totals.Yeet}\nmal weggeyeetet`;
+      this.schaufel = `Es wurden\n${stats.totals.Schaufel}\nSchaufeln gegen Köpfe geschlagen`;
+
+      var tmp = []
+
+      //console.log(stats.ids.toString())
+      //console.log(JSON.parse(stats.ids.toString()))
+      //console.warn(stats.ids)
+      for (const [key, value] of Object.entries(stats.ids)) {
+        console.log(value)
+        tmp.push(value);
+      }
+      tmp.sort((a, b) => {
+        return -(a.Xp - b.Xp);
+      });
+      tmp.forEach(element => {
+        if (element.Xp != 0 && element.Username !== null) {
+          this.leaderboard.push(element)
+        }
+      });
+    }
+  },
+  mounted: function () {
+    console.info("Data")
+    this.loadData()
+  }
+
+}
+</script>
