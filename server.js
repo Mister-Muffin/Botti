@@ -76,7 +76,7 @@ app.get(["/botti", "/"], async (req, res) => {
 app.get("/botti/stats", async (req, res) => {
 
     try {
-        const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\" FROM users");
+        const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\" FROM users");
         console.log(query.rows);
 
         let status = {};

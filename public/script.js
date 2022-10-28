@@ -1,35 +1,36 @@
-window.addEventListener('load', async (event) => {
-    'use strict';
+window.addEventListener("load", async (event) => {
+    "use strict";
 
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
         navigator.serviceWorker
-            .register('./sw.js');
+            .register("./sw.js");
     }
 
 
     const MDCCircularProgress = mdc.circularProgress.MDCCircularProgress;
 
-    const circularProgress1 = new MDCCircularProgress(document.querySelector('#kreisi1'));
-    const circularProgress2 = new MDCCircularProgress(document.querySelector('#kreisi2'));
-    const circularProgress3 = new MDCCircularProgress(document.querySelector('#kreisi3'));
-    const circularProgress4 = new MDCCircularProgress(document.querySelector('#kreisi4'));
-    circularProgress1.determinate = false
-    circularProgress2.determinate = false
-    circularProgress3.determinate = false
-    circularProgress4.determinate = false
+    const circularProgress1 = new MDCCircularProgress(document.querySelector("#kreisi1"));
+    const circularProgress2 = new MDCCircularProgress(document.querySelector("#kreisi2"));
+    const circularProgress3 = new MDCCircularProgress(document.querySelector("#kreisi3"));
+    const circularProgress4 = new MDCCircularProgress(document.querySelector("#kreisi4"));
+    circularProgress1.determinate = false;
+    circularProgress2.determinate = false;
+    circularProgress3.determinate = false;
+    circularProgress4.determinate = false;
 
     const yeetList = document.getElementById("yeeter");
     const ehreList = document.getElementById("geehrte");
     const allaList = document.getElementById("allaUltras");
     const schaufelList = document.getElementById("geschaufelte");
+    const xpList = document.getElementById("leaderboard");
 
-    const res = await fetch("https://discord.schweininchen.de/botti/stats");
+    const res = await fetch("botti/stats");
     const divNames = ["numEhre", "numAlla", "numYeet", "numSchaufel"];
 
     if (res.status !== 200) {
         console.warn(`${res.status}!`);
 
-        const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!"
+        const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
 
         for (let name of divNames) {
             document.getElementById(name).parentElement.style = "display: grid; place-items: center;";
@@ -41,9 +42,9 @@ window.addEventListener('load', async (event) => {
         circularProgress4.close();
 
         setTimeout(() => {
-            document.getElementById("body").style.setProperty("--onFinishedShow", "unset")
-            document.getElementById("body").style.setProperty("--onLoadShow", "none")
-        }, 300)
+            document.getElementById("body").style.setProperty("--onFinishedShow", "unset");
+            document.getElementById("body").style.setProperty("--onLoadShow", "none");
+        }, 300);
         return;
     }
 
@@ -60,14 +61,14 @@ window.addEventListener('load', async (event) => {
     circularProgress4.close();
 
     let yeeters = {};
-    let geehrte = {}
+    let geehrte = {};
     for (let user in stats.ids) {
         console.log(user);
 
-        yeeters[user] = stats.ids[user].UserId
+        yeeters[user] = stats.ids[user].UserId;
         console.log(yeeters);
 
-        geehrte[user] = stats.ids[user].UserId
+        geehrte[user] = stats.ids[user].UserId;
         console.log(geehrte);
 
         const el = document.createElement("H2");
@@ -85,15 +86,19 @@ window.addEventListener('load', async (event) => {
         const schaufelement = document.createElement("H2");
         schaufelement.innerText = `${stats.ids[user].Username}: ${stats.ids[user].Schaufel} mal weggeschaufelt`;
         schaufelList.appendChild(schaufelement);
+
+        const xpElement = document.createElement("H3");
+        xpElement.innerText = `${stats.ids[user].Username}: ${stats.ids[user].Xp} mal weggeschaufelt`;
+        xpList.appendChild(xpElement);
     }
 
     setTimeout(() => {
-        document.getElementById("body").style.setProperty("--onFinishedShow", "unset")
-        document.getElementById("body").style.setProperty("--onLoadShow", "none")
-    }, 300)
+        document.getElementById("body").style.setProperty("--onFinishedShow", "unset");
+        document.getElementById("body").style.setProperty("--onLoadShow", "none");
+    }, 300);
 
 
-    console.log('The page has fully loaded');
+    console.log("The page has fully loaded");
 });
 
 
@@ -102,27 +107,27 @@ function cardClick(card) {
 
     document.body.onkeyup = e => {
         if (e.key == "Escape") {
-            closeOverlay()
+            closeOverlay();
         }
-    }
+    };
 
     switch (card) {
-        case "YEET":
-            document.getElementById("info-card").classList.add("blue")
-            document.getElementById("yeetList").style.removeProperty("display")
-            break;
-        case "EHRE":
-            document.getElementById("info-card").classList.add("red")
-            document.getElementById("ehreList").style.removeProperty("display")
-            break;
-        case "ALLA":
-            document.getElementById("info-card").classList.add("green")
-            document.getElementById("allaList").style.removeProperty("display")
-            break;
-        case "SCHAUFELN":
-            document.getElementById("info-card").classList.add("yellow")
-            document.getElementById("schaufelList").style.removeProperty("display")
-            break;
+    case "YEET":
+        document.getElementById("info-card").classList.add("blue");
+        document.getElementById("yeetList").style.removeProperty("display");
+        break;
+    case "EHRE":
+        document.getElementById("info-card").classList.add("red");
+        document.getElementById("ehreList").style.removeProperty("display");
+        break;
+    case "ALLA":
+        document.getElementById("info-card").classList.add("green");
+        document.getElementById("allaList").style.removeProperty("display");
+        break;
+    case "SCHAUFELN":
+        document.getElementById("info-card").classList.add("yellow");
+        document.getElementById("schaufelList").style.removeProperty("display");
+        break;
     }
 }
 
@@ -131,16 +136,16 @@ function closeOverlayClick(event, element) {
         event.stopPropagation();
         return;
     }
-    closeOverlay()
+    closeOverlay();
 }
 
 function closeOverlay() {
-    document.body.onkeyup = () => { }
+    document.body.onkeyup = () => { };
     document.getElementById("overlay").style.display = "none";
-    document.getElementById("yeetList").style.setProperty("display", "none")
-    document.getElementById("ehreList").style.setProperty("display", "none")
-    document.getElementById("allaList").style.setProperty("display", "none")
-    document.getElementById("schaufelList").style.setProperty("display", "none")
+    document.getElementById("yeetList").style.setProperty("display", "none");
+    document.getElementById("ehreList").style.setProperty("display", "none");
+    document.getElementById("allaList").style.setProperty("display", "none");
+    document.getElementById("schaufelList").style.setProperty("display", "none");
 
-    document.getElementById("info-card").classList.remove("blue", "green", "red", "yellow")
+    document.getElementById("info-card").classList.remove("blue", "green", "red", "yellow");
 }
