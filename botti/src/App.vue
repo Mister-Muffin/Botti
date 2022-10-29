@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     loadData: async function () {
-      const res = await fetch("http://127.0.0.1:5000/botti/stats");
+      const res = await fetch("/botti/stats");
 
       if (res.status !== 200) {
         console.warn(`${res.status}!`);
