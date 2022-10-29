@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const path = require("path");
 const { Client } = require("pg");
 
 dotenv.config();
@@ -35,7 +36,7 @@ const server = app.listen(process.env.PORT || 5000, () => {
 });
 
 app.use(limiter);
-app.use(express.static(__dirname + "/dist/"));
+app.use(express.static(path.join(__dirname, "/dist")));
 
 app.get(["/botti", "/"], async (req, res) => {
     const token = req.query.token;
@@ -67,7 +68,6 @@ app.get(["/botti", "/"], async (req, res) => {
 
         fs.writeFileSync(pathString, JSON.stringify(config));
         res.sendFile(__dirname + "/dist/botti/index.html");
-        //res.sendFile(__dirname + "/public/" + "index.html");
     } else {
         res.sendStatus(403);
     }
