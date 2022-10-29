@@ -2,7 +2,6 @@
 import TitleText from './components/TitleText.vue'
 import StatBox from './components/StatBox.vue'
 </script>
-
 <template>
   <header>
     <div class="wrapper">
@@ -64,47 +63,59 @@ export default {
   },
   methods: {
     loadData: async function () {
-      const res = await fetch("/botti/stats");
+      await fetch("/botti/stats").then(async (res) => {
 
-      if (res.status !== 200) {
-        console.warn(`${res.status}!`);
+        if (res.status !== 200) {
+          console.warn(`${res.status}!`);
 
-        const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
-        this.ehre, this.alla, this.yeet, this.schaufel = errorMessage;
+          const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
+          this.ehre, this.alla, this.yeet, this.schaufel = errorMessage;
 
-        return;
-      }
-
-      const stats = await res.json();
-      console.log(stats);
-
-      this.ehre = `Es wurde schon\n${stats.totals.Ehre}\nmal Ehre generiert`;
-      this.alla = `Es wurde insgesamt\n${stats.totals.Alla}\nmal alla gesagt`;
-      this.yeet = `Es wurde sich schon\n${stats.totals.Yeet}\nmal weggeyeetet`;
-      this.schaufel = `Es wurden\n${stats.totals.Schaufel}\nSchaufeln gegen Köpfe geschlagen`;
-
-      var tmp = []
-
-      //console.log(stats.ids.toString())
-      //console.log(JSON.parse(stats.ids.toString()))
-      //console.warn(stats.ids)
-      for (const [key, value] of Object.entries(stats.ids)) {
-        console.log(value)
-        tmp.push(value);
-      }
-      tmp.sort((a, b) => {
-        return -(a.Xp - b.Xp);
-      });
-      tmp.forEach(element => {
-        if (element.Xp != 0 && element.Username !== null) {
-          this.leaderboard.push(element)
+          return;
         }
+
+        const stats = await res.json();
+
+        this.ehre = `Es wurde schon\n${stats.totals.Ehre}\nmal Ehre generiert`;
+        this.alla = `Es wurde insgesamt\n${stats.totals.Alla}\nmal alla gesagt`;
+        this.yeet = `Es wurde sich schon\n${stats.totals.Yeet}\nmal weggeyeetet`;
+        this.schaufel = `Es wurden\n${stats.totals.Schaufel}\nSchaufeln gegen Köpfe geschlagen`;
+
+        var tmp = []
+
+        //console.log(stats.ids.toString())
+        //console.log(JSON.parse(stats.ids.toString()))
+        //console.warn(stats.ids)
+        for (const [key, value] of Object.entries(stats.ids)) {
+          tmp.push(value);
+        }
+        tmp.sort((a, b) => {
+          return -(a.Xp - b.Xp);
+        });
+        tmp.forEach(element => {
+          if (element.Xp != 0 && element.Username !== null) {
+            this.leaderboard.push(element)
+          }
+        });
+      }).catch((e) => {
+        const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
+        this.ehre = errorMessage;
+        this.alla = errorMessage;
+        this.yeet = errorMessage;
+        this.schaufel = errorMessage;
+        this.leaderboard.push(e)
       });
+    },
+    loop: function () {
+      this.loadData()
+      setTimeout(this.loop, 2000);
     }
   },
   mounted: function () {
     console.info("Data")
     this.loadData()
+    console.info("Loop")
+    this.loop()
   }
 
 }

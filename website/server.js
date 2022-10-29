@@ -92,8 +92,6 @@ app.get("/botti/stats", async (req, res) => {
             status.ids[query.rows[i].UserId] = query.rows[i];
         }
 
-        console.log(status);
-
         res.send(status);
 
     } catch (e) {
