@@ -12,7 +12,7 @@ ENV DB_USER="botti" \
 
 RUN apk add curl
 RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
-RUN pnpm i
+RUN pnpm install --frozen-lockfile
 RUN pnpm add concurrently
 
 CMD [ "npm", "run", "full" ]
