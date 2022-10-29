@@ -92,6 +92,7 @@ export default {
         tmp.sort((a, b) => {
           return -(a.Xp - b.Xp);
         });
+        this.leaderboard = []
         tmp.forEach(element => {
           if (element.Xp != 0 && element.Username !== null) {
             this.leaderboard.push(element)
