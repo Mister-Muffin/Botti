@@ -10,8 +10,9 @@ ENV DB_USER="botti" \
     DB_PORT=5432 \
     DB_PASS="postgres"
 
-RUN npm i
-RUN npm i -g concurrently
 RUN apk add curl
+RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+RUN pnpm i
+RUN pnpm add concurrently
 
 CMD [ "npm", "run", "full" ]
