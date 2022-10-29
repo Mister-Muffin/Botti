@@ -14,5 +14,6 @@ RUN apk add curl
 RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
 RUN pnpm install --frozen-lockfile
 RUN pnpm add concurrently
+RUN pnpm build-only
 
 CMD [ "npm", "run", "full" ]
