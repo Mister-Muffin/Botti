@@ -12,6 +12,17 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
+      - 
+        name: Set up pnpm
+        uses: pnpm/action-setup@v2
+      - 
+        name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build-only
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -32,3 +43,5 @@ jobs:
           platforms: linux/amd64,linux/arm/v7
           push: true
           tags: bigbraindamage/botti:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
