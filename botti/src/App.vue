@@ -17,16 +17,36 @@ import StatBox from './components/StatBox.vue'
       <StatBox hue=200 :text=schaufel />
     </div>
     <div style="min-height: 20px;"></div>
-    <h1 class="subtitle, green">Rangliste</h1>
-    <div id="leaderboard">
-      <ol>
-        <li id="leaderboardList" v-for="member in leaderboard">{{ member.Username }}: {{ member.Xp }}xp</li>
-      </ol>
+    <div class="center">
+      <h1 class="subtitle, green">Rangliste</h1>
+      <div id="leaderboard">
+        <li id="leaderboardListItem">
+          <span>Plazierung</span>
+          <span style="width: 40%;">Name</span>
+          <span>Erfahrung</span>
+          <span>Nachrichten</span>
+        </li>
+        <li id="leaderboardListItem" v-for="(item, index) in leaderboard" :key="item">
+          <span>{{ index + 1 }}</span>
+          <span style="width: 40%;">{{ item.Username }}</span>
+          <span>{{ item.Xp }} xp</span>
+          <span>NaN</span>
+        </li>
+      </div>
     </div>
   </main>
 </template>
 
 <style scoped>
+header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 30px;
+}
+
 #boxes {
   width: inherit;
   height: auto;
@@ -34,19 +54,54 @@ import StatBox from './components/StatBox.vue'
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-around;
+  gap: 30px;
 }
 
 #leaderboard {
-  width: 100%;
+  width: 50%;
   min-height: 200px;
   border-radius: 10px;
-  border: solid hsl(133, 76%, 33%) 2px;
+  border: solid hsl(var(--default-background-hue), var(--default-background-sat), 16%) 2px;
   padding: 10px 0 10px 0;
+  background-color: hsl(var(--default-background-hue), var(--default-background-sat), 18%);
 }
 
-#leaderboardList {
+#leaderboard span {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+#leaderboardListItem {
   padding: 5px 0 5px 0;
   font-size: large;
+  cursor: default;
+  background-color: hsl(var(--default-background-hue), var(--default-background-sat), 22%);
+  border: solid rgba(0, 0, 0, 0) 10px;
+  border-radius: 10px;
+  transition: background-color 0.8s;
+  list-style: none;
+  margin-left: 1em;
+  margin-right: 1em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+#leaderboardListItem:hover {
+  background-color: hsl(var(--default-background-hue), var(--default-background-sat), 25%);
+}
+
+.center {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 </style>
 
@@ -64,6 +119,7 @@ export default {
   methods: {
     loadData: async function () {
       await fetch("/botti/stats").then(async (res) => {
+        const formatter = Intl.NumberFormat('en', { notation: "compact" })
 
         if (res.status !== 200) {
           console.warn(`${res.status}!`);
@@ -95,6 +151,7 @@ export default {
         this.leaderboard = []
         tmp.forEach(element => {
           if (element.Xp != 0 && element.Username !== null) {
+            element.Xp = formatter.format(element.Xp)
             this.leaderboard.push(element)
           }
         });
