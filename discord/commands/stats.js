@@ -9,7 +9,7 @@ const pathString = `${appDir}/data/access.json`;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("stats")
-        .setDescription("View Betti's server stats"),
+        .setDescription("View Botti's server stats"),
     async execute(interaction) {
 
         let tokens = await new Promise(r => fs.access(pathString, fs.constants.F_OK, e => r(!e))) ? JSON.parse(fs.readFileSync(pathString, "utf8")) : [];
