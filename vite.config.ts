@@ -8,14 +8,14 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./botti/src', import.meta.url))
+      '@': fileURLToPath(new URL('./botti', import.meta.url))
     }
   },
   build: {
     outDir: resolve(__dirname, "./website/dist/"),
     rollupOptions: {
       input: {
-        main: resolve(__dirname, './botti/index.html'),
+        main: resolve(__dirname, './botti/public/index.html'),
       }
     }
   }
