@@ -117,20 +117,39 @@ export default {
     }
   },
   methods: {
-    loadData: async function () {
-      await fetch("/botti/stats").then(async (res) => {
+    loadData: async function (wsData?: any) {
+      let res;
+      if (wsData === undefined) {
+        res = await fetch("/botti/stats").then((r) => {
+          if (r.status !== 200) {
+            console.warn(`${r.status}!`);
+
+            const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
+            this.ehre, this.alla, this.yeet, this.schaufel = errorMessage;
+
+            return;
+          }
+        }).catch(e => {
+          const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
+          this.ehre = errorMessage;
+          this.alla = errorMessage;
+          this.yeet = errorMessage;
+          this.schaufel = errorMessage;
+          this.leaderboard.push(e)
+        })
+      } else {
+        res = wsData
+      }
+
+      try {
         const formatter = Intl.NumberFormat('en', { notation: "compact" })
 
-        if (res.status !== 200) {
-          console.warn(`${res.status}!`);
-
-          const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
-          this.ehre, this.alla, this.yeet, this.schaufel = errorMessage;
-
-          return;
+        let stats;
+        try {
+          stats = await res.json();
+        } catch (e) {
+          stats = JSON.parse(res);
         }
-
-        const stats = await res.json();
 
         this.ehre = `Es wurde schon\n${stats.totals.Ehre}\nmal Ehre generiert`;
         this.alla = `Es wurde insgesamt\n${stats.totals.Alla}\nmal alla gesagt`;
@@ -155,25 +174,27 @@ export default {
             this.leaderboard.push(element)
           }
         });
-      }).catch((e) => {
+      } catch (e) {
+        console.warn(e)
         const errorMessage = !navigator.onLine ? "OFFLINE" : "API down!";
         this.ehre = errorMessage;
         this.alla = errorMessage;
         this.yeet = errorMessage;
         this.schaufel = errorMessage;
         this.leaderboard.push(e)
-      });
+      }
     },
-    loop: function () {
-      this.loadData()
-      setTimeout(this.loop, 2000);
-    }
   },
   mounted: function () {
-    console.info("Data")
-    this.loadData()
-    console.info("Loop")
-    this.loop()
+    try {
+      let connection = new WebSocket(`ws://${window.location.host}/`);
+      connection.onmessage = (event) => {
+        console.log("New Data arrived!")
+        if (event.data != 200) this.loadData(event.data);
+      }
+    } catch (e) {
+      this.loadData()
+    }
   }
 
 }

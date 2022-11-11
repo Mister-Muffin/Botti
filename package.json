@@ -14,6 +14,7 @@
     "build": "run-p type-check build-only",
     "preview": "vite botti preview",
     "build-only": "vite build",
+    "build-only-dev": "vite build --mode development",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
@@ -29,7 +30,8 @@
     "mkdirp": "^1.0.4",
     "pg": "^8.6.0",
     "vue": "^3.2.41",
-    "web-pingjs": "^1.0.1"
+    "web-pingjs": "^1.0.1",
+    "ws": "^8.11.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
