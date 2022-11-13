@@ -1,6 +1,6 @@
 const { REST, Routes } = require("discord.js");
 const { token } = require("../../config.json");
-const {readdirSync} = require("fs");
+const { readdirSync } = require("fs");
 const path = require("path");
 
 const appDir = path.dirname(require.main.filename).replace("handler", "");
@@ -26,7 +26,13 @@ for (let file of commands) {
 //
 
 const rest = new REST({ version: "10" }).setToken(token);
-
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commandList })
-    .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
-    .catch(console.error);
+(async () => {
+    try {
+        let data = await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commandList });
+        console.log(`Successfully registered ${data.length} application commands.`);
+        process.exit(0);
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
+    }
+})();

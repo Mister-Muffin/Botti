@@ -190,12 +190,10 @@ function checkArgs() {
         case "--register":
             require("./handler/registerCommand.js");
             console.info("Registered commands. Exiting.");
-            process.exit(0);
             break;
         case "--delete":
             require("./handler/deleteCommands.js");
             console.info("Deleted commands. Exiting.");
-            process.exit(0);
             break;
         default:
     }
