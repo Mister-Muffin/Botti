@@ -21,16 +21,16 @@ import StatBox from './components/StatBox.vue'
       <h1 class="subtitle, green">Rangliste</h1>
       <div id="leaderboard">
         <li id="leaderboardListItem">
-          <span>Plazierung</span>
-          <span style="width: 40%;">Name</span>
-          <span>Erfahrung</span>
-          <span>Nachrichten</span>
+          <span style="width: 15%;text-align: start">Plazierung</span>
+          <span style="width: 45%;text-align: start">Name</span>
+          <span style="width: 20%;text-align: end;">Erfahrung</span>
+          <span style="width: 20%;text-align: end;">Nachrichten</span>
         </li>
         <li id="leaderboardListItem" v-for="(item, index) in leaderboard" :key="item">
-          <span>{{ index + 1 }}</span>
-          <span style="width: 40%;">{{ item.Username }}</span>
-          <span>{{ item.Xp }} xp</span>
-          <span>NaN</span>
+          <span style="width: 15%;text-align: start;">{{ index + 1 }}</span>
+          <span style="width: 45%;text-align: start;">{{ item.Username }}</span>
+          <span style="width: 20%;text-align: end;">{{ item.Xp }}</span>
+          <span style="width: 20%;text-align: end;">{{ item.Messages }}</span>
         </li>
       </div>
     </div>
@@ -164,19 +164,19 @@ export default {
         this.yeet = `Es wurde sich schon\n${stats.totals.Yeet}\nmal weggeyeetet`;
         this.schaufel = `Es wurden\n${stats.totals.Schaufel}\nSchaufeln gegen Köpfe geschlagen`;
 
-        var tmp = []
+        var user = []
 
         for (const [, value] of Object.entries(stats.ids)) {
-          tmp.push(value);
+          user.push(value);
         }
-        tmp.sort((a, b) => {
+        user.sort((a, b) => {
           return -(a.Xp - b.Xp);
         });
         this.leaderboard = []
-        tmp.forEach(element => {
-          if (element.Xp != 0 && element.Username !== null) {
-            element.Xp = formatter.format(element.Xp)
-            this.leaderboard.push(element)
+        user.forEach(userStat => {
+          if (userStat.Xp != 0 && userStat.Username !== null) {
+            userStat.Xp = formatter.format(userStat.Xp)
+            this.leaderboard.push(userStat)
           }
         });
       } catch (e) {
