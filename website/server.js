@@ -115,7 +115,9 @@ app.get(["/botti", "/"], async (req, res) => {
         fs.writeFileSync(pathString, JSON.stringify(config));
         res.sendFile(__dirname + "/dist/botti/public/index.html");
     } else {
-        res.sendStatus(403);
+        devEnv = process.env.DEV_ENV ? process.env.DEV_ENV : "produnction";
+        if (devEnv == "production") res.sendStatus(403);
+        else res.sendFile(__dirname + "/dist/botti/public/index.html");
     }
 });
 
@@ -130,7 +132,7 @@ app.get("/botti/stats", async (req, res) => {
 });
 
 async function loadStatsFromDatabase() {
-    const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\" FROM users");
+    const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\", \"Messages\" FROM users");
 
     let status = {};
     status.totals = {};
