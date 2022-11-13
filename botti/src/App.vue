@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     loadData: async function (wsData?: any) {
-      let res;
+      let res: any;
       if (wsData === undefined) {
         res = await fetch("/botti/stats").then((r) => {
           if (r.status !== 200) {
@@ -142,9 +142,17 @@ export default {
       }
 
       try {
-        const formatter = Intl.NumberFormat('en', { notation: "compact" })
+        const formatter = Intl.NumberFormat('en', {
+          //@ts-ignore
+          notation: 'compact',
+        })
 
-        let stats;
+        interface Stats {
+          totals: { Ehre: string, Alla: string, Yeet: string, Schaufel: string };
+          ids: {}
+        }
+
+        let stats: Stats;
         try {
           stats = await res.json();
         } catch (e) {
@@ -158,10 +166,7 @@ export default {
 
         var tmp = []
 
-        //console.log(stats.ids.toString())
-        //console.log(JSON.parse(stats.ids.toString()))
-        //console.warn(stats.ids)
-        for (const [key, value] of Object.entries(stats.ids)) {
+        for (const [, value] of Object.entries(stats.ids)) {
           tmp.push(value);
         }
         tmp.sort((a, b) => {
