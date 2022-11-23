@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import pg from "pg";
 import { Status, AccessList } from "./types";
-import { loadStatsFromDatabase } from "./db";
+import { loadStatsFromDatabase } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.join(dirname(__filename), "../.."); // move out of the tsbuild and dist directory 
