@@ -1,13 +1,14 @@
 import express from "express";
 import RateLimit from "express-rate-limit";
-import WebSocket, { WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from "ws";
 import http from "http";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import fs from "fs";
 import pg from "pg";
-import { Status, User } from "./types";
+import { Status, AccessList } from "./types";
+import { loadStatsFromDatabase } from "./db";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.join(dirname(__filename), "../.."); // move out of the tsbuild and dist directory 
@@ -27,7 +28,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-const limiter = new RateLimit({
+const limiter = RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 300,
     message:
@@ -53,13 +54,13 @@ app.use(express.static(path.join(__dirname, "/dist/website")));
 https://masteringjs.io/tutorials/express/websockets,
 https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
 */
-wss.on("connection", async socket => {
+wss.on("connection", async (socket: WebSocket) => {
     socket.isAlive = true;
     socket.on("pong", () => {
         socket.isAlive = true;
     });
 
-    socket.send(JSON.stringify(await loadStatsFromDatabase()));
+    socket.send(JSON.stringify(await loadStatsFromDatabase(dbclient)));
     //socket.on("message", message => console.log(message));
 });
 //https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
@@ -80,7 +81,7 @@ setInterval(async () => {
     if (wss.clients.size == 0) {
         return;
     }
-    const status = await loadStatsFromDatabase();
+    const status = await loadStatsFromDatabase(dbclient);
     wss.clients.forEach(client => {
         if (client != wss) {
             if (JSON.stringify(oldStatus) !== JSON.stringify(status)) {
@@ -94,26 +95,15 @@ setInterval(async () => {
 app.get(["/botti", "/"], async (req, res) => {
     const reqToken = req.query.token;
     const accessList = JSON.parse(fs.readFileSync(pathString, "utf8"));
-    const token = accessList.find(object => object.token == reqToken);
+    const token = accessList.find((object: AccessList) => object.token == reqToken);
 
     if (token) {
-
-        const kabutt = (new Date).getTime() - token.date > 5 * 60 * 1000;
-
         const index = accessList.indexOf(token);
+        const tokenExpired = (new Date).getTime() - token.date > 5 * 60 * 1000;
+        if (tokenExpired) {
+            removeIndexFromList(index, accessList);
 
-        if (kabutt) {
-
-            if (index > -1) {
-                accessList.splice(index, 1);
-            }
-
-            fs.writeFileSync(pathString, JSON.stringify(accessList));
-
-            res.sendStatus(410);
-
-            return;
-
+            return res.sendStatus(410);
         }
 
         accessList[index].date = (new Date).getTime();
@@ -129,7 +119,7 @@ app.get(["/botti", "/"], async (req, res) => {
 
 app.get("/botti/stats", async (req, res) => {
     try {
-        const status = await loadStatsFromDatabase();
+        const status = await loadStatsFromDatabase(dbclient);
         res.send(status);
     } catch (e) {
         console.error(e);
@@ -137,33 +127,10 @@ app.get("/botti/stats", async (req, res) => {
     }
 });
 
-async function loadStatsFromDatabase() {
-    const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\", \"Messages\" FROM users");
-
-    const status: Status = {
-        totals: {},
-        ids: {}
-    };
-
-    for (const key in query.rows[0]) {
-        // Only sum up if it makes sense to sum. (Do not sum user ids/names)
-        if (["Alla", "Ehre", "Yeet", "Schaufel", "Xp", "Messages"].includes(key))
-            status.totals[key as keyof Totals] = Number(query.rows.reduce((accumulator, item) => {
-                return Number(accumulator) + Number(item[key]);
-            }, 0));
+function removeIndexFromList(index: number, accessList: Array<unknown>) {
+    if (index > -1) {
+        accessList.splice(index, 1);
     }
 
-    for (let i = 0; i < query.rows.length; i++) {
-        const userId: string | unknown = query.rows[i].UserId;
-        if (userId != null) {
-            try {
-                status.ids[userId as keyof User] = query.rows[i];
-                status.ids[userId as keyof User].Xp = Number(status.ids[userId as keyof User].Xp);
-                status.ids[userId as keyof User].UserId = Number(status.ids[userId as keyof User]);
-                status.ids[userId as keyof User].Messages = Number(status.ids[userId as keyof User].Messages);
-            } catch { /**/ }
-        }
-    }
-
-    return status;
+    fs.writeFileSync(pathString, JSON.stringify(accessList));
 }

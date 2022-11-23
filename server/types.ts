@@ -5,7 +5,7 @@ export type Status = {
     }
 }
 
-type Totals = {
+export type Totals = {
     "Alla"?: number,
     "Ehre"?: number,
     "Yeet"?: number,
@@ -24,3 +24,10 @@ export type User = {
     "Xp"?: number,
     "Messages"?: number
 }
+
+export type AccessList = [
+    {
+        "date": number,
+        "token": string
+    }
+]

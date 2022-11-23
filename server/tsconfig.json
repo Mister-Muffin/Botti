@@ -13,5 +13,6 @@
     "sourceMap": true,
     "outDir": "dist/tsbuild/",
     "noEmitOnError": false,
+    "strict": true
   },
 }
