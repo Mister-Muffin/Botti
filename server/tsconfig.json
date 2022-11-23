@@ -1,0 +1,17 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "exclude": [
+    ".vscode",
+    "data",
+    "dist",
+    "**/*.spec.ts"
+  ],
+  "compilerOptions": {
+    "module": "ESNext",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "outDir": "dist/tsbuild/",
+    "noEmitOnError": false,
+  },
+}

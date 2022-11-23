@@ -1,8 +1,18 @@
-const express = require("express");
-var http = require("http");
-const dotenv = require("dotenv");
-const path = require("path");
-const { Client } = require("pg");
+import express from "express";
+import RateLimit from "express-rate-limit";
+import WebSocket, { WebSocketServer } from 'ws';
+import http from "http";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import fs from "fs";
+import pg from "pg";
+import { Status, User } from "./types";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.join(dirname(__filename), "../.."); // move out of the tsbuild and dist directory 
+
+const { Client } = pg;
 
 dotenv.config();
 
@@ -11,15 +21,12 @@ const dbclient = new Client({
     host: process.env.DB_IP,
     database: process.env.DB_DB,
     password: process.env.DB_PASS,
-    port: process.env.DB_PORT ? process.env.DB_PORT : 5432
+    port: process.env.DB_PORT as unknown as number ? process.env.DB_PORT as unknown as number : 5432
 });
-const fs = require("fs");
 const app = express();
 const server = http.createServer(app);
-const ws = require("ws");
-const wss = new ws.Server({ server });
+const wss = new WebSocketServer({ server });
 
-const RateLimit = require("express-rate-limit");
 const limiter = new RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 300,
@@ -40,7 +47,7 @@ server.listen(process.env.PORT || 5000, () => {
 });
 
 app.use(limiter);
-app.use(express.static(path.join(__dirname, "/dist")));
+app.use(express.static(path.join(__dirname, "/dist/website")));
 
 /*
 https://masteringjs.io/tutorials/express/websockets,
@@ -67,7 +74,7 @@ setInterval(() => {
 }, 10000);
 
 // only send Data if Data has changed
-let oldStatus;
+let oldStatus: Status;
 setInterval(async () => {
     // If no one is connected, don't query the database
     if (wss.clients.size == 0) {
@@ -75,7 +82,7 @@ setInterval(async () => {
     }
     const status = await loadStatsFromDatabase();
     wss.clients.forEach(client => {
-        if (client != ws) {
+        if (client != wss) {
             if (JSON.stringify(oldStatus) !== JSON.stringify(status)) {
                 client.send(JSON.stringify(status));
             }
@@ -85,24 +92,23 @@ setInterval(async () => {
 }, 2000);
 
 app.get(["/botti", "/"], async (req, res) => {
-    const token = req.query.token;
-    let config = JSON.parse(fs.readFileSync(pathString, "utf8"));
+    const reqToken = req.query.token;
+    const accessList = JSON.parse(fs.readFileSync(pathString, "utf8"));
+    const token = accessList.find(object => object.token == reqToken);
 
-    const tokenObjecktOderSo = config.find(objeckt => objeckt.token == token);
+    if (token) {
 
-    if (tokenObjecktOderSo) {
+        const kabutt = (new Date).getTime() - token.date > 5 * 60 * 1000;
 
-        const kabutt = (new Date).getTime() - tokenObjecktOderSo.date > 5 * 60 * 1000;
-
-        const index = config.indexOf(tokenObjecktOderSo);
+        const index = accessList.indexOf(token);
 
         if (kabutt) {
 
             if (index > -1) {
-                config.splice(index, 1);
+                accessList.splice(index, 1);
             }
 
-            fs.writeFileSync(pathString, JSON.stringify(config));
+            fs.writeFileSync(pathString, JSON.stringify(accessList));
 
             res.sendStatus(410);
 
@@ -110,14 +116,14 @@ app.get(["/botti", "/"], async (req, res) => {
 
         }
 
-        config[index].date = (new Date).getTime();
+        accessList[index].date = (new Date).getTime();
 
-        fs.writeFileSync(pathString, JSON.stringify(config));
-        res.sendFile(__dirname + "/dist/botti/public/index.html");
+        fs.writeFileSync(pathString, JSON.stringify(accessList));
+        res.sendFile(__dirname + "/dist/website/botti/public/index.html");
     } else {
-        devEnv = process.env.DEV_ENV ? process.env.DEV_ENV : "produnction";
+        const devEnv = process.env.DEV_ENV ? process.env.DEV_ENV : "produnction";
         if (devEnv == "production") res.sendStatus(403);
-        else res.sendFile(__dirname + "/dist/botti/public/index.html");
+        else res.sendFile(__dirname + "/dist/website/botti/public/index.html");
     }
 });
 
@@ -134,18 +140,29 @@ app.get("/botti/stats", async (req, res) => {
 async function loadStatsFromDatabase() {
     const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\", \"Messages\" FROM users");
 
-    let status = {};
-    status.totals = {};
-    status.ids = {};
+    const status: Status = {
+        totals: {},
+        ids: {}
+    };
 
     for (const key in query.rows[0]) {
-        status.totals[key] = query.rows.reduce(function (accumulator, item) {
-            return accumulator + item[key];
-        }, 0);
+        // Only sum up if it makes sense to sum. (Do not sum user ids/names)
+        if (["Alla", "Ehre", "Yeet", "Schaufel", "Xp", "Messages"].includes(key))
+            status.totals[key as keyof Totals] = Number(query.rows.reduce((accumulator, item) => {
+                return Number(accumulator) + Number(item[key]);
+            }, 0));
     }
 
     for (let i = 0; i < query.rows.length; i++) {
-        status.ids[query.rows[i].UserId] = query.rows[i];
+        const userId: string | unknown = query.rows[i].UserId;
+        if (userId != null) {
+            try {
+                status.ids[userId as keyof User] = query.rows[i];
+                status.ids[userId as keyof User].Xp = Number(status.ids[userId as keyof User].Xp);
+                status.ids[userId as keyof User].UserId = Number(status.ids[userId as keyof User]);
+                status.ids[userId as keyof User].Messages = Number(status.ids[userId as keyof User].Messages);
+            } catch { /**/ }
+        }
     }
 
     return status;

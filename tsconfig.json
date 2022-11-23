@@ -5,6 +5,9 @@
     "botti/src/**/*",
     "botti/src/**/*.vue"
   ],
+  "exclude": [
+    "server/**"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
