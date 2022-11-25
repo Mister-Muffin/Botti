@@ -1,4 +1,4 @@
-export type Status = {
+export type Stats = {
     totals: Totals
     ids: {
         [index: string]: User;

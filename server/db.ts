@@ -1,10 +1,10 @@
 import { Client } from "pg";
-import { User, Totals, Status } from "./types";
+import { User, Totals, Stats } from "./types";
 
 export async function loadStatsFromDatabase(dbclient: Client) {
     const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\", \"Messages\" FROM users");
 
-    const status: Status = {
+    const status: Stats = {
         totals: {},
         ids: {}
     };
