@@ -10,7 +10,7 @@
     "module": "ESNext",
     "removeComments": true,
     "preserveConstEnums": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "outDir": "dist/tsbuild/",
     "noEmitOnError": false,
     "strict": true
