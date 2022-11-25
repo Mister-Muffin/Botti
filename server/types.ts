@@ -25,9 +25,7 @@ export type User = {
     "Messages"?: number
 }
 
-export type AccessList = [
-    {
-        "date": number,
-        "token": string
-    }
-]
+export type AccessListEntry = {
+    "date": number,
+    "token": string
+}

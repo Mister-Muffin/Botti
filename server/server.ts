@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import fs from "fs";
 import pg from "pg";
-import { Status, AccessList } from "./types";
+import { Status, AccessListEntry } from "./types";
 import { loadStatsFromDatabase } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,11 +22,14 @@ const dbclient = new Client({
     host: process.env.DB_IP,
     database: process.env.DB_DB,
     password: process.env.DB_PASS,
-    port: process.env.DB_PORT as unknown as number ? process.env.DB_PORT as unknown as number : 5432
+    port: process.env.DB_PORT as unknown as number || 5432
 });
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
+
+const pathString = `${__dirname}/data/access.json`;
+const expressPort: number = process.env.PORT as unknown as number || 5000;
 
 const limiter = RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
@@ -35,16 +38,18 @@ const limiter = RateLimit({
         "Too many requests from this IP, please try again after a minute"
 });
 
-async function initializeDB() {
-    await dbclient.connect();
-    console.log("Successfully connected to Database");
+interface ExtWebSocket extends WebSocket {
+    isAlive: boolean;
 }
-initializeDB();
 
-const pathString = `${__dirname}/data/access.json`;
+// Connect to the Postgres Database
+await dbclient.connect();
+console.log("Successfully connected to Database");
 
-server.listen(process.env.PORT || 5000, () => {
-    console.log(`Express running → PORT ${server.address().port}`);
+
+
+server.listen(expressPort, () => {
+    console.log(`Express running → PORT ${expressPort}`);
 });
 
 app.use(limiter);
@@ -54,7 +59,7 @@ app.use(express.static(path.join(__dirname, "/dist/website")));
 https://masteringjs.io/tutorials/express/websockets,
 https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
 */
-wss.on("connection", async (socket: WebSocket) => {
+wss.on("connection", async (socket: ExtWebSocket) => {
     socket.isAlive = true;
     socket.on("pong", () => {
         socket.isAlive = true;
@@ -65,12 +70,13 @@ wss.on("connection", async (socket: WebSocket) => {
 });
 //https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
 setInterval(() => {
-    wss.clients.forEach((ws) => {
+    wss.clients.forEach((ws: WebSocket) => {
+        const extWs = ws as ExtWebSocket;
 
-        if (!ws.isAlive) return ws.terminate();
+        if (!extWs.isAlive) return ws.terminate();
 
-        ws.isAlive = false;
-        ws.ping();
+        extWs.isAlive = false;
+        extWs.ping();
     });
 }, 10000);
 
@@ -83,10 +89,8 @@ setInterval(async () => {
     }
     const status = await loadStatsFromDatabase(dbclient);
     wss.clients.forEach(client => {
-        if (client != wss) {
-            if (JSON.stringify(oldStatus) !== JSON.stringify(status)) {
-                client.send(JSON.stringify(status));
-            }
+        if (JSON.stringify(oldStatus) !== JSON.stringify(status)) {
+            client.send(JSON.stringify(status));
         }
     });
     oldStatus = status;
@@ -95,7 +99,7 @@ setInterval(async () => {
 app.get(["/botti", "/"], async (req, res) => {
     const reqToken = req.query.token;
     const accessList = JSON.parse(fs.readFileSync(pathString, "utf8"));
-    const token = accessList.find((object: AccessList) => object.token == reqToken);
+    const token = accessList.find((object: AccessListEntry) => object.token == reqToken);
 
     if (token) {
         const index = accessList.indexOf(token);
