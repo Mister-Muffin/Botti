@@ -30,6 +30,8 @@ const wss = new WebSocketServer({ server });
 
 const pathString = `${__dirname}/data/access.json`;
 const expressPort: number = process.env.PORT as unknown as number || 5000;
+const devEnv = process.env.DEV_ENV || "produnction";
+const isEnvProduction = devEnv === "production";
 
 const limiter = RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
@@ -50,6 +52,7 @@ console.log("Successfully connected to Database");
 
 server.listen(expressPort, () => {
     console.log(`Express running → PORT ${expressPort}`);
+    if (!isEnvProduction) console.info(`Express local URL: http://[::1]:${expressPort}`);
 });
 
 app.use(limiter);
@@ -115,8 +118,7 @@ app.get(["/botti", "/"], async (req, res) => {
         fs.writeFileSync(pathString, JSON.stringify(accessList));
         res.sendFile(__dirname + "/dist/website/botti/public/index.html");
     } else {
-        const devEnv = process.env.DEV_ENV ? process.env.DEV_ENV : "produnction";
-        if (devEnv == "production") res.sendStatus(403);
+        if (isEnvProduction) res.sendStatus(403);
         else res.sendFile(__dirname + "/dist/website/botti/public/index.html");
     }
 });
