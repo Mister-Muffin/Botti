@@ -11,7 +11,7 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "outDir": "dist/tsbuild/",
+    "outDir": "dist/",
     "noEmitOnError": false,
     "strict": true
   },

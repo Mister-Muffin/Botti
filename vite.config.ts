@@ -12,10 +12,10 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: resolve(__dirname, "./server/dist/website/"),
+    outDir: resolve(__dirname, "./website/dist/"),
     rollupOptions: {
       input: {
-        main: resolve(__dirname, './botti/public/index.html'),
+        main: resolve(__dirname, './website/public/index.html'),
       }
     }
   }
