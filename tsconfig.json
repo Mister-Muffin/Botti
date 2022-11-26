@@ -2,8 +2,8 @@
   "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": [
     "env.d.ts",
-    "botti/src/**/*",
-    "botti/src/**/*.vue"
+    "website/src/**/*",
+    "website/src/**/*.vue"
   ],
   "exclude": [
     "server/**"
@@ -12,7 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./botti/src/*"
+        "website/src/*"
       ]
     },
     // https://github.com/vuejs/tsconfig/blob/26fc528db347dbbbbaa2ea15d3c2d95c197887b7/tsconfig.json-->
