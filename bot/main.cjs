@@ -5,7 +5,7 @@ const { Client, IntentsBitField, Collection } = require("discord.js");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { incrementValueFromUserId } = require("./postgres.js");
+const { incrementValueFromUserId } = require("./postgres.cjs");
 
 const { Client: PgClient } = require("pg");
 const dbclient = new PgClient({ //export
@@ -51,11 +51,11 @@ async function initializeDB() {
 initializeDB();
 
 
-require("./handler/command.js")(client);
+require("./handler/command.cjs")(client);
 
 client.on("ready", async () => {
 
-    if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.js");
+    if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.cjs");
 
     await client.user.setPresence({ activities: [{ name: "/play", type: "PLAYING" }], status: "online" });
     console.log("ONLINE!");
@@ -188,11 +188,11 @@ function checkArgs() {
     const myArgs = process.argv.slice(2);
     switch (myArgs[0]) {
         case "--register":
-            require("./handler/registerCommand.js");
+            require("./handler/registerCommand.cjs");
             console.info("Registered commands. Exiting.");
             break;
         case "--delete":
-            require("./handler/deleteCommands.js");
+            require("./handler/deleteCommands.cjs");
             console.info("Deleted commands. Exiting.");
             break;
         default:
