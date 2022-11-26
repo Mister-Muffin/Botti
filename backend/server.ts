@@ -12,7 +12,8 @@ import { loadStatsFromDatabase } from "./db.js";
 import { broadcastData, terminateDeadConnections } from "./websocket.js";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.join(dirname(__filename), "../.."); // move out of the tsbuild and dist directory 
+const __dirname = path.join(dirname(__filename), ".."); // move out of the tsbuild and dist directory
+const websitePath = path.join(__dirname, "..", "website/dist");
 
 const { Client } = pg;
 
@@ -57,7 +58,7 @@ server.listen(expressPort, () => {
 });
 
 app.use(limiter);
-app.use(express.static(path.join(__dirname, "/dist/website")));
+app.use(express.static(websitePath));
 
 /*
 https://masteringjs.io/tutorials/express/websockets,
@@ -94,10 +95,10 @@ app.get(["/botti", "/"], async (req, res) => {
         accessList[index].date = (new Date).getTime();
 
         fs.writeFileSync(pathString, JSON.stringify(accessList));
-        res.sendFile(__dirname + "/dist/website/botti/public/index.html");
+        res.sendFile(path.join(websitePath, "website/public/index.html"));
     } else {
         if (isEnvProduction) res.sendStatus(403);
-        else res.sendFile(__dirname + "/dist/website/botti/public/index.html");
+        else res.sendFile(path.join(websitePath, "website/public/index.html"));
     }
 });
 
