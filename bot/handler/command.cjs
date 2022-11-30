@@ -3,6 +3,7 @@ const ascii = require("ascii-table");
 const path = require("path");
 
 const appDir = path.dirname(require.main.filename);
+console.log("Appdir: " + appDir);
 
 // Create a new Ascii table
 let table = new ascii("Commands");
@@ -10,9 +11,9 @@ table.setHeading("Command", "Load status");
 
 module.exports = (client) => {
     // Read every commands subfolder
-    readdirSync(`${appDir}/commands/`).forEach(dir => {
+    readdirSync(`${appDir}/commands/`).forEach(() => {
         // Filter so we only have .js command files
-        const commands = readdirSync(`${appDir}/commands/`).filter(file => file.endsWith(".js"));
+        const commands = readdirSync(`${appDir}/commands/`).filter(file => file.endsWith(".cjs"));
 
         // Loop over the commands, and add all of them to a collection
         // If there's no name found, prevent it from returning an error,

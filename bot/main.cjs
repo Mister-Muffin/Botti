@@ -1,6 +1,6 @@
 checkArgs();
 
-const { Client, IntentsBitField, Collection } = require("discord.js");
+const { Client, IntentsBitField, Collection, Events } = require("discord.js");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -62,13 +62,25 @@ client.on("ready", async () => {
 
 });
 
-client.on("interactionCreate", async interaction => {
-    // not every interaction is a slash command (e.g. MessageComponents).Only receive slash commands by making use of the BaseInteraction#isChatInputCommand() method
+client.on(Events.InteractionCreate, async interaction => {
+    // Not every interaction is a slash command (e.g. MessageComponents).
+    // Only receive slash commands by making use of the BaseInteraction#isChatInputCommand() method
     if (!interaction.isChatInputCommand()) return;
+    
     const commandName = interaction.commandName.toLowerCase();
-    let command = interaction.client.commands.get(commandName);
+    const command = interaction.client.commands.get(commandName);
 
-    command.execute(interaction);
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return await interaction.reply({ content: ":x: This command was not found!", ephemeral: true });
+    }
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+    }
 
 });
 

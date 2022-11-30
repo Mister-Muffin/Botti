@@ -3,18 +3,20 @@ const { token } = require("../../config.json");
 const { readdirSync } = require("fs");
 const path = require("path");
 
-const appDir = path.dirname(require.main.filename).replace("handler", "");
+const appDir = path.dirname(require.main.filename);
+const commandsDir = path.join(appDir, "commands");
 
 const clientId = "493003865537511436";
 const guildId = "492426074396033035";
 
 
-const commands = readdirSync(`${appDir}/commands/`).filter(file => file.endsWith(".js"));
+const commands = readdirSync(commandsDir).filter(file => file.endsWith(".cjs"));
 const commandList = [];
 
-for (let file of commands) {
+
+for (const file of commands) {
     try {
-        let command = require(`${appDir}/commands/${file}`).data.toJSON();
+        const command = require(`${commandsDir}/${file}`).data.toJSON();
 
         commandList.push(command);
     } catch (e) {
