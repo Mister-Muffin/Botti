@@ -1,5 +1,5 @@
 import { Client } from "pg";
-import { User, Totals, Stats } from "./types";
+import { User, Totals, Stats } from "./types.js";
 
 export async function loadStatsFromDatabase(dbclient: Client) {
     const query = await dbclient.query("SELECT \"UserId\", \"Alla\", \"Ehre\", \"Yeet\", \"Schaufel\", \"Username\", \"Xp\", \"Messages\" FROM users");

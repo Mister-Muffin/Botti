@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import fs from "fs";
 import pg from "pg";
-import { AccessListEntry } from "./types";
+import { AccessListEntry } from "./types.js";
 import { loadStatsFromDatabase } from "./db.js";
 import { broadcastData, terminateDeadConnections } from "./websocket.js";
 

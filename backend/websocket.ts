@@ -2,7 +2,7 @@ import { Client } from "pg";
 import { WebSocket, WebSocketServer } from "ws";
 import { loadStatsFromDatabase } from "./db.js";
 import { ExtWebSocket } from "./server.js";
-import { Stats } from "./types";
+import { Stats } from "./types.js";
 
 let oldStats: Stats;
 export async function broadcastData(wss: WebSocketServer, dbclient: Client) {
