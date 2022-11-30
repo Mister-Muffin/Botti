@@ -9,8 +9,8 @@ module.exports = {
         .setDescription("zeigt dir deinen aktuellen Kontostand an"),
     async execute(interaction) {
 
-        const { dbclient } = require(`${appDir}/main.js`);
-        const { getValueFromUserId } = require(`${appDir}/postgres.js`);
+        const { dbclient } = require(`${appDir}/main.cjs`);
+        const { getValueFromUserId } = require(`${appDir}/postgres.cjs`);
 
         const authorId = interaction.member.user.id;
         const coins = (await getValueFromUserId(dbclient, "Coins", authorId)).Coins;

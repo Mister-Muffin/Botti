@@ -13,8 +13,8 @@ module.exports = {
     async execute(interaction) {
         try {
 
-            const { dbclient: dbClient } = require(`${appDir}/main.js`);
-            const { getValueFromUserId } = require(`${appDir}/postgres.js`);
+            const { dbclient: dbClient } = require(`${appDir}/main.cjs`);
+            const { getValueFromUserId } = require(`${appDir}/postgres.cjs`);
 
             const member = interaction.options.getMember("member") || interaction.member;
 

@@ -1,5 +1,5 @@
 const fs = require("fs");
-const Embed = require("../embed.js");
+const Embed = require("../embed.cjs");
 module.exports = {
   name: "help",
   description: "Helo, im under de water, please help me!",

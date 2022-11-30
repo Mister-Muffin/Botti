@@ -4,7 +4,7 @@ I am a happy Discord Bot :smiley:
 
 ## Installation
 
-### Via Docker (recommended) (not available yet)
+### Via Docker (recommended) (public image not available yet)
 
 Just for one time use (no persistency or stats webserver):
 
@@ -71,7 +71,7 @@ docker volume create botti
 Run the container with the newly created volume and port 80 opened:
 
 ```bash
-docker run --env-file [/path/to/env/file] -v botti:/botti/data/ -p 80:5000 bigbraindamage/botti:latest
+docker run --env-file [/path/to/env/file] -v botti:/botti/bot/data/ -v botti:/botti/website/data/ -p 80:5000 bigbraindamage/botti:latest
 ```
 
 ## Commands: /
