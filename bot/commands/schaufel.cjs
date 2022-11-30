@@ -1,5 +1,5 @@
 const path = require("path");
-const {SlashCommandBuilder} = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const appDir = path.dirname(require.main.filename);
 
 module.exports = {
@@ -10,8 +10,8 @@ module.exports = {
     async execute(interaction) {
 
         try {
-            const { incrementValueFromUserId } = require(`${appDir}/postgres.js`);
-            const { dbclient: dbClient } = require(`${appDir}/main.js`);
+            const { incrementValueFromUserId } = require(`${appDir}/postgres.cjs`);
+            const { dbclient: dbClient } = require(`${appDir}/main.cjs`);
 
             const user = interaction.options.getUser("user", false) || interaction.member.user.id;
 

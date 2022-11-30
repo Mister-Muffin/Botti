@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const path = require("path");
 const appDir = path.dirname(require.main.filename);
 const colors = {
@@ -16,8 +16,8 @@ module.exports = {
         .setName("play")
         .setDescription("startet das Spiel!"),
     async execute(interaction) {
-        const { getValueFromUserId, incrementValueFromUserId } = require(`${appDir}/postgres.js`);
-        const { dbclient } = require(`${appDir}/main.js`);
+        const { getValueFromUserId, incrementValueFromUserId } = require(`${appDir}/postgres.cjs`);
+        const { dbclient } = require(`${appDir}/main.cjs`);
         const authorId = interaction.member.user.id;
 
         let coins = (await getValueFromUserId(dbclient, "Coins", authorId)).Coins;

@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { createAPIMessage } = require("../embed");
+const { createAPIMessage } = require("../embed.cjs");
 module.exports = {
     name: "clear",
     description: "Löscht eine bestimmte Anzahl an Nachichten.",
