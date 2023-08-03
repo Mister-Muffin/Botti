@@ -5,6 +5,7 @@ ServiceAccountKey.json
 *.code-workspace
 data/
 .env
+.direnv/
 
 # Logs from https://github.com/github/gitignore/blob/master/Node.gitignore
 logs
