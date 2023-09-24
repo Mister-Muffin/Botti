@@ -20,7 +20,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "author": "",
-  "license": "GNU GENERAL PUBLIC LICENSE",
+  "license": "GNU General Public License v3.0",
   "dependencies": {
     "@discordjs/voice": "^0.13.0",
     "ascii-table": "^0.0.9",
