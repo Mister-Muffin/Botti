@@ -50,7 +50,7 @@ export interface ExtWebSocket extends WebSocket {
 await dbclient.connect();
 console.log("Successfully connected to Database");
 
-
+if (process.env.PROXY_IP) app.set("trust proxy", process.env.PROXY_IP);
 
 server.listen(expressPort, () => {
     console.log(`Express running → PORT ${expressPort}`);
