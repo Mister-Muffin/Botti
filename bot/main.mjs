@@ -1,21 +1,22 @@
 checkArgs();
 
-const { Client, IntentsBitField, Collection, Events } = require("discord.js");
+import { load } from "https://deno.land/std@0.202.0/dotenv/mod.ts";
+import * as path from "https://deno.land/std@0.202.0/path/mod.ts";
 
-const dotenv = require("dotenv");
-dotenv.config();
+const env = await load();
 
-const { incrementValueFromUserId } = require("./postgres.cjs");
+import { Client, IntentsBitField, Collection, Events } from "discord.js";
 
-const { Client: PgClient } = require("pg");
-const dbclient = new PgClient({ //export
-    user: process.env.DB_USER,
-    host: process.env.DB_IP,
-    database: process.env.DB_DB,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT ? process.env.DB_PORT : 5432
+import incrementValueFromUserId from "./postgres.mjs";
+
+import pg from "npm:pg@8.11.3";
+export const dbclient = new pg.Client({ //export
+    user: env["DB_USER"],
+    host: env["DB_IP"],
+    database: env["DB_DB"],
+    password: env["DB_PASS"],
+    port: env["DB_PORT"] ? env["DB_PORT"] : 5432
 });
-module.exports.dbclient = dbclient;
 
 const myIntents = new IntentsBitField();
 myIntents.add(
@@ -24,24 +25,22 @@ myIntents.add(
     IntentsBitField.Flags.MessageContent
 );
 
-const fs = require("fs");
-const path = require("path");
-const appDir = path.dirname(require.main.filename);
-global.appRoot__ObhsaaU = path.resolve(__dirname);
+const appDir = path.dirname(import.meta.url);
+// global.appRoot__ObhsaaU = path.resolve(import.meta.url);
 const client = new Client({ intents: myIntents });
 client.commands = new Collection();
 client.aliases = new Collection();
 var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 
-const pathString = `${appDir}/data/gold.json`;
+const pathString = `bot/data/gold.json`;
 let goldJson;
 try {
-    goldJson = require(pathString);
+    goldJson = Deno.readFileSync(pathString);
 } catch (e) {
     console.warn(e);
-    fs.writeFileSync(pathString, JSON.stringify({}));
-    goldJson = require(pathString);
+    Deno.writeTextFileSync(pathString, JSON.stringify({}));
+    goldJson = Deno.readFileSync(pathString);
 }
 
 async function initializeDB() {
@@ -51,11 +50,12 @@ async function initializeDB() {
 initializeDB();
 
 
-require("./handler/command.cjs")(client);
+import * as command from "./handler/command.cjs";
+command(client);
 
 client.on("ready", async () => {
 
-    if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.cjs");
+    if (env["REGISTER_COMMANDS"]) require("./handler/registerCommand.cjs");
 
     await client.user.setPresence({ activities: [{ name: "/play", type: "PLAYING" }], status: "online" });
     console.log("ONLINE!");
@@ -66,7 +66,7 @@ client.on(Events.InteractionCreate, async interaction => {
     // Not every interaction is a slash command (e.g. MessageComponents).
     // Only receive slash commands by making use of the BaseInteraction#isChatInputCommand() method
     if (!interaction.isChatInputCommand()) return;
-    
+
     const commandName = interaction.commandName.toLowerCase();
     const command = interaction.client.commands.get(commandName);
 
@@ -181,7 +181,7 @@ async function updateStat(stat, msg, statMessage) {
 }
 
 
-client.login(process.env.TOKEN);
+client.login(env["TOKEN"]);
 
 process.on("SIGINT", async () => {
     try {
@@ -197,7 +197,7 @@ process.on("SIGINT", async () => {
 
 /* eslint-disable indent */
 function checkArgs() {
-    const myArgs = process.argv.slice(2);
+    const myArgs = Deno.args.slice(2);
     switch (myArgs[0]) {
         case "--register":
             require("./handler/registerCommand.cjs");
