@@ -41,6 +41,10 @@ router.get("/ws", async (ctx) => {
 
     console.log(`New client connected`);
 
+    socket.onopen = async () => {
+        socket.send(JSON.stringify(await loadStatsFromDatabase(dbclient)));
+    };
+
     // when a client disconnects, remove them from the connected clients list
     // and broadcast the active users list
     socket.onclose = () => {
