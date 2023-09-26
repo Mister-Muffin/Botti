@@ -50,7 +50,7 @@ async function initializeDB() {
 initializeDB();
 
 
-import * as command from "./handler/command.cjs";
+import command from "./handler/command.mjs";
 command(client);
 
 client.on("ready", async () => {
@@ -183,7 +183,7 @@ async function updateStat(stat, msg, statMessage) {
 
 client.login(env["TOKEN"]);
 
-process.on("SIGINT", async () => {
+Deno.addSignalListener("SIGINT", async () => {
     try {
         await client.destroy();
         await dbclient.end();
@@ -191,7 +191,7 @@ process.on("SIGINT", async () => {
     }
     finally {
         console.log("SIGINT exiting");
-        process.exit(0);
+        Deno.exit(0);
     }
 });
 
