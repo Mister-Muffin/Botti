@@ -192,7 +192,7 @@ export default {
   },
   mounted: function () {
     try {
-      let connection = new WebSocket(`ws://${window.location.host}/`);
+      let connection = new WebSocket(`ws://${window.location.host}/ws`);
       connection.onmessage = (event) => {
         console.log("New Data arrived!")
         if (event.data != 200) this.loadData(event.data);
