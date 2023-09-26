@@ -1,19 +1,14 @@
-import { Application, Router } from "oak";
 // @deno-types="npm:@types/node"
-import path, { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import { load } from "dotenv";
 import pg from "pg";
-import type { AccessListEntry } from "./types.ts";
+import { Application, Router } from "oak";
+import { load } from "dotenv";
 import { loadStatsFromDatabase } from "./db.ts";
 import { broadcastData } from "./websocket.ts";
+import type { AccessListEntry } from "./types.ts";
 
 const env = await load({
     envPath: "../.env",
 });
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.join(dirname(__filename), ".."); // move out of the tsbuild and dist directory
 
 const { Client } = pg;
 
@@ -30,7 +25,6 @@ const connectedClients: WebSocket[] = [];
 const app = new Application();
 const router = new Router();
 
-const pathString = `${__dirname}/data/access.json`;
 const webPort: number = env["PORT"] as unknown as number || 5000;
 const devEnv = env["DEV_ENV"] || "produnction";
 const isEnvProduction = devEnv === "production";
@@ -89,7 +83,7 @@ app.use(async (ctx, next) => {
 
             accessList[index].date = (new Date()).getTime();
 
-            Deno.writeTextFileSync(pathString, JSON.stringify(accessList));
+            Deno.writeTextFileSync("../data/access.json", JSON.stringify(accessList));
             return ctx.send({ root: "../website/dist", index: "index.html" });
         } else {
             if (isEnvProduction) return ctx.response.status = 403;
@@ -106,7 +100,7 @@ function removeIndexFromList(index: number, accessList: Array<unknown>) {
         accessList.splice(index, 1);
     }
 
-    Deno.writeTextFileSync(pathString, JSON.stringify(accessList));
+    Deno.writeTextFileSync("../data/access.json", JSON.stringify(accessList));
 }
 
 app.use(router.routes());
