@@ -1,6 +1,5 @@
 import { Client } from "pg";
 import { loadStatsFromDatabase } from "./db.ts";
-import { ExtWebSocket } from "./server.ts";
 import type { Stats } from "./types.ts";
 
 let oldStats: Stats;

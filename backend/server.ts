@@ -35,10 +35,6 @@ const webPort: number = env["PORT"] as unknown as number || 5000;
 const devEnv = env["DEV_ENV"] || "produnction";
 const isEnvProduction = devEnv === "production";
 
-export interface ExtWebSocket extends WebSocket {
-    isAlive: boolean;
-}
-
 // Connect to the Postgres Database
 await dbclient.connect();
 console.log("Successfully connected to Database");
