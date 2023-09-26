@@ -7,7 +7,6 @@ import pg from "pg";
 import type { AccessListEntry } from "./types.ts";
 import { loadStatsFromDatabase } from "./db.ts";
 import { broadcastData, terminateDeadConnections } from "./websocket.ts";
-import { db } from "https://deno.land/std@0.200.0/media_types/_db.ts";
 
 const env = await load({
     envPath: "../.env",
@@ -15,7 +14,6 @@ const env = await load({
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.join(dirname(__filename), ".."); // move out of the tsbuild and dist directory
-const websitePath = path.join("..", "website/dist");
 
 const { Client } = pg;
 
@@ -45,19 +43,6 @@ export interface ExtWebSocket extends WebSocket {
 await dbclient.connect();
 console.log("Successfully connected to Database");
 
-/*
-https://masteringjs.io/tutorials/express/websockets,
-https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
-*/
-// wss.on("connection", async (socket: ExtWebSocket) => {
-//     socket.isAlive = true;
-//     socket.on("pong", () => {
-//         socket.isAlive = true;
-//     });
-
-//     socket.send(JSON.stringify(await loadStatsFromDatabase(dbclient)));
-//     //socket.on("message", message => console.log(message));
-// });
 //https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
 // setInterval(terminateDeadConnections, 10000, wss);
 
@@ -87,7 +72,7 @@ app.use(async (ctx, next) => {
         }
 
         const reqToken = ctx.request.headers.get("token");
-        const accessList = [{}];
+        const accessList: AccessListEntry[] = JSON.parse(Deno.readTextFileSync("../data/access.json"));
         const token = accessList.find((object: AccessListEntry) => object.token == reqToken);
 
         if (token) {
@@ -105,9 +90,10 @@ app.use(async (ctx, next) => {
             return ctx.send({ root: "../website/dist", index: "index.html" });
         } else {
             if (isEnvProduction) return ctx.response.status = 403;
-            else await ctx.send(path.join(websitePath, "website/public/index.html"));
+            else await ctx.send({ root: "../website/dist", index: "index.html" });
         }
-    } catch {
+    } catch (e) {
+        console.warn("Catched error:", e);
         await next();
     }
 });

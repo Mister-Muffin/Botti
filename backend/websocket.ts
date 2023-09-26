@@ -7,7 +7,6 @@ let oldStats: Stats;
 let oldClients: WebSocket[];
 export async function broadcastData(clients: WebSocket[], dbclient: Client) {
     // If no one is connected, don't query the database
-    console.log(clients.length);
     if (clients.length == 0) return;
 
     const stats = await loadStatsFromDatabase(dbclient);
