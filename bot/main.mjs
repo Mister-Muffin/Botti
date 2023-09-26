@@ -1,11 +1,11 @@
 checkArgs();
 
-import { load } from "https://deno.land/std@0.202.0/dotenv/mod.ts";
-import * as path from "https://deno.land/std@0.202.0/path/mod.ts";
+import { load } from "dotenv";
+import * as path from "path";
 
 const env = await load();
 
-import { Client, IntentsBitField, Collection, Events } from "discord.js";
+import { Client, Collection, Events, IntentsBitField } from "discord.js";
 
 import incrementValueFromUserId from "./postgres.mjs";
 
@@ -15,14 +15,14 @@ export const dbclient = new pg.Client({ //export
     host: env["DB_IP"],
     database: env["DB_DB"],
     password: env["DB_PASS"],
-    port: env["DB_PORT"] ? env["DB_PORT"] : 5432
+    port: env["DB_PORT"] ? env["DB_PORT"] : 5432,
 });
 
 const myIntents = new IntentsBitField();
 myIntents.add(
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMessages,
-    IntentsBitField.Flags.MessageContent
+    IntentsBitField.Flags.MessageContent,
 );
 
 const appDir = path.dirname(import.meta.url);
@@ -49,20 +49,17 @@ async function initializeDB() {
 }
 initializeDB();
 
-
 import command from "./handler/command.mjs";
 command(client);
 
 client.on("ready", async () => {
-
     if (env["REGISTER_COMMANDS"]) require("./handler/registerCommand.cjs");
 
     await client.user.setPresence({ activities: [{ name: "/play", type: "PLAYING" }], status: "online" });
     console.log("ONLINE!");
-
 });
 
-client.on(Events.InteractionCreate, async interaction => {
+client.on(Events.InteractionCreate, async (interaction) => {
     // Not every interaction is a slash command (e.g. MessageComponents).
     // Only receive slash commands by making use of the BaseInteraction#isChatInputCommand() method
     if (!interaction.isChatInputCommand()) return;
@@ -81,14 +78,15 @@ client.on(Events.InteractionCreate, async interaction => {
         console.error(error);
         await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
     }
-
 });
 
 client.on("messageCreate", async (msg) => {
-    if (msg.author.bot)
+    if (msg.author.bot) {
         return;
-    if (!msg.guild)
+    }
+    if (!msg.guild) {
         return;
+    }
     if (msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
         ehre(msg);
     }
@@ -101,7 +99,7 @@ client.on("messageCreate", async (msg) => {
     if (msg.content.toLowerCase().includes("tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194")) {
         setTimeout(() => {
             msg.delete()
-                .then(msg => console.log(`Deleted message from ${msg.author.username} after 1 second`))
+                .then((msg) => console.log(`Deleted message from ${msg.author.username} after 1 second`))
                 .catch(console.error);
         }, 1000);
     }
@@ -110,30 +108,31 @@ client.on("messageCreate", async (msg) => {
     const authorId = msg.author.id;
 
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
-
         let lastTime = parsedGold[authorId].time;
         // console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
         if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 60)) {
             try {
                 //Check if user exists
-                const userArray = (await dbclient.query("SELECT \"UserId\" FROM users")).rows;
-                if (userArray.filter(object => object.UserId == authorId).length < 1) {
+                const userArray = (await dbclient.query('SELECT "UserId" FROM users')).rows;
+                if (userArray.filter((object) => object.UserId == authorId).length < 1) {
                     dbclient.query(`INSERT INTO users("UserId") VALUES (${authorId});`);
                 }
                 //
-                await dbclient.query(`UPDATE users SET "Username" = '${msg.author.username}' WHERE "UserId" = ${authorId}`);
+                await dbclient.query(
+                    `UPDATE users SET "Username" = '${msg.author.username}' WHERE "UserId" = ${authorId}`,
+                );
                 //
                 await incrementValueFromUserId(dbclient, "Coins", 2, authorId);
                 await incrementValueFromUserId(dbclient, "Xp", Math.random() * (10) + 15, authorId);
 
                 parsedGold[authorId].time = new Date();
-
-            } catch (e) { console.warn(e); }
+            } catch (e) {
+                console.warn(e);
+            }
         }
 
         fs.writeFileSync(pathString, JSON.stringify(parsedGold));
-
     } else if (!msg.content.startsWith("</") && !goldJson[authorId]) {
         console.log("else if 1");
         parsedGold[authorId] = { time: new Date() };
@@ -144,7 +143,6 @@ client.on("messageCreate", async (msg) => {
 
     // If msg.member is uncached, cache it.
     if (!msg.member) msg.member = await msg.guild.fetchMember(msg);
-
 });
 
 function ehre(msg) {
@@ -176,10 +174,10 @@ async function updateStat(stat, msg, statMessage) {
 
             await msg.channel.send({ content: statMessage.replace("{newStat}", parseInt(val) + 1) });
         }
-
-    } catch (e) { console.warn(e); }
+    } catch (e) {
+        console.warn(e);
+    }
 }
-
 
 client.login(env["TOKEN"]);
 
@@ -188,8 +186,7 @@ Deno.addSignalListener("SIGINT", async () => {
         await client.destroy();
         await dbclient.end();
         console.log("\nConnection closed.");
-    }
-    finally {
+    } finally {
         console.log("SIGINT exiting");
         Deno.exit(0);
     }
