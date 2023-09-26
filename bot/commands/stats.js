@@ -1,8 +1,7 @@
-import { access, constants, readFileSync, writeFileSync } from "fs";
 import { dirname } from "path";
 import { SlashCommandBuilder } from "discord.js";
 
-const appDir = dirname(require.main.filename);
+const appDir = dirname(import.meta.url);
 const pathString = `${appDir}/data/access.json`;
 
 export const data = new SlashCommandBuilder()

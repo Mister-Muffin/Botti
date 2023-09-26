@@ -1,6 +1,6 @@
 import { dirname } from "path";
 import { SlashCommandBuilder } from "discord.js";
-const appDir = dirname(require.main.filename);
+const appDir = dirname(import.meta.url);
 
 export const data = new SlashCommandBuilder()
     .setName("schaufel")

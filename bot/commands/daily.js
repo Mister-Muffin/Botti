@@ -1,9 +1,9 @@
 import { dirname } from "path";
 
-const appDir = dirname(require.main.filename);
+const appDir = dirname(import.meta.url);
 
-const { getValueFromUserId, incrementValueFromUserId } = require(`${appDir}/postgres.cjs`);
-const { dbclient } = require(`${appDir}/main.cjs`);
+import { getValueFromUserId, incrementValueFromUserId } from "../postgres.mjs";
+import { dbclient } from "../main.mjs";
 import { SlashCommandBuilder } from "discord.js";
 
 export const data = new SlashCommandBuilder()

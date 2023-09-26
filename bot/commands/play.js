@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { dirname } from "path";
-const appDir = dirname(require.main.filename);
+const appDir = dirname(import.meta.url);
 const colors = {
     red: 0xe74c3c,
     yellow: 0xf1c40f,

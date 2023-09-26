@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { dirname } from "path";
-const appDir = dirname(require.main.filename);
+const appDir = dirname(import.meta.url);
 
 export const data = new SlashCommandBuilder()
     .setName("xp")
