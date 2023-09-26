@@ -1,6 +1,6 @@
-import { dirname } from "path";
 import { SlashCommandBuilder } from "discord.js";
-const appDir = dirname(import.meta.url);
+import { incrementValueFromUserId } from "../postgres.mjs";
+import { dbclient as dbClient } from "../main.mjs";
 
 export const data = new SlashCommandBuilder()
     .setName("schaufel")
@@ -8,9 +8,6 @@ export const data = new SlashCommandBuilder()
     .addUserOption((option) => option.setName("user").setDescription("Andere Person").setRequired(false));
 export async function execute(interaction) {
     try {
-        const { incrementValueFromUserId } = require(`${appDir}/postgres.cjs`);
-        const { dbclient: dbClient } = require(`${appDir}/main.cjs`);
-
         const user = interaction.options.getUser("user", false) || interaction.member.user.id;
 
         await incrementValueFromUserId(dbClient, "Schaufel", 1, user);

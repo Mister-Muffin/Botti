@@ -1,13 +1,12 @@
 checkArgs();
 
 import { load } from "dotenv";
-import * as path from "path";
 
 const env = await load();
 
 import { Client, Collection, Events, IntentsBitField } from "discord.js";
 
-import {incrementValueFromUserId} from "./postgres.mjs";
+import { incrementValueFromUserId } from "./postgres.mjs";
 
 import pg from "pg";
 export const dbclient = new pg.Client({ //export
@@ -25,12 +24,12 @@ myIntents.add(
     IntentsBitField.Flags.MessageContent,
 );
 
-const appDir = path.dirname(import.meta.url);
 // global.appRoot__ObhsaaU = path.resolve(import.meta.url);
 const client = new Client({ intents: myIntents });
 client.commands = new Collection();
 client.aliases = new Collection();
-var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
+let lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
+// deno-lint-ignore no-self-assign
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 
 const pathString = `bot/data/gold.json`;
@@ -104,11 +103,11 @@ client.on("messageCreate", async (msg) => {
         }, 1000);
     }
 
-    let parsedGold = goldJson;
+    const parsedGold = goldJson;
     const authorId = msg.author.id;
 
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
-        let lastTime = parsedGold[authorId].time;
+        const lastTime = parsedGold[authorId].time;
         // console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
         if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 60)) {

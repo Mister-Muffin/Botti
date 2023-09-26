@@ -4,7 +4,7 @@ export const description = "Helo, im under de water, please help me!";
 export const options = [];
 export async function run(client, interaction, args) {
     try {
-        help(`${Deno.readFileSync("commands/help.txt", "utf8")}`, client, interaction);
+        help(`${Deno.readTextFileSync("./help.txt")}`, client, interaction);
     } catch (e) {
         error(
             `

@@ -1,6 +1,7 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { dirname } from "path";
-const appDir = dirname(import.meta.url);
+import { getValueFromUserId, incrementValueFromUserId } from "../postgres.mjs";
+import { dbclient } from "../main.mjs";
+
 const colors = {
     red: 0xe74c3c,
     yellow: 0xf1c40f,
@@ -15,8 +16,6 @@ export const data = new SlashCommandBuilder()
     .setName("play")
     .setDescription("startet das Spiel!");
 export async function execute(interaction) {
-    const { getValueFromUserId, incrementValueFromUserId } = require(`${appDir}/postgres.cjs`);
-    const { dbclient } = require(`${appDir}/main.cjs`);
     const authorId = interaction.member.user.id;
 
     let coins = (await getValueFromUserId(dbclient, "Coins", authorId)).Coins;

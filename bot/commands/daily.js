@@ -1,7 +1,3 @@
-import { dirname } from "path";
-
-const appDir = dirname(import.meta.url);
-
 import { getValueFromUserId, incrementValueFromUserId } from "../postgres.mjs";
 import { dbclient } from "../main.mjs";
 import { SlashCommandBuilder } from "discord.js";

@@ -1,14 +1,12 @@
-import { dirname } from "path";
 import { SlashCommandBuilder } from "discord.js";
 
-const appDir = dirname(import.meta.url);
-const pathString = `${appDir}/data/access.json`;
+const pathString = `../data/access.json`;
 
 export const data = new SlashCommandBuilder()
     .setName("stats")
     .setDescription("View Botti's server stats");
 export async function execute(interaction) {
-    let tokens = await new Promise((r) => access(pathString, constants.F_OK, (e) => r(!e)))
+    const tokens = await new Promise((r) => access(pathString, constants.F_OK, (e) => r(!e)))
         ? JSON.parse(readFileSync(pathString, "utf8"))
         : [];
 
@@ -24,8 +22,8 @@ export async function execute(interaction) {
 
 function makeId(length) {
     let result = "";
-    let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let charactersLength = characters.length;
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }

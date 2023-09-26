@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { dirname } from "path";
-const appDir = dirname(import.meta.url);
+import { dbclient as dbClient } from "../main.mjs";
+import { getValueFromUserId } from "../postgres.mjs";
 
 export const data = new SlashCommandBuilder()
     .setName("xp")
@@ -12,9 +12,6 @@ export const data = new SlashCommandBuilder()
     );
 export async function execute(interaction) {
     try {
-        const { dbclient: dbClient } = require(`${appDir}/main.cjs`);
-        const { getValueFromUserId } = require(`${appDir}/postgres.cjs`);
-
         const member = interaction.options.getMember("member") || interaction.member;
 
         const authorId = member.user.id;
@@ -32,9 +29,8 @@ export async function execute(interaction) {
 
         const third = 1 / 3;
 
-        const level =
-            ((-5 * Math.pow(10, third)) /
-                (-Math.pow(-(Math.sqrt(9 * xp * xp + 1500 * xp + 50000) - 3 * xp - 250), third))) - 5;
+        const level = ((-5 * Math.pow(10, third)) /
+            (-Math.pow(-(Math.sqrt(9 * xp * xp + 1500 * xp + 50000) - 3 * xp - 250), third))) - 5;
         const medals = [
             "https://cdn.discordapp.com/attachments/704275816598732840/1031210582587736064/e2f8f101328a4b4ae7875945716345b3.webp",
             "https://cdn.discordapp.com/attachments/704275816598732840/1031210582222852117/c65da98dd1cd29756d4d5901ed549661.webp",

@@ -5,7 +5,7 @@ const colors = {
     yellow: 0xf1c40f,
     green: 0x2ecc71,
     purple: 0x8e44ad,
-    cyan: 0x0fcedb
+    cyan: 0x0fcedb,
 };
 
 export async function error(content, client, interaction, callbackType) {
@@ -14,7 +14,6 @@ export async function error(content, client, interaction, callbackType) {
         .setDescription(content);
 
     module.exports.sendEmbed(interaction, emb, client, callbackType);
-
 }
 export async function warning(content, client, interaction, callbackType) {
     const emb = new EmbedBuilder()
@@ -55,8 +54,8 @@ export async function sendEmbed(interaction, embed, client, callbackType) {
     client.api.interactions(interaction.id, interaction.token).callback.post({
         data: {
             type: callbackType ? callbackType : 4,
-            data: await module.exports.createAPIMessage(interaction, embed, client)
-        }
+            data: await module.exports.createAPIMessage(interaction, embed, client),
+        },
     });
 }
 
