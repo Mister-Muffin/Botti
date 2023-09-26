@@ -21,15 +21,3 @@ export async function broadcastData(clients: WebSocket[], dbclient: Client) {
     oldStats = stats;
     return;
 }
-
-export function terminateDeadConnections(wss: WebSocketServer) {
-    wss.clients.forEach((ws: WebSocket) => {
-        const extWs = ws as ExtWebSocket;
-
-        if (!extWs.isAlive) return ws.terminate();
-
-        extWs.isAlive = false;
-        extWs.ping();
-    });
-    return;
-}

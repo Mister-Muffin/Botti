@@ -6,7 +6,7 @@ import { load } from "dotenv";
 import pg from "pg";
 import type { AccessListEntry } from "./types.ts";
 import { loadStatsFromDatabase } from "./db.ts";
-import { broadcastData, terminateDeadConnections } from "./websocket.ts";
+import { broadcastData } from "./websocket.ts";
 
 const env = await load({
     envPath: "../.env",
@@ -43,9 +43,6 @@ export interface ExtWebSocket extends WebSocket {
 await dbclient.connect();
 console.log("Successfully connected to Database");
 
-//https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
-// setInterval(terminateDeadConnections, 10000, wss);
-
 setInterval(broadcastData, 2000, connectedClients, dbclient);
 
 router.get("/ws", async (ctx) => {
@@ -53,9 +50,6 @@ router.get("/ws", async (ctx) => {
     connectedClients.push(socket);
 
     console.log(`New client connected`);
-
-    // broadcast the active users list when a new user logs in
-    socket.onopen = () => {};
 
     // when a client disconnects, remove them from the connected clients list
     // and broadcast the active users list
@@ -65,9 +59,22 @@ router.get("/ws", async (ctx) => {
     };
 });
 
+router.get("/stats", async (ctx) => {
+    try {
+        const stats = await loadStatsFromDatabase(dbclient);
+        return ctx.response.body = stats;
+    } catch (e) {
+        console.error(e);
+        return ctx.response.status = 503;
+    }
+});
+
 app.use(async (ctx, next) => {
     try {
         if (ctx.request.url.pathname == "/ws") {
+            return next();
+        }
+        if (ctx.request.url.pathname == "/stats") {
             return next();
         }
 
@@ -97,16 +104,6 @@ app.use(async (ctx, next) => {
         await next();
     }
 });
-
-// app.get("/botti/stats", async (req, res) => {
-//     try {
-//         const stats = await loadStatsFromDatabase(dbclient);
-//         res.send(stats);
-//     } catch (e) {
-//         console.error(e);
-//         res.sendStatus(503);
-//     }
-// });
 
 function removeIndexFromList(index: number, accessList: Array<unknown>) {
     if (index > -1) {

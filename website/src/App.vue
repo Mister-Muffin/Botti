@@ -120,7 +120,7 @@ export default {
     loadData: async function (wsData?: any) {
       let res: any;
       if (wsData === undefined) {
-        res = await fetch("/botti/stats").then((r) => {
+        res = await fetch("/stats").then((r) => {
           if (r.status !== 200) {
             console.warn(`${r.status}!`);
 
