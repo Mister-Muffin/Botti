@@ -57,7 +57,7 @@ server.listen(expressPort, () => {
     if (!isEnvProduction) console.info(`Express local URL: http://[::1]:${expressPort}`);
 });
 
-app.use(limiter);
+// app.use(limiter);
 app.use(express.static(websitePath));
 
 /*
