@@ -133,11 +133,11 @@ client.on("messageCreate", async (msg) => {
             }
         }
 
-        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
+        Deno.writeTextFileSync(pathString, JSON.stringify(parsedGold));
     } else if (!msg.content.startsWith("</") && !goldJson[authorId]) {
         console.log("else if 1");
         parsedGold[authorId] = { time: new Date() };
-        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
+        Deno.writeTextFileSync(pathString, JSON.stringify(parsedGold));
     }
 
     await incrementValueFromUserId(dbclient, "Messages", 1, authorId); // increase message counter every time a user sent a message
