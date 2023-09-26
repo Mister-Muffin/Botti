@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { createAPIMessage } from "../embed.mjs";
+import { createAPIMessage } from "../embed.js";
 export const name = "clear";
 export const description = "Löscht eine bestimmte Anzahl an Nachichten.";
 export const options = [

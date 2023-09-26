@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { incrementValueFromUserId } from "../postgres.mjs";
-import { dbclient as dbClient } from "../main.mjs";
+import { incrementValueFromUserId } from "../postgres.js";
+import { dbclient as dbClient } from "../main.js";
 
 export const data = new SlashCommandBuilder()
     .setName("schaufel")

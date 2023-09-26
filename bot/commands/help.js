@@ -1,4 +1,4 @@
-import { error, help } from "../embed.mjs";
+import { error, help } from "../embed.js";
 export const name = "help";
 export const description = "Helo, im under de water, please help me!";
 export const options = [];

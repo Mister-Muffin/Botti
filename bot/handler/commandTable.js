@@ -1,4 +1,4 @@
-import * as clear from "../commands/clear.mjs";
+import * as clear from "../commands/clear.js";
 import * as coins from "../commands/coins.js";
 import * as count from "../commands/count.js";
 import * as daily from "../commands/daily.js";
@@ -13,17 +13,17 @@ import * as stop from "../commands/stop.js";
 import * as xp from "../commands/xp.js";
 
 export const commands = [
-  clear,
-  coins,
-  count,
-  daily,
-  fant,
-  help,
-  ping,
-  play,
-  pong,
-  schaufel,
-  stats,
-  stop,
-  xp,
+    clear,
+    coins,
+    count,
+    daily,
+    fant,
+    help,
+    ping,
+    play,
+    pong,
+    schaufel,
+    stats,
+    stop,
+    xp,
 ];

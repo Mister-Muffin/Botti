@@ -6,7 +6,7 @@ const env = await load();
 
 import { Client, Collection, Events, IntentsBitField } from "discord.js";
 
-import { incrementValueFromUserId } from "./postgres.mjs";
+import { incrementValueFromUserId } from "./postgres.js";
 
 import pg from "pg";
 export const dbclient = new pg.Client({ //export
@@ -48,7 +48,7 @@ async function initializeDB() {
 }
 initializeDB();
 
-import command from "./handler/command.mjs";
+import command from "./handler/command.js";
 command(client);
 
 client.on("ready", async () => {

@@ -1,5 +1,5 @@
-import { getValueFromUserId, incrementValueFromUserId } from "../postgres.mjs";
-import { dbclient } from "../main.mjs";
+import { getValueFromUserId, incrementValueFromUserId } from "../postgres.js";
+import { dbclient } from "../main.js";
 import { SlashCommandBuilder } from "discord.js";
 
 export const data = new SlashCommandBuilder()

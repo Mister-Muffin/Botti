@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { dbclient } from "../main.mjs";
-import { getValueFromUserId } from "../postgres.mjs";
+import { dbclient } from "../main.js";
+import { getValueFromUserId } from "../postgres.js";
 
 export const data = new SlashCommandBuilder()
     .setName("coins")

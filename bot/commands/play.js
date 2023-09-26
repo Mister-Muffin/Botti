@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { getValueFromUserId, incrementValueFromUserId } from "../postgres.mjs";
-import { dbclient } from "../main.mjs";
+import { getValueFromUserId, incrementValueFromUserId } from "../postgres.js";
+import { dbclient } from "../main.js";
 
 const colors = {
     red: 0xe74c3c,

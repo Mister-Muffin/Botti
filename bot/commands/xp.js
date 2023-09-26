@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { dbclient as dbClient } from "../main.mjs";
-import { getValueFromUserId } from "../postgres.mjs";
+import { dbclient as dbClient } from "../main.js";
+import { getValueFromUserId } from "../postgres.js";
 
 export const data = new SlashCommandBuilder()
     .setName("xp")

@@ -1,5 +1,5 @@
 import ascii from "ascii-table";
-import { commands } from "./commandTable.mjs"
+import { commands } from "./commandTable.js";
 
 const appDir = "bot";
 console.log("Appdir: " + appDir);
@@ -28,7 +28,6 @@ export default (client) => {
         } catch (e) {
             console.warn("Command skipped. Not implemented");
         }
-
     }
     // Log the table
     console.log(table.toString());
