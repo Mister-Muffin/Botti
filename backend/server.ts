@@ -68,7 +68,7 @@ app.use(async (ctx, next) => {
             return next();
         }
 
-        const reqToken = ctx.request.headers.get("token");
+        const reqToken = ctx.request.url.searchParams.get("token");
         const accessList: AccessListEntry[] = JSON.parse(Deno.readTextFileSync("../data/access.json"));
         const token = accessList.find((object: AccessListEntry) => object.token == reqToken);
 

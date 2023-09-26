@@ -7,7 +7,7 @@
         "ascii-table": "npm:ascii-table@0.0.9"
     },
     "tasks": {
-        "start": "deno run --allow-read --allow-write=bot/data --allow-net --allow-env main.js"
+        "start": "deno run --allow-read --allow-write=bot/data,../data/access.json --allow-net --allow-env main.js"
     },
     "fmt": {
         "useTabs": false,

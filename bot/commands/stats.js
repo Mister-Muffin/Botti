@@ -5,18 +5,17 @@ const pathString = `../data/access.json`;
 export const data = new SlashCommandBuilder()
     .setName("stats")
     .setDescription("View Botti's server stats");
+
 export async function execute(interaction) {
-    const tokens = await new Promise((r) => access(pathString, constants.F_OK, (e) => r(!e)))
-        ? JSON.parse(readFileSync(pathString, "utf8"))
-        : [];
+    const tokens = JSON.parse(Deno.readTextFileSync(pathString));
 
     const token = { "date": (new Date()).getTime(), "token": makeId(8) };
     tokens.push(token);
 
-    writeFileSync(pathString, JSON.stringify(tokens));
+    Deno.writeTextFileSync(pathString, JSON.stringify(tokens));
 
     await interaction.reply(
-        `Du kannst die Statistiken unter https://discord.schweininchen.de/botti/?token=${token.token} aufrufen.`,
+        `Du kannst die Statistiken unter https://discord.schweininchen.de/?token=${token.token} aufrufen.`,
     );
 }
 
