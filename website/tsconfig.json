@@ -1,11 +1,6 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
-  "exclude": [
-    ".vscode",
-    "data",
-    "dist",
-    "**/*.spec.ts"
-  ],
+  "exclude": [".vscode", "data", "dist", "**/*.spec.ts", "backend/"],
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -15,5 +10,5 @@
     "outDir": "dist/",
     "noEmitOnError": false,
     "strict": true
-  },
+  }
 }

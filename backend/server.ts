@@ -1,45 +1,45 @@
 import express from "express";
 import RateLimit from "express-rate-limit";
 import WebSocket, { WebSocketServer } from "ws";
-import http from "http";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-import dotenv from "dotenv";
-import fs from "fs";
+import http from "node:http";
+import path, { dirname } from "node:path";
+import { load } from "dotenv";
+import { fileURLToPath } from "node:url";
 import pg from "pg";
-import { AccessListEntry } from "./types.js";
-import { loadStatsFromDatabase } from "./db.js";
-import { broadcastData, terminateDeadConnections } from "./websocket.js";
+import type { AccessListEntry } from "./types.ts";
+import { loadStatsFromDatabase } from "./db.ts";
+import { broadcastData, terminateDeadConnections } from "./websocket.ts";
+
+const env = await load({
+    envPath: "../.env",
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.join(dirname(__filename), ".."); // move out of the tsbuild and dist directory
-const websitePath = path.join(__dirname, "..", "website/dist");
+const websitePath = path.join("..", "website/dist");
 
 const { Client } = pg;
 
-dotenv.config();
-
 const dbclient = new Client({
-    user: process.env.DB_USER,
-    host: process.env.DB_IP,
-    database: process.env.DB_DB,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT as unknown as number || 5432
+    user: env["DB_USER"],
+    host: env["DB_IP"],
+    database: env["DB_DB"],
+    password: env["DB_PASS"],
+    port: env["DB_PORT"] as unknown as number || 5432,
 });
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 const pathString = `${__dirname}/data/access.json`;
-const expressPort: number = process.env.PORT as unknown as number || 5000;
-const devEnv = process.env.DEV_ENV || "produnction";
+const expressPort: number = env["PORT"] as unknown as number || 5000;
+const devEnv = env["DEV_ENV"] || "produnction";
 const isEnvProduction = devEnv === "production";
 
 const limiter = RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 300,
-    message:
-        "Too many requests from this IP, please try again after a minute"
+    message: "Too many requests from this IP, please try again after a minute",
 });
 
 export interface ExtWebSocket extends WebSocket {
@@ -50,7 +50,7 @@ export interface ExtWebSocket extends WebSocket {
 await dbclient.connect();
 console.log("Successfully connected to Database");
 
-if (process.env.PROXY_IP) app.set("trust proxy", process.env.PROXY_IP);
+if (env["PROXY_IP"]) app.set("trust proxy", env["PROXY_IP"]);
 
 server.listen(expressPort, () => {
     console.log(`Express running → PORT ${expressPort}`);
@@ -78,23 +78,23 @@ setInterval(terminateDeadConnections, 10000, wss);
 
 setInterval(broadcastData, 2000, wss, dbclient);
 
-app.get(["/botti", "/"], async (req, res) => {
+app.get(["/botti", "/"], (req, res) => {
     const reqToken = req.query.token;
-    const accessList = JSON.parse(fs.readFileSync(pathString, "utf8"));
+    const accessList = JSON.parse(Deno.readTextFileSync(pathString));
     const token = accessList.find((object: AccessListEntry) => object.token == reqToken);
 
     if (token) {
         const index = accessList.indexOf(token);
-        const tokenExpired = (new Date).getTime() - token.date > 5 * 60 * 1000;
+        const tokenExpired = (new Date()).getTime() - token.date > 5 * 60 * 1000;
         if (tokenExpired) {
             removeIndexFromList(index, accessList);
 
             return res.sendStatus(410);
         }
 
-        accessList[index].date = (new Date).getTime();
+        accessList[index].date = (new Date()).getTime();
 
-        fs.writeFileSync(pathString, JSON.stringify(accessList));
+        Deno.writeTextFileSync(pathString, JSON.stringify(accessList));
         res.sendFile(path.join(websitePath, "website/public/index.html"));
     } else {
         if (isEnvProduction) res.sendStatus(403);
@@ -117,5 +117,5 @@ function removeIndexFromList(index: number, accessList: Array<unknown>) {
         accessList.splice(index, 1);
     }
 
-    fs.writeFileSync(pathString, JSON.stringify(accessList));
+    Deno.writeTextFileSync(pathString, JSON.stringify(accessList));
 }
