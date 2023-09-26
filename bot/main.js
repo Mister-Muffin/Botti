@@ -2,7 +2,9 @@ checkArgs();
 
 import { load } from "dotenv";
 
-const env = await load();
+const env = await load({
+    envPath: "../.env",
+});
 
 import { Client, Collection, Events, IntentsBitField } from "discord.js";
 
@@ -32,7 +34,7 @@ let lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 // deno-lint-ignore no-self-assign
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 
-const pathString = `bot/data/gold.json`;
+const pathString = `data/gold.json`;
 let goldJson;
 try {
     goldJson = Deno.readFileSync(pathString);

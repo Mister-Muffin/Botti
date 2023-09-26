@@ -1,0 +1,20 @@
+{
+    "imports": {
+        "dotenv": "https://deno.land/std@0.202.0/dotenv/mod.ts",
+        "path": "https://deno.land/std@0.202.0/path/mod.ts",
+        "pg": "npm:pg@8.11.3",
+        "discord.js": "npm:discord.js@14.13.0",
+        "ascii-table": "npm:ascii-table@0.0.9"
+    },
+    "tasks": {
+        "start": "deno run --allow-read --allow-write=bot/data --allow-net --allow-env main.js"
+    },
+    "fmt": {
+        "useTabs": false,
+        "lineWidth": 122,
+        "indentWidth": 4,
+        "semiColons": true,
+        "singleQuote": false,
+        "proseWrap": "preserve"
+    }
+}
