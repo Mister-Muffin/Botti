@@ -18,5 +18,6 @@ export async function broadcastData(clients: WebSocket[], dbclient: Client) {
     });
 
     oldStats = stats;
+    oldClients = clients;
     return;
 }
