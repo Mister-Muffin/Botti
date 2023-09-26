@@ -1,5 +1,4 @@
 import ascii from "ascii-table";
-import { dirname } from "https://deno.land/std@0.202.0/path/mod.ts";
 import { commands } from "./commandTable.mjs"
 
 const appDir = "bot";
