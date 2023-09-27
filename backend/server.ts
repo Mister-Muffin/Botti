@@ -1,114 +1,108 @@
-import express from "express";
-import RateLimit from "express-rate-limit";
-import WebSocket, { WebSocketServer } from "ws";
-import http from "http";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-import dotenv from "dotenv";
-import fs from "fs";
+// @deno-types="npm:@types/node"
 import pg from "pg";
-import { AccessListEntry } from "./types.js";
-import { loadStatsFromDatabase } from "./db.js";
-import { broadcastData, terminateDeadConnections } from "./websocket.js";
+import { Application, Router } from "oak";
+import { load } from "dotenv";
+import { loadStatsFromDatabase } from "./db.ts";
+import { broadcastData } from "./websocket.ts";
+import type { AccessListEntry } from "./types.ts";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.join(dirname(__filename), ".."); // move out of the tsbuild and dist directory
-const websitePath = path.join(__dirname, "..", "website/dist");
+const env = await load({
+    envPath: "../.env",
+});
 
 const { Client } = pg;
 
-dotenv.config();
-
 const dbclient = new Client({
-    user: process.env.DB_USER,
-    host: process.env.DB_IP,
-    database: process.env.DB_DB,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT as unknown as number || 5432
+    user: Deno.env.get("DB_USER"),
+    host: Deno.env.get("DB_IP"),
+    database: Deno.env.get("DB_DB"),
+    password: Deno.env.get("DB_PASS"),
+    port: Deno.env.get("DB_PORT") as unknown as number || 5432,
 });
-const app = express();
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
 
-const pathString = `${__dirname}/data/access.json`;
-const expressPort: number = process.env.PORT as unknown as number || 5000;
-const devEnv = process.env.DEV_ENV || "produnction";
+const connectedClients: WebSocket[] = [];
+
+const app = new Application();
+const router = new Router();
+
+const webPort: number = Deno.env.get("PORT") as unknown as number || 5000;
+const devEnv = Deno.env.get("DEV_ENV") || "produnction";
 const isEnvProduction = devEnv === "production";
-
-const limiter = RateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 300,
-    message:
-        "Too many requests from this IP, please try again after a minute"
-});
-
-export interface ExtWebSocket extends WebSocket {
-    isAlive: boolean;
-}
 
 // Connect to the Postgres Database
 await dbclient.connect();
 console.log("Successfully connected to Database");
 
-if (process.env.PROXY_IP) app.set("trust proxy", process.env.PROXY_IP);
+setInterval(broadcastData, 2000, connectedClients, dbclient);
 
-server.listen(expressPort, () => {
-    console.log(`Express running → PORT ${expressPort}`);
-    if (!isEnvProduction) console.info(`Express local URL: http://[::1]:${expressPort}`);
+router.get("/ws", async (ctx) => {
+    const socket = await ctx.upgrade();
+    connectedClients.push(socket);
+
+    console.log(`New client connected`);
+
+    socket.onopen = async () => {
+        socket.send(JSON.stringify(await loadStatsFromDatabase(dbclient)));
+    };
+
+    // when a client disconnects, remove them from the connected clients list
+    // and broadcast the active users list
+    socket.onclose = () => {
+        console.log(`Client disconnected`);
+        connectedClients.splice(connectedClients.indexOf(socket), 1);
+    };
 });
 
-app.use(limiter);
-app.use(express.static(websitePath));
-
-/*
-https://masteringjs.io/tutorials/express/websockets,
-https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
-*/
-wss.on("connection", async (socket: ExtWebSocket) => {
-    socket.isAlive = true;
-    socket.on("pong", () => {
-        socket.isAlive = true;
-    });
-
-    socket.send(JSON.stringify(await loadStatsFromDatabase(dbclient)));
-    //socket.on("message", message => console.log(message));
-});
-//https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
-setInterval(terminateDeadConnections, 10000, wss);
-
-setInterval(broadcastData, 2000, wss, dbclient);
-
-app.get(["/botti", "/"], async (req, res) => {
-    const reqToken = req.query.token;
-    const accessList = JSON.parse(fs.readFileSync(pathString, "utf8"));
-    const token = accessList.find((object: AccessListEntry) => object.token == reqToken);
-
-    if (token) {
-        const index = accessList.indexOf(token);
-        const tokenExpired = (new Date).getTime() - token.date > 5 * 60 * 1000;
-        if (tokenExpired) {
-            removeIndexFromList(index, accessList);
-
-            return res.sendStatus(410);
-        }
-
-        accessList[index].date = (new Date).getTime();
-
-        fs.writeFileSync(pathString, JSON.stringify(accessList));
-        res.sendFile(path.join(websitePath, "website/public/index.html"));
-    } else {
-        if (isEnvProduction) res.sendStatus(403);
-        else res.sendFile(path.join(websitePath, "website/public/index.html"));
+router.get("/stats", async (ctx) => {
+    try {
+        const stats = await loadStatsFromDatabase(dbclient);
+        return ctx.response.body = stats;
+    } catch (e) {
+        console.error(e);
+        return ctx.response.status = 503;
     }
 });
 
-app.get("/botti/stats", async (req, res) => {
+app.use(async (ctx, next) => {
     try {
-        const stats = await loadStatsFromDatabase(dbclient);
-        res.send(stats);
+        if (ctx.request.url.pathname == "/ws") {
+            return next();
+        }
+        if (ctx.request.url.pathname == "/stats") {
+            return next();
+        }
+
+        try {
+            Deno.readTextFileSync("../data/access.json");
+        } catch {
+            Deno.mkdirSync("../data", { recursive: true });
+            Deno.writeTextFileSync("../data/access.json", "[]");
+        }
+
+        const reqToken = ctx.request.url.searchParams.get("token");
+        const accessList: AccessListEntry[] = JSON.parse(Deno.readTextFileSync("../data/access.json"));
+        const token = accessList.find((object: AccessListEntry) => object.token == reqToken);
+
+        if (token) {
+            const index = accessList.indexOf(token);
+            const tokenExpired = (new Date()).getTime() - token.date > 5 * 60 * 1000;
+            if (tokenExpired) {
+                removeIndexFromList(index, accessList);
+
+                return ctx.response.status = 410;
+            }
+
+            accessList[index].date = (new Date()).getTime();
+
+            Deno.writeTextFileSync("../data/access.json", JSON.stringify(accessList));
+            return ctx.send({ root: "../website/dist", index: "index.html" });
+        } else {
+            if (isEnvProduction) return ctx.response.status = 403;
+            else await ctx.send({ root: "../website/dist", index: "index.html" });
+        }
     } catch (e) {
-        console.error(e);
-        res.sendStatus(503);
+        console.warn("Catched error:", e);
+        await next();
     }
 });
 
@@ -117,5 +111,11 @@ function removeIndexFromList(index: number, accessList: Array<unknown>) {
         accessList.splice(index, 1);
     }
 
-    fs.writeFileSync(pathString, JSON.stringify(accessList));
+    Deno.writeTextFileSync("../data/access.json", JSON.stringify(accessList));
 }
+
+app.use(router.routes());
+
+await app.listen({ port: webPort });
+console.log(`Server running → PORT ${webPort}`);
+if (!isEnvProduction) console.info(`Express local URL: http://[::1]:${webPort}`);
