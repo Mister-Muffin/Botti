@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM docker.io/node:lts-alpine
 
 COPY . /botti
 
@@ -10,10 +10,11 @@ ENV DB_USER="botti" \
     DB_PORT=5432 \
     DB_PASS="postgres"
 
-RUN apk --no-cache add deno
+RUN apk add curl
+RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+RUN pnpm install --frozen-lockfile
+RUN pnpm add concurrently
+RUN pnpm build-only
+RUN pnpm build-server
 
-# RUN deno cache --lock=bot/deno.lock bot/deno.json
-# RUN deno cache --lock=backend/deno.lock backend/deno.json
-RUN deno task build
-
-CMD [ "deno", "task", "full" ]
+CMD [ "npm", "run", "full" ]

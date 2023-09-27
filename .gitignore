@@ -6,7 +6,6 @@ ServiceAccountKey.json
 data/
 .env
 .direnv/
-website/.vite/
 
 # Logs from https://github.com/github/gitignore/blob/master/Node.gitignore
 logs

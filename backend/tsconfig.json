@@ -1,0 +1,19 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "exclude": [
+    ".vscode",
+    "data",
+    "dist",
+    "**/*.spec.ts"
+  ],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "outDir": "dist/",
+    "noEmitOnError": false,
+    "strict": true
+  },
+}

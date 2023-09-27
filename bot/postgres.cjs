@@ -1,10 +1,14 @@
-export async function getValueFromUserId(db, key, userId) {
+async function getValueFromUserId(db, key, userId) {
     return (await db.query(`SELECT "${key}" FROM users WHERE "UserId" = ${userId}`)).rows[0];
 }
-export async function updateValueFromUserId(db, value, newValue, userId) {
+async function updateValueFromUserId(db, value, newValue, userId) {
     return (await db.query(`UPDATE users SET "${value}" = "${newValue}" WHERE "UserId" = ${userId}`));
 }
 
-export async function incrementValueFromUserId(db, value, int, userId) {
+async function incrementValueFromUserId(db, value, int, userId) {
     return (await db.query(`UPDATE users SET "${value}" = "${value}" + ${int} WHERE "UserId" = ${userId}`));
 }
+
+module.exports = {
+    getValueFromUserId, updateValueFromUserId, incrementValueFromUserId
+};

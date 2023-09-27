@@ -1,0 +1,15 @@
+env:
+    browser: true
+    commonjs: false
+    es2021: true
+extends: eslint:recommended
+parserOptions:
+    ecmaVersion: 12
+rules:
+    indent: warn
+    linebreak-style: warn
+    quotes: warn
+    semi: warn
+    no-unused-vars: warn
+    no-self-assign: off
+    no-undef: off
