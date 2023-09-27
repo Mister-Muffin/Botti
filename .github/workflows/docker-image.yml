@@ -31,6 +31,6 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm/v7
           push: true
-          tags: bigbraindamage/botti:deno
+          tags: bigbraindamage/botti:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

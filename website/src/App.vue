@@ -120,7 +120,7 @@ export default {
     loadData: async function (wsData?: any) {
       let res: any;
       if (wsData === undefined) {
-        res = await fetch("/stats").then((r) => {
+        res = await fetch("/botti/stats").then((r) => {
           if (r.status !== 200) {
             console.warn(`${r.status}!`);
 
@@ -192,7 +192,7 @@ export default {
   },
   mounted: function () {
     try {
-      let connection = new WebSocket(`ws://${window.location.host}/ws`);
+      let connection = new WebSocket(`ws://${window.location.host}/`);
       connection.onmessage = (event) => {
         console.log("New Data arrived!")
         if (event.data != 200) this.loadData(event.data);

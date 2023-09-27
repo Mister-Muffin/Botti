@@ -1,49 +1,47 @@
 checkArgs();
 
-import { load } from "dotenv";
+const { Client, IntentsBitField, Collection, Events } = require("discord.js");
 
-const env = await load({
-    envPath: "../.env",
+const dotenv = require("dotenv");
+dotenv.config();
+
+const { incrementValueFromUserId } = require("./postgres.cjs");
+
+const { Client: PgClient } = require("pg");
+const dbclient = new PgClient({ //export
+    user: process.env.DB_USER,
+    host: process.env.DB_IP,
+    database: process.env.DB_DB,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT ? process.env.DB_PORT : 5432
 });
-
-console.log(Deno.env.toObject());
-
-import { Client, Collection, Events, IntentsBitField } from "discord.js";
-
-import { incrementValueFromUserId } from "./postgres.js";
-
-import pg from "pg";
-export const dbclient = new pg.Client({ //export
-    user: Deno.env.get("DB_USER"),
-    host: Deno.env.get("DB_IP"),
-    database: Deno.env.get("DB_DB"),
-    password: Deno.env.get("DB_PASS"),
-    port: Deno.env.get("DB_PORT") ? Deno.env.get("DB_PORT") : 5432,
-});
+module.exports.dbclient = dbclient;
 
 const myIntents = new IntentsBitField();
 myIntents.add(
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMessages,
-    IntentsBitField.Flags.MessageContent,
+    IntentsBitField.Flags.MessageContent
 );
 
-// global.appRoot__ObhsaaU = path.resolve(import.meta.url);
+const fs = require("fs");
+const path = require("path");
+const appDir = path.dirname(require.main.filename);
+global.appRoot__ObhsaaU = path.resolve(__dirname);
 const client = new Client({ intents: myIntents });
 client.commands = new Collection();
 client.aliases = new Collection();
-let lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
-// deno-lint-ignore no-self-assign
+var lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = "YAMAN!";
 lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis = lukasKrasseEuroEtoroVerdiensteMitEhreInklusiveAufEhrenbasis;
 
-const pathString = `data/gold.json`;
+const pathString = `${appDir}/data/gold.json`;
 let goldJson;
 try {
-    goldJson = Deno.readFileSync(pathString);
+    goldJson = require(pathString);
 } catch (e) {
     console.warn(e);
-    Deno.writeTextFileSync(pathString, JSON.stringify({}));
-    goldJson = Deno.readFileSync(pathString);
+    fs.writeFileSync(pathString, JSON.stringify({}));
+    goldJson = require(pathString);
 }
 
 async function initializeDB() {
@@ -52,21 +50,23 @@ async function initializeDB() {
 }
 initializeDB();
 
-import command from "./handler/command.js";
-command(client);
+
+require("./handler/command.cjs")(client);
 
 client.on("ready", async () => {
-    if (Deno.env.get("REGISTER_COMMANDS")) require("./handler/registerCommand.cjs");
+
+    if (process.env.REGISTER_COMMANDS) require("./handler/registerCommand.cjs");
 
     await client.user.setPresence({ activities: [{ name: "/play", type: "PLAYING" }], status: "online" });
     console.log("ONLINE!");
+
 });
 
-client.on(Events.InteractionCreate, async (interaction) => {
+client.on(Events.InteractionCreate, async interaction => {
     // Not every interaction is a slash command (e.g. MessageComponents).
     // Only receive slash commands by making use of the BaseInteraction#isChatInputCommand() method
     if (!interaction.isChatInputCommand()) return;
-
+    
     const commandName = interaction.commandName.toLowerCase();
     const command = interaction.client.commands.get(commandName);
 
@@ -81,15 +81,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
         console.error(error);
         await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
     }
+
 });
 
 client.on("messageCreate", async (msg) => {
-    if (msg.author.bot) {
+    if (msg.author.bot)
         return;
-    }
-    if (!msg.guild) {
+    if (!msg.guild)
         return;
-    }
     if (msg.content.toLowerCase().match("(e|ä)h?r(e|ä)")) {
         ehre(msg);
     }
@@ -102,50 +101,50 @@ client.on("messageCreate", async (msg) => {
     if (msg.content.toLowerCase().includes("tenor.com/view/laughing-big-mouth-eat-screaming-crazy-gif-12904194")) {
         setTimeout(() => {
             msg.delete()
-                .then((msg) => console.log(`Deleted message from ${msg.author.username} after 1 second`))
+                .then(msg => console.log(`Deleted message from ${msg.author.username} after 1 second`))
                 .catch(console.error);
         }, 1000);
     }
 
-    const parsedGold = goldJson;
+    let parsedGold = goldJson;
     const authorId = msg.author.id;
 
     if (parsedGold[authorId] && !msg.content.startsWith("</")) {
-        const lastTime = parsedGold[authorId].time;
+
+        let lastTime = parsedGold[authorId].time;
         // console.log("Last time: " + !Math.floor((new Date() - new Date(lastTime)) / 1000) < 60);
 
         if (!(Math.floor((new Date() - new Date(lastTime)) / 1000) < 60)) {
             try {
                 //Check if user exists
-                const userArray = (await dbclient.query('SELECT "UserId" FROM users')).rows;
-                if (userArray.filter((object) => object.UserId == authorId).length < 1) {
+                const userArray = (await dbclient.query("SELECT \"UserId\" FROM users")).rows;
+                if (userArray.filter(object => object.UserId == authorId).length < 1) {
                     dbclient.query(`INSERT INTO users("UserId") VALUES (${authorId});`);
                 }
                 //
-                await dbclient.query(
-                    `UPDATE users SET "Username" = '${msg.author.username}' WHERE "UserId" = ${authorId}`,
-                );
+                await dbclient.query(`UPDATE users SET "Username" = '${msg.author.username}' WHERE "UserId" = ${authorId}`);
                 //
                 await incrementValueFromUserId(dbclient, "Coins", 2, authorId);
                 await incrementValueFromUserId(dbclient, "Xp", Math.random() * (10) + 15, authorId);
 
                 parsedGold[authorId].time = new Date();
-            } catch (e) {
-                console.warn(e);
-            }
+
+            } catch (e) { console.warn(e); }
         }
 
-        Deno.writeTextFileSync(pathString, JSON.stringify(parsedGold));
+        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
+
     } else if (!msg.content.startsWith("</") && !goldJson[authorId]) {
         console.log("else if 1");
         parsedGold[authorId] = { time: new Date() };
-        Deno.writeTextFileSync(pathString, JSON.stringify(parsedGold));
+        fs.writeFileSync(pathString, JSON.stringify(parsedGold));
     }
 
     await incrementValueFromUserId(dbclient, "Messages", 1, authorId); // increase message counter every time a user sent a message
 
     // If msg.member is uncached, cache it.
     if (!msg.member) msg.member = await msg.guild.fetchMember(msg);
+
 });
 
 function ehre(msg) {
@@ -177,27 +176,28 @@ async function updateStat(stat, msg, statMessage) {
 
             await msg.channel.send({ content: statMessage.replace("{newStat}", parseInt(val) + 1) });
         }
-    } catch (e) {
-        console.warn(e);
-    }
+
+    } catch (e) { console.warn(e); }
 }
 
-client.login(Deno.env.get("TOKEN"));
 
-Deno.addSignalListener("SIGINT", async () => {
+client.login(process.env.TOKEN);
+
+process.on("SIGINT", async () => {
     try {
         await client.destroy();
         await dbclient.end();
         console.log("\nConnection closed.");
-    } finally {
+    }
+    finally {
         console.log("SIGINT exiting");
-        Deno.exit(0);
+        process.exit(0);
     }
 });
 
 /* eslint-disable indent */
 function checkArgs() {
-    const myArgs = Deno.args.slice(2);
+    const myArgs = process.argv.slice(2);
     switch (myArgs[0]) {
         case "--register":
             require("./handler/registerCommand.cjs");

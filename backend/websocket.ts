@@ -1,23 +1,35 @@
 import { Client } from "pg";
-import { loadStatsFromDatabase } from "./db.ts";
-import type { Stats } from "./types.ts";
+import { WebSocket, WebSocketServer } from "ws";
+import { loadStatsFromDatabase } from "./db.js";
+import { ExtWebSocket } from "./server.js";
+import { Stats } from "./types.js";
 
 let oldStats: Stats;
-let oldClients: WebSocket[];
-export async function broadcastData(clients: WebSocket[], dbclient: Client) {
+export async function broadcastData(wss: WebSocketServer, dbclient: Client) {
     // If no one is connected, don't query the database
-    if (clients.length == 0) return;
+    if (wss.clients.size == 0) return;
 
     const stats = await loadStatsFromDatabase(dbclient);
 
-    // only send Data if Data has changed and the same clients are connected
-    if (JSON.stringify(oldStats) === JSON.stringify(stats) && clients == oldClients) return;
+    // only send Data if Data has changed
+    if (JSON.stringify(oldStats) === JSON.stringify(stats)) return;
 
-    clients.forEach((client) => {
+    wss.clients.forEach(client => {
         client.send(JSON.stringify(stats));
     });
 
     oldStats = stats;
-    oldClients = clients;
+    return;
+}
+
+export function terminateDeadConnections(wss: WebSocketServer) {
+    wss.clients.forEach((ws: WebSocket) => {
+        const extWs = ws as ExtWebSocket;
+
+        if (!extWs.isAlive) return ws.terminate();
+
+        extWs.isAlive = false;
+        extWs.ping();
+    });
     return;
 }
