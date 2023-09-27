@@ -6,17 +6,19 @@ const env = await load({
     envPath: "../.env",
 });
 
+console.log(Deno.env.toObject());
+
 import { Client, Collection, Events, IntentsBitField } from "discord.js";
 
 import { incrementValueFromUserId } from "./postgres.js";
 
 import pg from "pg";
 export const dbclient = new pg.Client({ //export
-    user: env["DB_USER"],
-    host: env["DB_IP"],
-    database: env["DB_DB"],
-    password: env["DB_PASS"],
-    port: env["DB_PORT"] ? env["DB_PORT"] : 5432,
+    user: Deno.env.get("DB_USER"),
+    host: Deno.env.get("DB_IP"),
+    database: Deno.env.get("DB_DB"),
+    password: Deno.env.get("DB_PASS"),
+    port: Deno.env.get("DB_PORT") ? Deno.env.get("DB_PORT") : 5432,
 });
 
 const myIntents = new IntentsBitField();
@@ -54,7 +56,7 @@ import command from "./handler/command.js";
 command(client);
 
 client.on("ready", async () => {
-    if (env["REGISTER_COMMANDS"]) require("./handler/registerCommand.cjs");
+    if (Deno.env.get("REGISTER_COMMANDS")) require("./handler/registerCommand.cjs");
 
     await client.user.setPresence({ activities: [{ name: "/play", type: "PLAYING" }], status: "online" });
     console.log("ONLINE!");
@@ -180,7 +182,7 @@ async function updateStat(stat, msg, statMessage) {
     }
 }
 
-client.login(env["TOKEN"]);
+client.login(Deno.env.get("TOKEN"));
 
 Deno.addSignalListener("SIGINT", async () => {
     try {

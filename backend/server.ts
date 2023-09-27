@@ -13,11 +13,11 @@ const env = await load({
 const { Client } = pg;
 
 const dbclient = new Client({
-    user: env["DB_USER"],
-    host: env["DB_IP"],
-    database: env["DB_DB"],
-    password: env["DB_PASS"],
-    port: env["DB_PORT"] as unknown as number || 5432,
+    user: Deno.env.get("DB_USER"),
+    host: Deno.env.get("DB_IP"),
+    database: Deno.env.get("DB_DB"),
+    password: Deno.env.get("DB_PASS"),
+    port: Deno.env.get("DB_PORT") as unknown as number || 5432,
 });
 
 const connectedClients: WebSocket[] = [];
@@ -25,8 +25,8 @@ const connectedClients: WebSocket[] = [];
 const app = new Application();
 const router = new Router();
 
-const webPort: number = env["PORT"] as unknown as number || 5000;
-const devEnv = env["DEV_ENV"] || "produnction";
+const webPort: number = Deno.env.get("PORT") as unknown as number || 5000;
+const devEnv = Deno.env.get("DEV_ENV") || "produnction";
 const isEnvProduction = devEnv === "production";
 
 // Connect to the Postgres Database
@@ -70,6 +70,13 @@ app.use(async (ctx, next) => {
         }
         if (ctx.request.url.pathname == "/stats") {
             return next();
+        }
+
+        try {
+            Deno.readTextFileSync("../data/access.json");
+        } catch {
+            Deno.mkdirSync("../data", { recursive: true });
+            Deno.writeTextFileSync("../data/access.json", "[]");
         }
 
         const reqToken = ctx.request.url.searchParams.get("token");

@@ -10,7 +10,7 @@
     "express-rate-limit": "npm:express-rate-limit@6.8.1"
   },
   "tasks": {
-    "start": "deno run --allow-read --allow-write=bot/data,../data/access.json --allow-net --allow-env server.ts"
+    "start": "deno run --allow-read --allow-write=bot/data,../data --allow-net --allow-env server.ts"
   },
   "fmt": {
     "useTabs": false,
