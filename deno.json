@@ -1,6 +1,8 @@
 {
   "tasks": {
     "full": "deno task -c backend/deno.json --cwd backend/ start & deno task -c bot/deno.json --cwd bot/ start",
+    "backend": "deno task -c backend/deno.json --cwd backend/ start",
+    "bot": "deno task -c bot/deno.json --cwd bot/ start",
     "build": "deno task -c website/deno.json --cwd website/ build"
   },
   "fmt": {

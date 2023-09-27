@@ -20,20 +20,15 @@ You can run Botti by cloning this GitHub repo and change to the new directory:
 git clone https://github.com/Mister-Muffin/Botti.git && cd Botti
 ```
 
-Install dependencies with npm (concurrently is needed to run express and discord.js at the same time):
+**Note: Make sure to set the environment variables!**
+
+Run Botti and the webserver concurrently with:
 
 ```bash
-npm i
-npm i -g concurrently
+deno task full
 ```
 
-Finally, you can run Botti and Express concurrently with:
-
-```bash
-npm run full
-```
-
-Or run Botti and Express independently with ```npm run start```and ```npm run express```
+Or run Botti and the backend independently with ```deno task bot```and ```deno task backend```
 
 ### Botti environment variables
 
