@@ -1,4 +1,5 @@
-FROM docker.io/node:lts-alpine
+# no alpine? -> https://github.com/docker/build-push-action/issues/1071#issuecomment-1976574780
+FROM docker.io/node:lts
 
 COPY . /botti
 
