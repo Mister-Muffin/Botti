@@ -1,5 +1,6 @@
 # no alpine? -> https://github.com/docker/build-push-action/issues/1071#issuecomment-1976574780
-FROM docker.io/node:lts
+FROM --platform=linux/amd64 docker.io/node:lts-alpine
+FROM --platform=linux/arm/v7 docker.io/node:lts
 
 COPY . /botti
 
