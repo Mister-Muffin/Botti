@@ -10,8 +10,7 @@ ENV DB_USER="botti" \
     DB_PORT=5432 \
     DB_PASS="postgres"
 
-RUN apk add curl
-RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+RUN npm i -g pnpm
 RUN pnpm install --frozen-lockfile
 RUN pnpm add concurrently
 RUN pnpm build-only
