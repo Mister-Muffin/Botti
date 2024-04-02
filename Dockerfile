@@ -21,7 +21,7 @@ RUN pnpm build-server
 FROM docker.io/node:lts-alpine
 
 # Copy built application from build phase
-COPY --from=BUILD_IMAGE /botti /
+COPY --from=BUILD_IMAGE /botti /botti
 
 WORKDIR /botti
 
