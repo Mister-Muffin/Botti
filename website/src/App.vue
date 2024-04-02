@@ -192,7 +192,8 @@ export default {
   },
   mounted: function () {
     try {
-      let connection = new WebSocket(`ws://${window.location.host}/`);
+      let proto = (window.location.protocol == "http:") ? "ws://" : "wss://"
+      let connection = new WebSocket(`${proto}${window.location.host}/`);
       connection.onmessage = (event) => {
         console.log("New Data arrived!")
         if (event.data != 200) this.loadData(event.data);
