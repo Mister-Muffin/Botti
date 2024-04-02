@@ -17,10 +17,15 @@
     "build-only-dev": "vite build --mode development",
     "build-server": "tsc -p backend/tsconfig.json",
     "type-check": "vue-tsc --noEmit",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "version": "node -v"
   },
   "author": "",
   "license": "GNU General Public License v3.0",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
   "dependencies": {
     "@discordjs/voice": "^0.13.0",
     "ascii-table": "^0.0.9",
