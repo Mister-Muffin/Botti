@@ -37,7 +37,7 @@
     "pg": "^8.11.4",
     "vue": "^3.4.21",
     "web-pingjs": "^1.0.1",
-    "ws": "^8.16.0"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.10.1",
